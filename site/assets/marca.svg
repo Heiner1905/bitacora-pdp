@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="64" height="64" role="img" aria-label="Heiner Rincón">
+  <g fill="none" stroke="#DCE1E6">
+    <circle cx="200" cy="200" r="181" stroke-width="12" stroke-dasharray="1.8 93.49" opacity="0.75"/>
+    <path d="M340 200 A140 140 0 0 1 229.11 336.94" stroke-width="20"/>
+    <path d="M170.89 336.94 A140 140 0 1 1 314.68 119.7" stroke-width="20"/>
+    <path d="M88 200 A146 146 0 0 1 312 200 A146 146 0 0 1 88 200 Z" stroke-width="10"/>
+    <circle cx="200" cy="200" r="44" stroke="#8F96A0" stroke-width="8"/>
+  </g>
+  <g fill="#E23E57"><circle cx="200" cy="194" r="9"/><polygon points="195.5,199 204.5,199 208,214 192,214"/></g>
+  <path d="M314.68 119.7 A140 140 0 0 1 340 200" fill="none" stroke="#E23E57" stroke-width="20" transform="translate(23 -7)"/>
+</svg>

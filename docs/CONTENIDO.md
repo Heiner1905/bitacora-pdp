@@ -16,12 +16,12 @@ Un registro semanal, en primera persona, de lo trabajado en clase y de lo que He
 ## Estructura de la página
 
 1. **Portada** — símbolo, nombre completo, código, programa, materia, periodo.
-2. **Índice / mapa** — las semanas como arcos del anillo (N arcos = N semanas), con su estado.
+2. **Índice / mapa** — panel que se abre desde el encabezado: las semanas como arcos del anillo (N arcos = N semanas), con su estado. Además, la tira de la combinación muestra el avance.
 3. **Semanas** — una sección por semana:
-   - Etiqueta `SEMANA_0X` + título del tema + estado + fecha.
+   - Número de semana como plano + `SEMANA 0X` + título del tema + estado + fecha.
    - Reflexión en primera persona.
    - Bloques específicos según el tema (ver tabla).
-   - Cierre **GIRO**: la frase clave de la semana, destacada.
+   - Cierre de semana: la **lección clave**, destacada (diseño en `docs/DIRECCION.md` §8).
 4. **Cierre** — el fragmento encaja, el círculo se completa, mensaje final.
 
 ## Semanas previstas (provisionales — Heiner confirmará)
@@ -57,15 +57,18 @@ window.BITACORA = {
     {
       id: "semana-01",
       numero: 1,
-      titulo: "Expectativas",
+      titulo: "Expectativas de la materia y de mi futuro laboral",
       estado: "pendiente",        // "pendiente" | "en-curso" | "completada"
       fecha: "[PENDIENTE: fecha]",
       reflexion: "[PENDIENTE: reflexión de la semana]",
       bloques: [
-        { tipo: "lista", titulo: "Qué espero de la materia", items: ["[PENDIENTE]"] }
-        // otros tipos: "texto", "tarjetas", "star", "imagen", "cita"
+        { titulo: "Qué esperaba y qué espero ahora", viz: "tachado",
+          datos: { pares: [{ antes: "[PENDIENTE]", despues: "[PENDIENTE]" }] } }
+        // viz: "tachado" | "escalera" | "tarjetas" | "anillos" | "waffle" | "flujo"
+        //    | "maquina" | "checklist" | "contador" | "texto" | "imagen"
+        // Esquema de `datos` por viz: docs/DIRECCION.md §7. Números desconocidos = null.
       ],
-      giro: "[PENDIENTE: la frase clave de la semana]"
+      leccion: "[PENDIENTE: la lección clave de la semana]"
     }
   ]
 };

@@ -1,0 +1,81 @@
+/* ==========================================================================
+   FRAGMENTO.EXE · Tokens — paleta «Hielo y rubí» + tipografía + medidas
+   Fuente de verdad del color. Ningún otro archivo define hex propios.
+   Contrastes (WCAG) calculados sobre --noche / --grafito / --pizarra:
+     escarcha 18.2 / 17.0 / 15.4   hielo 15.0 / 14.0 / 12.7
+     niebla    6.6 /  6.2 /  5.6   acero 3.4 (NUNCA texto: líneas, dial, pendientes)
+     rubí      4.7 /  4.4 /  4.0   → como texto solo sobre --noche y ≥ 18px; sobre fondo rubí el texto va en --noche (4.7)
+     rubí claro 7.9 sobre noche     → foco y destello final
+   ========================================================================== */
+
+@font-face {
+  font-family: "Zodiak";
+  src: url("../assets/fonts/zodiak-variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Fondos */
+  --noche: #0A0B0E;      /* fondo principal (≈64 % de la pantalla) */
+  --grafito: #12141A;    /* superficies: bloques, visualizaciones (≈14 %) */
+  --pizarra: #1B1E25;    /* elevado, separadores sólidos, hover */
+
+  /* Tinta */
+  --escarcha: #F4F6F8;   /* títulos y números grandes */
+  --hielo: #DCE1E6;      /* texto principal, anillo y párpados del símbolo */
+  --niebla: #8F96A0;     /* texto secundario, etiquetas, fibras del iris */
+  --acero: #5D6672;      /* líneas, dial, estados pendientes — nunca texto */
+
+  /* El único color vivo (≈2 % de la pantalla): cerradura, fragmento, CTA */
+  --rubi: #E23E57;
+  --rubi-hondo: #9E2338; /* pressed, halos detrás del rubí */
+  --rubi-claro: #FF7A8E; /* anillo de foco, destello del encaje final */
+
+  /* Derivados (alfa sobre la paleta, no colores nuevos) */
+  --linea: rgba(220, 225, 230, .14);        /* hairline sobre noche */
+  --linea-fuerte: rgba(220, 225, 230, .28);
+  --pendiente-borde: var(--acero);          /* recuadro punteado [PENDIENTE] (3.4:1, no es texto) */
+
+  /* Estados de semana */
+  --estado-completada: var(--hielo);        /* hielo lleno */
+  --estado-en-curso: var(--rubi);           /* rubí */
+  --estado-pendiente: var(--acero);         /* acero punteado */
+
+  /* Tipografía: Zodiak (display, local) · Newsreader (lectura) · Martian Mono (datos) */
+  --f-display: "Zodiak", "Times New Roman", serif;
+  --f-texto: "Newsreader", Georgia, serif;
+  --f-dato: "Martian Mono", ui-monospace, Menlo, monospace;
+
+  --t-gigante: min(46vw, 80svh);                         /* número de semana como plano */
+  --t-nombre: min(clamp(5rem, 1rem + 15.5vw, 16.5rem), 27svh);
+  --t-titulo: clamp(2.25rem, 1rem + 3.4vw, 4.25rem);
+  --t-subtitulo: clamp(1.5rem, 1rem + 1.4vw, 2.25rem);
+  --t-proposito: clamp(1.375rem, 1rem + .9vw, 1.875rem);
+  --t-lectura: clamp(1.125rem, 1rem + .3vw, 1.3125rem);  /* reflexión: 60–75 caracteres */
+  --t-dato: .75rem;                                      /* mono: 12px mínimo */
+  --medida-lectura: 66ch;
+
+  /* Retícula */
+  --margen: 40px;
+  --medianil: 24px;
+  --cols: 12;
+
+  /* Movimiento */
+  --ease-salida: cubic-bezier(.16, 1, .3, 1);
+  --ease-entrada: cubic-bezier(.7, 0, .84, 0);
+  --dur-corta: .35s;
+  --dur-media: .9s;
+
+  /* Capas */
+  --z-particulas: 5;
+  --z-encabezado: 50;
+  --z-indice: 60;
+  --z-cursor: 100;
+}
+
+@media (max-width: 899px) { :root { --cols: 8; --margen: 24px; --medianil: 16px; } }
+@media (max-width: 599px) { :root { --cols: 4; --margen: 16px; --medianil: 12px; --t-gigante: 58vw; } }

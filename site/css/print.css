@@ -1,0 +1,25 @@
+/* ==========================================================================
+   Impresión / PDF desde Chrome: carta, fondo blanco, tinta negra,
+   una semana por página. Cada bloque puede añadir reglas propias
+   dentro de su archivo con @media print.
+   ========================================================================== */
+@media print {
+  @page { size: letter; margin: 18mm 16mm; }
+  :root {
+    --noche: #fff; --grafito: #fff; --pizarra: #f2f2f2;
+    --escarcha: #000; --hielo: #111; --niebla: #444; --acero: #888;
+    --rubi: #B0213A; --rubi-hondo: #B0213A; --rubi-claro: #B0213A;
+    --linea: #bbb; --linea-fuerte: #888;
+    color-scheme: light;
+  }
+  html, body { background: #fff !important; color: #111 !important; }
+  .capa-particulas, .cursor-ojo, .saltar, #encabezado, [data-no-imprimir], .transicion { display: none !important; }
+  .pin-spacer { padding: 0 !important; height: auto !important; width: auto !important; }
+  [style*="transform"] { transform: none !important; }
+  [style*="opacity"] { opacity: 1 !important; }
+  [style*="clip-path"] { clip-path: none !important; }
+  [style*="visibility"] { visibility: visible !important; }
+  .semana { break-before: page; break-inside: auto; min-height: 0 !important; }
+  .pendiente { outline-color: #888; }
+  a { text-decoration: none; }
+}

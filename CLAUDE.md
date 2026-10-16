@@ -16,7 +16,8 @@ No es un PDF de plantilla: es un **sitio web de una sola página**, publicado en
 
 | Archivo | Qué contiene | Cuándo leerlo |
 |---|---|---|
-| `docs/BRIEF.md` | Quién es Heiner, el concepto FRAGMENTO.EXE, el símbolo HR, la dirección visual de partida | Siempre antes de diseñar |
+| `docs/BRIEF.md` | Quién es Heiner, el concepto FRAGMENTO.EXE, el emblema y la paleta «Hielo y rubí» | Siempre antes de diseñar |
+| `docs/DIRECCION.md` | Dirección creativa final (A · Sala de observación), arquitectura, contratos y especificación de cada bloque | Antes de construir |
 | `docs/CONTENIDO.md` | Estructura de la bitácora, semanas, modelo de datos, reglas de contenido | Antes de tocar estructura o textos |
 | `docs/PLAN.md` | Fases del proyecto, forma de trabajar, despliegue | Al iniciar cada fase |
 | `docs/REFERENCIAS.md` | Páginas de referencia de diseño que eligió Heiner | En la fase de dirección creativa |
@@ -29,7 +30,9 @@ docs/                     ← contexto del proyecto (no se publica)
 site/                     ← LO ÚNICO QUE SE PUBLICA (Cloudflare Pages: build output = site)
   index.html
   css/  js/  data/  assets/
-assets/simbolo-hr.svg     ← fuente original del símbolo (copiar a site/assets/)
+site/assets/emblema.svg   ← emblema definitivo (inline para animar); marca.svg y favicon.svg al lado
+docs/diseno/              ← referencias del emblema vivo y de la paleta «Hielo y rubí» (no se publican)
+docs/recursos/            ← material de referencia de técnicas (no se publica)
 .claude/skills/           ← skills de diseño instaladas
 .claude/agents/           ← subagentes
 ```
@@ -66,6 +69,7 @@ Heiner quiere que el trabajo se haga con **varios subagentes en paralelo** para 
 8. **Imprimible:** hoja `@media print` (carta, una semana por página) para exportar a PDF desde Chrome.
 9. **Español colombiano** impecable: tildes, concordancia, primera persona.
 10. **Nada de** emojis, efecto Matrix, terminal verde sobre negro, ni personajes/logos/frases de obras con derechos (las referencias de Heiner son solo mood).
+11. **Paleta «Hielo y rubí» y emblema definitivos:** colores solo desde `site/css/tokens.css` (noche, grafito, pizarra, escarcha, hielo, niebla, acero, rubí, rubí hondo, rubí claro); el rubí es ~2 % de la pantalla (cerradura, fragmento, CTA); texto sobre rubí en `--noche`. El emblema (`site/assets/emblema.svg`, contrato de ids `#simbolo-*`) no se rediseña.
 
 ## Flujo de trabajo y despliegue
 
