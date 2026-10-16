@@ -1,0 +1,28 @@
+{
+  "title": "Siena Film Foundation",
+  "globals": [],
+  "canvas": 1,
+  "fonts": [
+    "\"NB International\", Arial, sans-serif",
+    "\"Neue Brucke\", Arial, sans-serif",
+    "\"P22 Parrish Roman\", Arial, sans-serif"
+  ],
+  "hints": [
+    "lenis",
+    "ogl",
+    "webflow",
+    "next"
+  ],
+  "scripts": [
+    "https://www.googletagmanager.com/gtag/js?id=G-5SFTWJHZ12",
+    "https://siena-film-foundation.vercel.app/app.js",
+    "https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=6728a72e769070a603d43c13",
+    "https://cdn.prod.website-files.com/6728a72e769070a603d43c13/js/webflow.schunk.7bfea9800fb08bae.js",
+    "https://cdn.prod.website-files.com/6728a72e769070a603d43c13/js/webflow.a0aa6ca1.a7ed9526f3bd2ad7.js"
+  ],
+  "css": [
+    "https://cdn.prod.website-files.com/6728a72e769070a603d43c13/css/siena-work-space.webflow.5a4c7c0c2.min.css",
+    "https://siena-film-foundation.vercel.app/styles/out.css",
+    "https://siena-film-foundation.vercel.app/styles/main.css"
+  ]
+}

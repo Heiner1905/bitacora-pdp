@@ -1,0 +1,34 @@
+{
+  "title": "Montfort Group",
+  "globals": [],
+  "canvas": 2,
+  "fonts": [
+    "\"Century Gothic\", sans-serif",
+    "\"Josefin Sans\", sans-serif"
+  ],
+  "hints": [
+    "three",
+    "webgl",
+    "ogl",
+    "next",
+    "astro"
+  ],
+  "scripts": [
+    "https://www.googletagmanager.com/gtag/js?id=G-4J9Y9ZRHPD&cx=c&gtm=4e6af0h2",
+    "https://www.googletagmanager.com/gtm.js?id=GTM-5F3SQM6J",
+    "https://consent.cookiebot.com/89edad7e-6fc5-41b7-91a2-04a65c8d6afa/cc.js?renew=false&referer=mont-fort.com&dnt=false&init=false",
+    "https://consentcdn.cookiebot.com/consentconfig/89edad7e-6fc5-41b7-91a2-04a65c8d6afa/mont-fort.com/configuration.js",
+    "https://consent.cookiebot.com/uc.js",
+    "https://mont-fort.com/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DcSP9LZ1.js",
+    "https://mont-fort.com/_astro/WebGL.astro_astro_type_script_index_0_lang.wO7n4uvo.js",
+    "https://mont-fort.com/_astro/Solutions.astro_astro_type_script_index_0_lang.O1AcBC4Y.js",
+    "https://mont-fort.com/_astro/Social.astro_astro_type_script_index_0_lang.Bdo1SUjv.js",
+    "https://mont-fort.com/_astro/ChaptersNavigation.astro_astro_type_script_index_0_lang.CydF1g6_.js",
+    "https://mont-fort.com/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js",
+    "https://mont-fort.com/_astro/Layout.astro_astro_type_script_index_0_lang.RJ8D73Hs.js",
+    "https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920"
+  ],
+  "css": [
+    "https://mont-fort.com/_astro/_slug_.CRG2uH_C.css"
+  ]
+}

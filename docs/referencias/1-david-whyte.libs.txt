@@ -1,0 +1,47 @@
+{
+  "title": "Experience & advantages - David Whyte",
+  "globals": [],
+  "canvas": 2,
+  "fonts": [
+    "Roobert, sans-serif",
+    "\"Canela Text\"",
+    "Arial",
+    "\"Times New Roman\"",
+    "Roobert",
+    "\"Canela Text Italic\""
+  ],
+  "hints": [
+    "three",
+    "lenis",
+    "ogl"
+  ],
+  "scripts": [
+    "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtktOA7U0o-VsaLz/recaptcha__en.js",
+    "https://www.googletagmanager.com/gtag/js?id=G-ZLTPNFMKSF",
+    "https://davidwhyte.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+    "https://davidwhyte.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js?ver=2.7.0-wc.10.9.4",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=10.9.4",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.min.js?ver=2.1.4-wc.10.9.4",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.min.js?ver=10.9.4",
+    "https://cdn.jsdelivr.net/npm/tarteaucitronjs@1.17.0/tarteaucitron.min.js?ver=6.9.10",
+    "https://reference.dashif.org/dash.js/latest/contrib/akamai/controlbar/ControlBar.js?ver=6.9.10",
+    "https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js?ver=3.14.0",
+    "https://davidwhyte.com/wp-content/themes/davidwhyte/app.js?ver=1790604091",
+    "https://www.google.com/recaptcha/api.js?render=6LdYQMktAAAAAJPDtFTqpdNruLwUxRXsWh5GpC3c",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js?ver=10.9.4",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/js/frontend/order-attribution.min.js?ver=10.9.4",
+    "https://js.stripe.com/dahlia/stripe.js",
+    "https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920"
+  ],
+  "css": [
+    "https://davidwhyte.com/wp-content/plugins/memberpress/css/ui/theme.css?ver=1.14.1",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/client/blocks/wc-blocks.css?ver=wc-10.9.4",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css?ver=10.9.4",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css?ver=10.9.4",
+    "https://davidwhyte.com/wp-content/plugins/woocommerce/assets/css/woocommerce.css?ver=10.9.4",
+    "https://davidwhyte.com/wp-content/themes/davidwhyte/style.css",
+    "https://davidwhyte.com/wp-content/themes/davidwhyte/loader.css",
+    "https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css?ver=3.14.0"
+  ]
+}

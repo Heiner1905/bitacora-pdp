@@ -1,0 +1,26 @@
+{
+  "title": "Alethia",
+  "globals": [],
+  "canvas": 2,
+  "fonts": [
+    "sans-serif",
+    "\"Geist Mono\", monospace",
+    "\"Geist Medium\", \"Geist Medium Placeholder\", sans-serif",
+    "\"Geist Regular\", \"Geist Regular Placeholder\", sans-serif",
+    "Geist, \"Geist Placeholder\", sans-serif",
+    "\"Geist SemiBold\", \"Geist SemiBold Placeholder\", sans-serif"
+  ],
+  "hints": [
+    "lenis",
+    "ogl",
+    "framer",
+    "next"
+  ],
+  "scripts": [
+    "https://www.googletagmanager.com/gtag/js?id=G-4TSC0KS8G3",
+    "https://www.googletagmanager.com/gtag/js?id=G-4TSC0KS8G3",
+    "https://events.framer.com/script?v=2",
+    "https://framerusercontent.com/sites/6AN2yDPkGAirmFqcg2kbn3/script_main.CPsdJQ5r.mjs"
+  ],
+  "css": []
+}

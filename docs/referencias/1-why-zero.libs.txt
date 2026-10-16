@@ -1,0 +1,26 @@
+{
+  "title": "Zero — Human Infrastructure to Get Hired",
+  "globals": [],
+  "canvas": 1,
+  "fonts": [
+    "\"Supply Sans\", monospace",
+    "\"Google Sans Flex\", \"Google Sans Code\", sans-serif",
+    "\"PP Supply Mono\", \"Supply Sans\", monospace",
+    "Arial",
+    "\"Times New Roman\""
+  ],
+  "hints": [
+    "three",
+    "webgl",
+    "ogl",
+    "next"
+  ],
+  "scripts": [
+    "https://www.googletagmanager.com/gtag/js?id=G-N4VGV4H4EN",
+    "https://why.zero.university/assets/main-B9-HtP-f.js"
+  ],
+  "css": [
+    "https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Google+Sans+Code:wght@400;700&family=Google+Sans+Flex:wght@500&family=Inter:wght@400;500;600&family=Newsreader:wght@400;500&display=swap",
+    "https://why.zero.university/assets/main-yeWZtezw.css"
+  ]
+}

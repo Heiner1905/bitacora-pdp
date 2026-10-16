@@ -1,0 +1,30 @@
+{
+  "title": "Lama Lama | Creative Digital Agency Amsterdam",
+  "globals": [],
+  "canvas": 3,
+  "fonts": [
+    "Sometype",
+    "Sometype, \"sans-serif\"",
+    "SuisseBPIntl, Helvetica, Arial, sans-serif",
+    "Sometype, Helvetica, Arial, sans-serif"
+  ],
+  "hints": [
+    "gsap",
+    "lenis",
+    "webgl",
+    "ogl",
+    "next"
+  ],
+  "scripts": [
+    "https://www.googletagmanager.com/gtag/js?id=G-4XH4L2MNDM&cx=c&gtm=4e6ae1",
+    "https://www.googletagmanager.com/gtm.js?id=GTM-PSJFHZN",
+    "https://lamalama.com/wp-content/plugins/sitepress-multilingual-cms/res/js/cookies/language-cookie.js",
+    "https://cdn.usefathom.com/script.js",
+    "https://app.cal.com/embed/embed.js",
+    "https://d5yoctgpv4cpx.cloudfront.net/RUM-OQ15K0OSPJ/v5-lamalama.com.js",
+    "https://lamalama.com/wp-content/themes/lamalama2025/dist/assets/main-BRUUYEmb.js"
+  ],
+  "css": [
+    "https://lamalama.com/wp-content/themes/lamalama2025/dist/assets/main-4J4fHc98.css?ver=7.1.3"
+  ]
+}

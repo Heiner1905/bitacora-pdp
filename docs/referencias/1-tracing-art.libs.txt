@@ -1,0 +1,21 @@
+{
+  "title": "Tracing Art",
+  "globals": [],
+  "canvas": 0,
+  "fonts": [
+    "Graphik, Roboto, \"Helvetica Neue\", sans-serif",
+    "Bardford, Roboto, \"Helvetica Neue\", sans-serif",
+    "sans-serif"
+  ],
+  "hints": [
+    "lenis",
+    "nuxt",
+    "next"
+  ],
+  "scripts": [
+    "https://www.getty.edu/tracingart/_nuxt/DPLBeim1.js"
+  ],
+  "css": [
+    "https://www.getty.edu/tracingart/_nuxt/style.BLbxF1pr.css"
+  ]
+}

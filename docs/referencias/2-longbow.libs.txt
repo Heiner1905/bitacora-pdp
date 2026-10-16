@@ -1,0 +1,26 @@
+{
+  "title": "Longbow | British Hand-Built Featherweight Sports Cars",
+  "globals": [],
+  "canvas": 0,
+  "fonts": [
+    "\"Geist Mono V4\", Arial, sans-serif",
+    "\"Ebgaramond Variablefont Wght 0\", Arial, sans-serif"
+  ],
+  "hints": [
+    "lenis",
+    "ogl",
+    "webflow"
+  ],
+  "scripts": [
+    "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js",
+    "https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=689c67bcc7193a0725e2aecf",
+    "https://cdn.prod.website-files.com/689c67bcc7193a0725e2aecf/js/webflow.schunk.36b8fb49256177c8.js",
+    "https://cdn.prod.website-files.com/689c67bcc7193a0725e2aecf/js/webflow.schunk.08779b17d1882f59.js",
+    "https://cdn.prod.website-files.com/689c67bcc7193a0725e2aecf/js/webflow.8553bbe6.ba7b15ba08516eac.js",
+    "https://cdn.digitalbutlers.me/projects/DB-Longbow/dev/index.js"
+  ],
+  "css": [
+    "https://cdn.prod.website-files.com/689c67bcc7193a0725e2aecf/css/db-longbow.webflow.shared.cba968ecc.css",
+    "https://fonts.googleapis.com/css?family=Bebas+Neue:300,400,500,600,700%7CEB+Garamond:300,400,500,600,700%7CGeist+Mono:300,400,500,600,700"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Home - blit",
+  "globals": [],
+  "canvas": 0,
+  "fonts": [
+    "Archivo, Helvetica, Arial, sans-serif"
+  ],
+  "hints": [
+    "lenis",
+    "webgl",
+    "ogl",
+    "splitting",
+    "next"
+  ],
+  "scripts": [
+    "data:text/javascript;base64,aGlzdG9yeS5zY3JvbGxSZXN0b3JhdGlvbiA9ICJtYW51YWwi",
+    "https://blit.studio/wp-content/cache/min/1/client_data/5b5b5e2eec7af84927ca9c68/script.js?ver=1787047259",
+    "https://blit.studio/wp-content/themes/blit/js/vendor.min.js",
+    "https://blit.studio/wp-content/themes/blit/js/app.min.js"
+  ],
+  "css": [
+    "https://blit.studio/wp-content/cache/min/1/wp-content/themes/blit/style.css?ver=1787047258",
+    "https://blit.studio/wp-content/plugins/sitepress-multilingual-cms/templates/language-switchers/legacy-list-horizontal/style.min.css?ver=1"
+  ]
+}

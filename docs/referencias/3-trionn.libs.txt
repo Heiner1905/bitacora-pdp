@@ -1,0 +1,54 @@
+{
+  "title": "TRIONN | AI-Powered Creative Design & Development Studio in India",
+  "globals": [
+    "lenis"
+  ],
+  "canvas": 3,
+  "fonts": [
+    "familjen, \"familjen Fallback\", sans-serif",
+    "neueHaas, \"neueHaas Fallback\", sans-serif"
+  ],
+  "hints": [
+    "gsap",
+    "lenis",
+    "webgl",
+    "ogl",
+    "next",
+    "astro"
+  ],
+  "scripts": [
+    "https://www.gstatic.com/recaptcha/releases/nY0xPItgwtlvjEjk2TqdwOQz/recaptcha__en.js",
+    "https://trionn.com/_next/static/chunks/0y3~cortx~or~.js",
+    "https://trionn.com/_next/static/chunks/00nvzi6qb_-1r.js",
+    "https://trionn.com/_next/static/chunks/turbopack-0nz662b_cli3l.js",
+    "https://trionn.com/_next/static/chunks/0_-x7hddx_1l6.js",
+    "https://trionn.com/_next/static/chunks/0cayk5enk9uhw.js",
+    "https://trionn.com/_next/static/chunks/02m2onmcd.l.g.js",
+    "https://trionn.com/_next/static/chunks/0z-5e_9x.n-.p.js",
+    "https://trionn.com/_next/static/chunks/08uh6.imupez1.js",
+    "https://trionn.com/_next/static/chunks/0eq63v9bib54k.js",
+    "https://trionn.com/_next/static/chunks/0d~m1vbg607mf.js",
+    "https://trionn.com/_next/static/chunks/0d3shmwh5_nmn.js",
+    "https://trionn.com/_next/static/chunks/13z7xnmanm326.js",
+    "https://trionn.com/_next/static/chunks/13xgo04nefn8q.js",
+    "https://trionn.com/_next/static/chunks/0_.rc2afwy26s.js",
+    "https://trionn.com/_next/static/chunks/0eox~aw2ff066.js",
+    "https://trionn.com/_next/static/chunks/0sue_k2sp00no.js",
+    "https://trionn.com/_next/static/chunks/04srvx.z7_jun.js",
+    "https://trionn.com/_next/static/chunks/15ky3h9upk1qm.js",
+    "https://trionn.com/_next/static/chunks/03~yq9q893hmn.js",
+    "https://www.google.com/recaptcha/api.js?render=6LcyZhUtAAAAAOfV8MQbwEXujCy7eZdF6mfhecxc",
+    "https://trionn.com/_next/static/chunks/1233qowaitufq.js",
+    "https://trionn.com/_next/static/chunks/06.ezyo7li73e.js",
+    "https://trionn.com/_next/static/chunks/0.876vu_iktyk.js",
+    "https://trionn.com/_next/static/chunks/0vr2_okvwe_sl.js",
+    "https://trionn.com/_next/static/chunks/0.924d2y-5~87.js",
+    "https://trionn.com/_next/static/chunks/0zaia6i55l01..js",
+    "https://www.googletagmanager.com/gtag/js?id=G-D2L5FM3EVB"
+  ],
+  "css": [
+    "https://trionn.com/_next/static/chunks/0wf1gwg29cqjw.css",
+    "https://trionn.com/_next/static/chunks/0-x39_77jza10.css",
+    "https://trionn.com/_next/static/chunks/0xt8hh0aijjr~.css"
+  ]
+}

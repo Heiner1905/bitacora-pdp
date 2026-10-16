@@ -1,0 +1,52 @@
+{
+  "title": "Aspen Search - Executive Search for Quantitative Finance & Tech",
+  "globals": [],
+  "canvas": 0,
+  "fonts": [
+    "suisseIntl, \"suisseIntl Fallback\", Arial, system-ui, sans-serif, ui-sans-serif, system-ui, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"",
+    "suisseIntlMono, \"suisseIntlMono Fallback\", ui-monospace, monospace, ui-monospace, monospace"
+  ],
+  "hints": [
+    "three",
+    "lenis",
+    "ogl",
+    "next",
+    "r3f",
+    "theatre"
+  ],
+  "scripts": [
+    "https://www.aspensearch.com/_next/static/immutable/chunks/1191lj8_x8otc.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3uols5lsshuk4.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/07v142o5owpy6.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/1awbb_or03f3d.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/2ty-5kg0gfifh.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/turbopack-1lasj-s0m9fxl.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3pp6x3wm-14c0.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/0ep791onj8_k8.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/24c0b-x81nd7z.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/43blnww2w7thf.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/1kzlwc14kitdh.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3j0n5q8x41_6e.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/192wvzxf889qq.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/23mpa9zqbr_je.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/1grhtjjmuoyti.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3ytq6bgo7g355.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3rj-bmy-3duyy.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/2fddfsh5whilj.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/2hn4att65jwsd.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3vwd6u028p0j8.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/1d3p_0f9z60rw.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3z5gbgxw6n3cw.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3ou1g7yk-pdi6.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/2_v4lk4hk-xd6.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/0ot9po99au43b.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/1d39zo95bgm-4.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/0c0hxoamwjsbw.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3fj3ssz0fg3bx.js",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/0c0hxoamwjsbw.js"
+  ],
+  "css": [
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3910qv-cxfuqm.css",
+    "https://www.aspensearch.com/_next/static/immutable/chunks/3k9-onrok7n76.css"
+  ]
+}

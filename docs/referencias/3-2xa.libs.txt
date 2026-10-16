@@ -1,0 +1,23 @@
+{
+  "title": "2xA — Home",
+  "globals": [],
+  "canvas": 8,
+  "fonts": [
+    "\"2XAMONOVF\", monospace",
+    "HelveticaProRoman, Helvetica, sans-serif"
+  ],
+  "hints": [
+    "three",
+    "lenis",
+    "ogl",
+    "splitting"
+  ],
+  "scripts": [
+    "https://www.googletagmanager.com/gtag/js?id=G-9V0NZV2FR8",
+    "https://2xa.studio/public/dist/assets/main-CzlVfecv.js",
+    "https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920"
+  ],
+  "css": [
+    "https://2xa.studio/public/dist/assets/style-TyInWDPO.css"
+  ]
+}

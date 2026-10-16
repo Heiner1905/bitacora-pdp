@@ -1,0 +1,37 @@
+{
+  "title": "Terminal Yard Operating System | The New Industry Standard in Yard Operations",
+  "globals": [],
+  "canvas": 0,
+  "fonts": [
+    "SuisseIntl, sans-serif",
+    "\"Geist Mono\", monospace",
+    "SuisseIntl"
+  ],
+  "hints": [
+    "lenis",
+    "ogl",
+    "webflow",
+    "nuxt",
+    "next"
+  ],
+  "scripts": [
+    "https://t.contentsquare.net/uxa/dc87b898eec11.js",
+    "https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache=%27v5v6h",
+    "https://app.salespeak.ai/widget.js",
+    "https://terminal-industries.com/_nuxt/B4erEYb0.js",
+    "https://t.contentsquare.net/releases/15.266.3/es2019/1300104-d0c88b5a.js",
+    "https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920"
+  ],
+  "css": [
+    "https://terminal-industries.com/_nuxt/entry.BHtTNCfd.css",
+    "https://terminal-industries.com/_nuxt/PathBackground.CYgSVosN.css",
+    "https://terminal-industries.com/_nuxt/get-frames.BEFbNTY1.css",
+    "https://terminal-industries.com/_nuxt/NotchSection.CmaDBuu9.css",
+    "https://terminal-industries.com/_nuxt/BackgroundCanvas.BfIfKjEO.css",
+    "https://terminal-industries.com/_nuxt/PaddedCounter.D_9jWspQ.css",
+    "https://terminal-industries.com/_nuxt/FormField.CFAqQbPc.css",
+    "https://terminal-industries.com/_nuxt/ButtonTilt.DIUWIHI3.css",
+    "https://terminal-industries.com/_nuxt/SiteFooter.CJ3pPAtB.css",
+    "https://terminal-industries.com/_nuxt/index.CWHlnDAF.css"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "title": "21 Hours on the Moon",
+  "globals": [],
+  "canvas": 4,
+  "fonts": [],
+  "hints": [
+    "three",
+    "ogl"
+  ],
+  "scripts": [
+    "https://www.googletagmanager.com/gtag/js?id=G-CTMNNH5JG9"
+  ],
+  "css": [
+    "https://www.21hrs.space/_app/immutable/assets/2.fd30c4b8.css",
+    "https://www.21hrs.space/_app/immutable/assets/Cookies.82fadc89.css",
+    "https://www.21hrs.space/_app/immutable/assets/Image.d64b0822.css",
+    "https://www.21hrs.space/_app/immutable/assets/CircularButton.e488053c.css",
+    "https://www.21hrs.space/_app/immutable/assets/FrameLines.83e3785d.css",
+    "https://www.21hrs.space/_app/immutable/assets/5.1c4dca04.css"
+  ]
+}

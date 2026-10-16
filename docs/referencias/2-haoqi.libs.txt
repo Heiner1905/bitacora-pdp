@@ -1,0 +1,31 @@
+{
+  "title": "HAOQI©2026",
+  "globals": [],
+  "canvas": 2,
+  "fonts": [
+    "tiktok, sans-serif",
+    "tronica-mono, monospace",
+    "mono, monospace"
+  ],
+  "hints": [
+    "next"
+  ],
+  "scripts": [
+    "https://haoqi.design/_next/static/chunks/7cc1924554447827.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/ee513d663d42744e.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/8c2d1abc8462562b.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/turbopack-e3b4066090a54cd6.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/1552c7742c37f06d.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/8f06fe72571f37b9.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/3c6cc5b2fcccdee5.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/d59f7a97fb1c563f.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/1098c2541054fc77.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/2689132c4e070b68.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/4d3f3b68dbbde33a.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/a6dad97d9634a72d.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt",
+    "https://haoqi.design/_next/static/chunks/56b0d8f9f2c1e441.js?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt"
+  ],
+  "css": [
+    "https://haoqi.design/_next/static/chunks/635eb04122aa774f.css?dpl=dpl_CydG2SHX387W4U5vX9NPppQSvmSt"
+  ]
+}

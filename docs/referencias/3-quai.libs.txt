@@ -1,0 +1,36 @@
+{
+  "title": "Quai Network",
+  "globals": [],
+  "canvas": 1,
+  "fonts": [
+    "monorama, \"monorama Fallback\", sans-serif",
+    "monorama, \"monorama Fallback\", monospace",
+    "baiJamjuree, \"baiJamjuree Fallback\", sans-serif",
+    "yapari, \"yapari Fallback\", sans-serif"
+  ],
+  "hints": [
+    "three",
+    "lenis",
+    "webgl",
+    "ogl",
+    "next"
+  ],
+  "scripts": [
+    "https://www.qu.ai/_next/static/chunks/4bd1b696-f785427dddbba9fb.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/1255-94c0e4b4416f2258.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/main-app-5eb0d9c55a395822.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/polyfills-42372ed130431b0a.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/3541.44111da2ea013e87.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/1782.af267a64126224ff.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/2512.1cde098da6c479b9.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/48.55e6532d605f5678.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/9281.6bda0fb227ac8d8b.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/app/about/page-226fabccc1775061.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/chunks/webpack-fc3f1c1210a23003.js?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f"
+  ],
+  "css": [
+    "https://www.qu.ai/_next/static/css/356023f188df5762.css?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/css/645cea3d56ba4311.css?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f",
+    "https://www.qu.ai/_next/static/css/72f5c94071a9f2a8.css?dpl=dpl_8wwB4TjqPYSXfK7TPVkpfDq2zJ3f"
+  ]
+}

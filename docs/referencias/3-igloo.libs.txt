@@ -1,0 +1,13 @@
+{
+  "title": "Igloo Inc.",
+  "globals": [],
+  "canvas": 0,
+  "fonts": [],
+  "hints": [
+    "webgl"
+  ],
+  "scripts": [
+    "https://www.igloo.inc/assets/index-2e130bc1.js"
+  ],
+  "css": []
+}
