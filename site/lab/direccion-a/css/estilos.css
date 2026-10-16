@@ -3,6 +3,16 @@
    Tokens → base → claqueta → portada → semana → GIRO → motion → print
    ========================================================= */
 
+/* Zodiak variable (Fontshare). Se declara aquí solo con el woff2 variable: los respaldos .woff/.ttf
+   que entrega la hoja de Fontshare pueden caer en una instancia estática gruesa si el woff2 falla. */
+@font-face {
+  font-family: "Zodiak";
+  src: url("https://cdn.fontshare.com/wf/UDGW4K5KDO2WNP2256GU5CP7HQDVADLQ/LML445TYWQT7TRPDYZPCIVB3BJWX7NTD/2O5TXCJMYUDHI5FO6N4PXN6WNROSBHNU.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Paleta (contrastes en docs/DIRECCION.md §A2) */
   --sala: #0D0F12;
@@ -565,5 +575,12 @@ html.cursor-activo, html.cursor-activo a, html.cursor-activo * { cursor: none; }
   .bloque { margin: 0 0 8mm !important; }
   .giro { min-height: auto; display: block; padding: 8mm 0; background: #fff !important; break-inside: avoid; }
   .giro__nota { display: none; }
+  .portada, .pin-spacer { position: static !important; transform: none !important; width: auto !important; height: auto !important; max-width: none !important; max-height: none !important; top: auto !important; left: auto !important; padding: 0 !important; margin: 0 !important; }
+  .giro, .js-mov .giro { margin-top: 0 !important; position: static !important; transform: none !important; top: auto !important; left: auto !important; width: auto !important; height: auto !important; max-width: none !important; max-height: none !important; }
+  .semana { margin-top: 0 !important; }
+  .semana__luz, .portada__luz { display: none !important; }
+  .giro__marco { opacity: 1 !important; visibility: visible !important; }
+  .giro__frase, .giro__rotulo { color: #111; }
+  .giro__rotulo { color: #8a4a12; }
   .pie { display: none; }
 }
