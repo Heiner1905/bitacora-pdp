@@ -180,6 +180,7 @@
   function fijarEscena(k, inmediato) {
     var el = $(".claqueta__k");
     var txt = pad(k);
+    claqueta.classList.toggle("es-solida", k > 0);
     if (el.textContent === txt) return;
     if (inmediato || !window.ScrambleTextPlugin) el.textContent = txt;
     else gsap.to(el, { duration: 0.5, scrambleText: { text: txt, chars: "0123456789", speed: 0.8 } });

@@ -176,6 +176,8 @@ html.precarga .claqueta { opacity: 0; }
   pointer-events: none;
 }
 .claqueta > * { pointer-events: auto; }
+/* Ya dentro de las escenas, la claqueta tapa lo que pasa por debajo (sin sombras ni velos) */
+.claqueta.es-solida { background: var(--sala); padding-bottom: 14px; }
 .claqueta__marca {
   grid-column: 1 / span 3;
   justify-self: start;
@@ -516,7 +518,7 @@ html.cursor-activo, html.cursor-activo a, html.cursor-activo * { cursor: none; }
   .portada { padding-bottom: 20px; }
   .simbolo { width: min(66vw, 46svh); margin: 48px 8px 0 0; }
   .nombre__linea--b { margin-left: 12vw; }
-  .portada__proposito { grid-column: 1 / -1; font-size: 1.1875rem; margin-top: 18px; }
+  .portada__proposito { grid-column: 1 / -1; font-size: 1.1875rem; line-height: 1.32; margin-top: 18px; }
   .creditos { margin-top: 22px; row-gap: 14px; column-gap: 12px; }
   .creditos dd { font-size: 1rem; }
   .creditos dt { font-size: .6875rem; }
