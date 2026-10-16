@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="Símbolo HR: círculo abierto con un ojo de pupila en cerradura y el fragmento faltante flotando afuera">
+  <path id="anillo" d="M 326.9 140.8 A 140 140 0 1 1 247.9 68.4" fill="none" stroke="#E9E4D8" stroke-width="10"/>
+  <path id="ojo-sup" d="M 112 196 Q 200 116 288 196" fill="none" stroke="#E9E4D8" stroke-width="5" stroke-linecap="round"/>
+  <path id="ojo-inf" d="M 112 196 Q 200 276 288 196" fill="none" stroke="#E9E4D8" stroke-width="5" stroke-linecap="round"/>
+  <circle id="iris" cx="200" cy="196" r="30" fill="none" stroke="#4F8EF7" stroke-width="4"/>
+  <g id="pupila" fill="#F28C38">
+    <circle cx="200" cy="190" r="8"/>
+    <polygon points="196,195 204,195 208,213 192,213"/>
+  </g>
+  <text id="hr" x="205" y="300" text-anchor="middle" fill="#E9E4D8" font-family="'Space Grotesk', sans-serif" font-weight="600" font-size="40" letter-spacing="10">HR</text>
+  <g id="fragmento" transform="translate(30,-30)">
+    <path d="M 247.9 68.4 A 140 140 0 0 1 326.9 140.8" fill="none" stroke="#F28C38" stroke-width="10"/>
+    <g id="bits">
+      <polygon points="275,122 272.5,126.3 267.5,126.3 265,122 267.5,117.7 272.5,117.7" fill="none" stroke="#3DBE8B" stroke-width="2"/>
+      <rect x="286" y="136" width="6" height="6" fill="#4F8EF7"/>
+      <polygon points="252,108 262,111 256,119" fill="#F28C38" opacity="0.6"/>
+    </g>
+  </g>
+</svg>
