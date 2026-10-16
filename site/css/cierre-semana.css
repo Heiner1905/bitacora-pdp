@@ -1,1 +1,47 @@
-/* cierre-semana.css — propiedad del constructor 3 (ver docs/DIRECCION.md §9) */
+/* ==========================================================================
+   cierre-semana.css — la lección clave de cada semana (constructor 3 · §8)
+   Vive dentro de .semana (que ya pone el margen lateral): misma retícula de 12/8/4.
+   ========================================================================== */
+.cs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--medianil);
+  row-gap: 28px;
+  align-content: center;
+  min-height: 72svh;
+  padding-block: 10svh;
+  isolation: isolate;
+}
+.cs__ficha {
+  grid-column: 1 / span 3;
+  align-self: start;
+  display: grid; gap: 6px;
+  padding-top: .9em;
+  border-top: 1px solid var(--linea-fuerte);
+}
+.cs__ficha b { font-weight: 400; color: var(--hielo); }
+.cs__cuerpo { grid-column: 4 / span 8; display: grid; gap: 32px; }
+.cs__texto {
+  font-family: var(--f-texto);
+  font-weight: 300;
+  font-size: clamp(1.75rem, 1rem + 2.5vw, 3.5rem);
+  line-height: 1.16;
+  letter-spacing: -.012em;
+  color: var(--escarcha);
+  max-width: 26ch;
+  text-wrap: pretty;
+}
+/* [PENDIENTE]: tal cual, sin efecto */
+.cs--pendiente { min-height: 0; padding-block: 6svh; }
+.cs--pendiente .cs__texto { font-size: var(--t-subtitulo); color: var(--niebla); font-style: italic; letter-spacing: 0; justify-self: start; }
+
+@media (max-width: 899px) {
+  .cs { min-height: 0; padding-block: 8svh; }
+  .cs__ficha { grid-column: 1 / -1; grid-template-columns: auto auto; justify-content: space-between; }
+  .cs__cuerpo { grid-column: 1 / -1; }
+}
+@media print {
+  .cs { min-height: 0; padding: 8mm 0 0; break-inside: avoid; }
+  .cs__texto { font-size: 18pt; color: #000; }
+}
