@@ -1,0 +1,37 @@
+@import url("../cs-base.css");
+
+/* Alternativa 2 · La combinación */
+.cs-combinacion .cs__cuerpo { grid-template-columns: auto minmax(0, 1fr); column-gap: clamp(20px, 3vw, 48px); align-items: start; }
+.cs__dial { width: clamp(84px, 9vw, 136px); aspect-ratio: 1; margin-top: .2em; overflow: visible; }
+.cs__dial .marcas { fill: none; stroke: var(--acero); }
+.cs__dial .indice { fill: var(--escarcha); }
+.cs__dial .orbita { fill: none; stroke: var(--hielo); opacity: .35; }
+.cs__dial .cerradura { fill: var(--rubi); }
+.cs__dial .fijo { fill: var(--rubi-claro); }
+
+.cs-combinacion .cs__texto { grid-column: 2; }
+.cs__pie { grid-column: 2; display: flex; gap: 18px; align-items: baseline; color: var(--niebla); }
+.cs__pie b { font-weight: 400; color: var(--hielo); }
+
+/* Tambor: una ventana de una línea; dentro, la cifra arriba y la palabra debajo */
+.tambor { display: inline-grid; vertical-align: top; overflow: clip; height: 1.16em; }
+.tambor__rueda { display: grid; grid-template-rows: 1.16em 1.16em; will-change: transform; }
+.tambor__cifra, .tambor__claro { grid-column: 1; line-height: 1.16em; white-space: nowrap; }
+.tambor__cifra {
+  font-family: var(--f-dato); font-variation-settings: "wdth" 75; font-weight: 300;
+  font-size: .5em; line-height: 2.32em; letter-spacing: .08em; color: var(--niebla);
+}
+.tambor__cifra { grid-row: 1; }
+.tambor__claro { grid-row: 2; }
+
+/* Estado final (sin JS de movimiento, reduced-motion, impresión): solo la palabra en claro */
+.cs-combinacion:not([data-modo="tambores"]) .tambor__rueda { transform: translateY(-50%); }
+
+@media (max-width: 599px) {
+  .cs-combinacion .cs__cuerpo { grid-template-columns: minmax(0, 1fr); row-gap: 20px; }
+  .cs-combinacion .cs__texto, .cs__pie { grid-column: 1; }
+  .cs__dial { width: 88px; }
+}
+@media print {
+  .tambor__rueda { transform: translateY(-50%) !important; }
+}

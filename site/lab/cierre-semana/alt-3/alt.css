@@ -1,0 +1,25 @@
+@import url("../cs-base.css");
+
+/* Alternativa 3 · El fragmento */
+.cs-fragmento { min-height: 100svh; }
+.cs-fragmento .cs__cuerpo { position: relative; z-index: 1; }
+.cs-fragmento .cs__texto { max-width: 22ch; }
+.pieza { display: inline-block; will-change: transform; }
+
+.cs__anillo {
+  position: absolute; z-index: 0; pointer-events: none;
+  width: min(60svh, 32vw); aspect-ratio: 1;
+  right: 3vw; top: 50%; translate: 0 -50%;
+  overflow: visible;
+}
+.cs__anillo .todo { fill: none; stroke: var(--acero); }
+.cs__anillo .todo-claro { fill: none; stroke: var(--hielo); opacity: 0; }
+.cs__anillo .arco { fill: none; stroke: var(--rubi); }
+.cs__anillo .pulso { fill: none; stroke: var(--rubi-claro); opacity: 0; }
+.cs__pie { color: var(--niebla); }
+
+@media (max-width: 899px) {
+  .cs__anillo { width: 44vw; right: var(--margen); top: 4svh; translate: none; }
+  .cs-fragmento .cs__texto { max-width: none; }
+}
+@media print { .cs__anillo { display: none; } }

@@ -1,0 +1,24 @@
+/* Laboratorio · cierre de semana — marco común de las 3 alternativas (no se publica en el sitio final). */
+.lab-nota {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px;
+  padding: 32px var(--margen) 0; max-width: 1280px;
+}
+.lab-nota h1 { font-family: var(--f-display); font-weight: 300; font-size: var(--t-subtitulo); color: var(--escarcha); line-height: 1.1; }
+.lab-nota p { max-width: 60ch; color: var(--niebla); font-size: 1rem; }
+.lab-nota nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.lab-nota nav a { color: var(--hielo); }
+.lab-nota nav a[aria-current] { color: var(--rubi-claro); }
+
+.lab-contexto {
+  min-height: 70svh; display: grid; align-content: end; gap: 16px;
+  padding: 0 var(--margen) 12svh; max-width: 1280px;
+}
+.lab-contexto p { max-width: var(--medida-lectura); color: var(--niebla); }
+.lab-rotulo {
+  display: inline-block; justify-self: start; padding: 4px 10px; border: 1px dashed var(--acero);
+  font-family: var(--f-dato); font-size: var(--t-dato); letter-spacing: .14em; text-transform: uppercase; color: var(--niebla);
+}
+.lab-espacio { height: 60svh; display: grid; place-items: center; }
+.lab-fin { height: 40svh; }
+.semana__cierre { position: relative; }
+.lab-rotulo--muestra { position: absolute; z-index: 4; top: 20px; right: var(--margen); }

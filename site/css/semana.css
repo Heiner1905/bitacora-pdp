@@ -1,1 +1,275 @@
-/* semana.css — propiedad del constructor 2 (ver docs/DIRECCION.md §9) */
+/* ==========================================================================
+   semana.css — plantilla de semana (constructor 2)
+   Cada semana es una escena: un plano (el número gigante), sus créditos
+   (ficha + título), la reflexión a 66ch y sus bloques con visualización.
+   data-plano varía la composición: centro (01) · izquierda · derecha · completo.
+   ========================================================================== */
+
+.semanas { position: relative; }
+
+.semana {
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--medianil);
+  padding: 0 var(--margen) clamp(64px, 10vw, 140px);
+  scroll-margin-top: 0;
+}
+.semana:focus { outline: none; }
+
+/* ---------- Cabecera: el plano ---------- */
+.semana__cabecera {
+  grid-column: 1 / -1;
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: 1fr auto 1fr;
+  padding: clamp(88px, 11vh, 120px) 0 clamp(48px, 8vh, 88px);
+}
+
+.semana__numero {
+  font-family: var(--f-display);
+  font-weight: 160;
+  font-size: var(--t-gigante);
+  line-height: .8;
+  letter-spacing: -.055em;
+  color: var(--escarcha);
+  font-variant-numeric: lining-nums;
+  font-feature-settings: "lnum" 1;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  position: relative;
+  z-index: 0;
+  /* el glifo respira dentro de su caja: nunca lo corta una línea */
+  padding-block: .04em .02em;
+}
+
+.semana__rotulo { position: relative; z-index: 2; }
+
+/* Ficha de créditos: SEMANA 0k · FECHA · ESTADO */
+.semana__ficha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 0;
+  margin: 0 0 clamp(16px, 2.2vw, 28px);
+  font-family: var(--f-dato);
+  font-size: var(--t-dato);
+  font-variation-settings: "wdth" 75;
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--niebla);
+}
+.semana__ficha dd { margin: 0; }
+.ficha__dato { display: inline-flex; align-items: center; }
+.ficha__dato + .ficha__dato::before {
+  content: "";
+  display: inline-block;
+  width: 18px; height: 1px;
+  margin: 0 12px;
+  background: var(--acero);
+  vertical-align: middle;
+}
+.ficha__semana dd { color: var(--escarcha); font-weight: 500; }
+.semana__ficha .pendiente {
+  text-transform: none; letter-spacing: 0; font-size: 1rem;
+  outline-offset: 3px; padding: 0 4px;
+}
+
+/* Estado con su color: completada hielo lleno · en curso rubí · pendiente acero punteado */
+.ficha__estado dd { display: inline-flex; align-items: center; gap: 8px; color: var(--hielo); }
+.estado__marca {
+  width: 10px; height: 10px; flex: none;
+  border-radius: 50%;
+  border: 1px dashed var(--estado-pendiente);
+}
+.semana[data-estado="completada"] .estado__marca { background: var(--estado-completada); border: 1px solid var(--estado-completada); }
+.semana[data-estado="en-curso"] .estado__marca { background: var(--estado-en-curso); border: 1px solid var(--estado-en-curso); box-shadow: 0 0 0 3px var(--noche), 0 0 0 4px var(--rubi-hondo); }
+.semana[data-estado="pendiente"] .estado__texto { color: var(--niebla); }
+
+.semana__titulo {
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: var(--t-titulo);
+  line-height: 1.02;
+  letter-spacing: -.02em;
+  color: var(--escarcha);
+  max-width: 17ch;
+  text-wrap: balance;
+}
+.semana__titulo.pendiente { font-family: var(--f-texto); font-size: var(--t-subtitulo); }
+
+/* --- Plano «centro» (semana 01): el número completo en el centro del cuadro,
+       la ficha bajo él (lo que se ve por la cerradura) y el título abajo a la izquierda --- */
+.semana[data-plano="centro"] .semana__numero {
+  grid-column: 1 / -1; grid-row: 2;
+  justify-self: center; align-self: center;
+  margin-inline-start: -.04em;
+}
+.semana[data-plano="centro"] .semana__rotulo { display: contents; }
+.semana[data-plano="centro"] .semana__ficha {
+  grid-column: 1 / -1; grid-row: 3; align-self: start; justify-self: center;
+  margin-top: clamp(14px, 2vh, 24px); justify-content: center;
+}
+.semana[data-plano="centro"] .semana__titulo {
+  grid-column: 1 / span 6; grid-row: 3; align-self: end;
+  font-size: var(--t-subtitulo); max-width: 22ch;
+}
+
+/* --- Plano «izquierda»: el número sangra por el borde izquierdo, créditos abajo a la derecha --- */
+.semana[data-plano="izquierda"] .semana__cabecera { grid-template-rows: auto 1fr auto; }
+.semana[data-plano="izquierda"] .semana__numero {
+  grid-column: 1 / -1; grid-row: 1 / 3; align-self: start; justify-self: start;
+  margin-left: calc(-1 * var(--margen) - .14em);
+}
+.semana[data-plano="izquierda"] .semana__rotulo { grid-column: 7 / -1; grid-row: 3; align-self: end; }
+
+/* --- Plano «derecha»: el número sangra por el borde derecho, créditos arriba a la izquierda --- */
+.semana[data-plano="derecha"] .semana__cabecera { grid-template-rows: auto 1fr auto; }
+.semana[data-plano="derecha"] .semana__numero {
+  grid-column: 1 / -1; grid-row: 2 / 4; align-self: end; justify-self: end;
+  margin-right: calc(-1 * var(--margen) - .16em);
+}
+.semana[data-plano="derecha"] .semana__rotulo { grid-column: 1 / span 6; grid-row: 1; align-self: start; }
+
+/* --- Plano «completo»: el número entra entero, partido por el eje; créditos al costado, a la altura de su base --- */
+.semana[data-plano="completo"] .semana__cabecera { grid-template-rows: 1fr auto 1fr; }
+.semana[data-plano="completo"] .semana__numero {
+  grid-column: 1 / span 7; grid-row: 2; align-self: center; justify-self: start;
+  font-size: min(40vw, 72svh);
+}
+.semana[data-plano="completo"] .semana__rotulo {
+  grid-column: 8 / -1; grid-row: 2; align-self: end;
+  padding-bottom: .4em;
+  border-left: 1px solid var(--linea);
+  padding-left: clamp(16px, 2vw, 28px);
+}
+
+/* ---------- Reflexión ---------- */
+.semana__reflexion {
+  grid-column: 2 / span 7;
+  position: relative;
+  margin-top: clamp(24px, 6vw, 72px);
+}
+.semana__reflexion .viz-texto {
+  font-size: calc(var(--t-lectura) * 1.1);
+  line-height: 1.62;
+  color: var(--hielo);
+  max-width: var(--medida-lectura);
+  hanging-punctuation: first;
+}
+.semana__reflexion .pendiente { display: inline-block; font-size: var(--t-lectura); }
+.semana[data-plano="izquierda"] .semana__reflexion { grid-column: 6 / span 7; }
+.semana[data-plano="derecha"] .semana__reflexion { grid-column: 2 / span 7; }
+.semana[data-plano="completo"] .semana__reflexion { grid-column: 4 / span 7; }
+
+/* ---------- Bloques ---------- */
+.semana__bloques {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  row-gap: clamp(72px, 10vw, 140px);
+  margin-top: clamp(72px, 10vw, 140px);
+}
+
+.bloque {
+  position: relative;
+  grid-column: 2 / span 7;
+  min-width: 0;
+}
+.bloque__cabecera { margin-bottom: clamp(24px, 3vw, 40px); }
+.bloque__titulo {
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: var(--t-subtitulo);
+  line-height: 1.1;
+  letter-spacing: -.01em;
+  color: var(--escarcha);
+  max-width: 24ch;
+  text-wrap: balance;
+}
+.bloque__titulo.pendiente { font-family: var(--f-texto); }
+.bloque__muestra {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 8px;
+  background: var(--rubi);
+  color: var(--noche);
+  font-family: var(--f-dato);
+  font-size: var(--t-dato);
+  font-variation-settings: "wdth" 75;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Bloques anchos (visualizaciones con estructura) */
+.bloque[data-viz="tarjetas"],
+.bloque[data-viz="flujo"],
+.bloque[data-viz="escalera"] { grid-column: 1 / -1; }
+.bloque[data-viz="anillos"],
+.bloque[data-viz="waffle"],
+.bloque[data-viz="contador"] { grid-column: 2 / span 10; }
+.bloque[data-viz="imagen"] { grid-column: 4 / span 8; }
+.bloque[data-viz="maquina"] { grid-column: 3 / span 9; }
+
+/* Ritmo: los bloques angostos se alternan de lado según el plano de la semana */
+.semana[data-plano="izquierda"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
+.semana[data-plano="centro"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
+.semana[data-plano="completo"] .bloque[data-orden="1"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
+.semana[data-plano="derecha"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]) { grid-column: 6 / span 7; }
+.semana[data-plano="derecha"] .bloque[data-orden="1"][data-viz="maquina"],
+.semana[data-plano="completo"] .bloque[data-orden="1"][data-viz="maquina"] { grid-column: 1 / span 9; }
+
+/* Contenedor del cierre (lo pinta cierre-semana.js) */
+.semana__cierre { grid-column: 1 / -1; position: relative; margin-top: clamp(72px, 10vw, 140px); }
+.semana__cierre:empty { margin-top: 0; }
+
+/* ---------- Tableta ---------- */
+@media (max-width: 899px) {
+  .semana__reflexion,
+  .semana[data-plano] .semana__reflexion { grid-column: 1 / -1; }
+  .bloque, .semana[data-plano] .bloque[data-orden] { grid-column: 1 / -1 !important; }
+  .semana[data-plano="izquierda"] .semana__rotulo,
+  .semana[data-plano="completo"] .semana__rotulo { grid-column: 3 / -1; }
+  .semana[data-plano="derecha"] .semana__rotulo { grid-column: 1 / span 6; }
+  .semana[data-plano="completo"] .semana__numero { grid-column: 1 / -1; grid-row: 1 / 3; align-self: start; font-size: var(--t-gigante); }
+  .semana[data-plano="completo"] .semana__rotulo { grid-row: 3; }
+}
+
+/* ---------- Móvil ---------- */
+@media (max-width: 599px) {
+  .semana__cabecera { min-height: 92svh; padding: 88px 0 40px; }
+  .semana[data-plano="izquierda"] .semana__rotulo,
+  .semana[data-plano="derecha"] .semana__rotulo,
+  .semana[data-plano="completo"] .semana__rotulo { grid-column: 1 / -1; }
+  .semana[data-plano="completo"] .semana__rotulo { border-left: 0; padding-left: 0; border-top: 1px solid var(--linea); padding-top: 16px; padding-bottom: 0; }
+  .semana[data-plano="derecha"] .semana__cabecera { grid-template-rows: auto 1fr auto; }
+  .semana[data-plano="centro"] .semana__titulo { grid-column: 1 / -1; }
+  .semana__ficha { font-size: 11.5px; }
+  .ficha__dato + .ficha__dato::before { width: 10px; margin: 0 8px; }
+  .semana__reflexion .viz-texto { font-size: var(--t-lectura); }
+}
+
+/* ---------- Impresión: una semana por página, número como cabezote ---------- */
+@media print {
+  .semana { display: block; padding: 0; }
+  .semana__cabecera { min-height: 0 !important; display: block; padding: 0 0 6mm; border-bottom: 1px solid #bbb; }
+  .semana__numero { font-size: 64pt !important; margin: 0 0 4mm !important; letter-spacing: -.03em; }
+  .semana__rotulo { border: 0 !important; padding: 0 !important; }
+  .semana__ficha { justify-content: flex-start !important; margin: 0 0 3mm !important; }
+  .semana__titulo { font-size: 22pt !important; max-width: none; }
+  .semana__reflexion { margin-top: 6mm; }
+  .semana__reflexion .viz-texto { font-size: 11.5pt; max-width: none; }
+  .semana__bloques { display: block; margin-top: 6mm; }
+  .bloque { break-inside: avoid; margin-bottom: 7mm; }
+  .bloque__titulo { font-size: 14pt; }
+  .bloque__muestra { border: 1px solid #000; background: none; color: #000; }
+  .semana__cierre { margin-top: 6mm; }
+}

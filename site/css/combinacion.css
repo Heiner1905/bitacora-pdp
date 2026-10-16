@@ -1,1 +1,89 @@
-/* combinacion.css — propiedad del constructor 2 (ver docs/DIRECCION.md §9) */
+/* ==========================================================================
+   combinacion.css — la tira de la combinación (constructor 2)
+   recorrida = hielo · actual = rubí (aguja con texto noche) · futura = acero punteado
+   ========================================================================== */
+
+.combinacion {
+  --casilla: 30px;
+  --alto-casilla: 28px;
+  --hueco: 4px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.combinacion__tira { position: relative; }
+.combinacion__casillas {
+  list-style: none;
+  display: flex;
+  gap: var(--hueco);
+  position: relative;
+  z-index: 1;
+}
+.combinacion__item { display: block; }
+
+.casilla {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--casilla);
+  height: var(--alto-casilla);
+  text-decoration: none;
+  font-family: var(--f-dato);
+  font-size: var(--t-dato);
+  font-variation-settings: "wdth" 75;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+  color: var(--niebla);
+  border: 1px dashed var(--acero);
+  transition: color var(--dur-corta) var(--ease-salida), border-color var(--dur-corta) var(--ease-salida);
+}
+/* área táctil ≥ 44px sin ensanchar la tira */
+.casilla::after { content: ""; position: absolute; inset: -9px calc(var(--hueco) / -2); }
+
+.casilla[data-estado="recorrida"] { color: var(--hielo); border: 1px solid var(--hielo); }
+.casilla[data-estado="actual"] { color: var(--noche); border: 1px solid transparent; font-weight: 500; }
+.casilla:hover { color: var(--escarcha); border-color: var(--hielo); }
+.casilla[data-estado="actual"]:hover { color: var(--noche); }
+.casilla:focus-visible { outline: 2px solid var(--rubi-claro); outline-offset: 3px; }
+
+/* La aguja rubí: una sola pieza que salta de casilla en casilla */
+.combinacion__aguja {
+  position: absolute;
+  left: 0; top: 0;
+  width: var(--casilla);
+  height: var(--alto-casilla);
+  background: var(--rubi);
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.combinacion__lectura {
+  display: none;
+  margin: 0;
+  font-family: var(--f-dato);
+  font-size: var(--t-dato);
+  font-variation-settings: "wdth" 75;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .1em;
+  color: var(--niebla);
+  white-space: nowrap;
+}
+.combinacion__k { color: var(--escarcha); }
+
+/* Compacta (móvil): marcas finas sin número + lectura «03 / 10» */
+@media (max-width: 599px) {
+  .combinacion { --casilla: 9px; --alto-casilla: 20px; --hueco: 3px; gap: 10px; }
+  .casilla { font-size: 0; border-width: 1px; }
+  .casilla__num { display: none; }
+  .casilla::after { inset: -12px calc(var(--hueco) / -2); }
+  .combinacion__lectura { display: block; }
+}
+
+/* Muchas semanas en pantallas medianas: se adelgaza sin perder los números */
+@media (min-width: 600px) and (max-width: 1100px) {
+  .combinacion { --casilla: 26px; --hueco: 3px; }
+}
+
+@media print { .combinacion { display: none !important; } }

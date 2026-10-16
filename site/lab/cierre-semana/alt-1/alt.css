@@ -1,0 +1,57 @@
+@import url("../cs-base.css");
+
+/* Alternativa 1 · La linterna */
+.cs-linterna .cs__escena { position: relative; display: grid; }
+.cs-linterna .cs__escena > * { grid-area: 1 / 1; }
+
+/* Capa de tachaduras: el documento "clasificado" (decorativa, aria-hidden) */
+.cs__tachado { color: transparent; user-select: none; }
+.cs__tachado span {
+  background: linear-gradient(transparent 30%, var(--pizarra) 30% 80%, transparent 80%);
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  border-radius: 1px;
+  padding: 0 .06em;
+}
+
+/* Texto real (siempre en el DOM): solo se ve donde alumbra la linterna */
+.cs-linterna[data-modo="linterna"] .cs__escena { --lx: 0px; --ly: 0px; --lr: 0px; }
+.cs-linterna[data-modo="linterna"] .cs__tachado {
+  -webkit-mask-image: radial-gradient(circle at var(--lx) var(--ly), transparent calc(var(--lr) * .5), #000 var(--lr));
+          mask-image: radial-gradient(circle at var(--lx) var(--ly), transparent calc(var(--lr) * .5), #000 var(--lr));
+}
+.cs-linterna[data-modo="linterna"] .cs__texto:not(.cs__tachado) {
+  position: relative; z-index: 1;
+  -webkit-mask-image: radial-gradient(circle at var(--lx) var(--ly), #000 calc(var(--lr) * .5), transparent var(--lr));
+          mask-image: radial-gradient(circle at var(--lx) var(--ly), #000 calc(var(--lr) * .5), transparent var(--lr));
+}
+.cs-linterna:not([data-modo="linterna"]) .cs__tachado { display: none; }
+
+/* Halo de la linterna: luz fría muy tenue sobre el campo */
+.cs__halo {
+  position: absolute; left: 0; top: 0; z-index: -1;
+  width: 640px; height: 640px; margin: -320px 0 0 -320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--hielo) 7%, transparent) 0, transparent 62%);
+  opacity: 0; pointer-events: none; will-change: transform;
+}
+
+.cs__pie { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.cs__cerradura { width: 18px; height: 27px; flex: none; overflow: visible; }
+.cs__cerradura g { fill: var(--rubi); transform-box: view-box; transform-origin: 200px 203px; }
+.cs__luz {
+  min-height: 44px; padding: 0 18px; border: 1px solid var(--linea-fuerte); border-radius: 999px; cursor: pointer;
+  font-family: var(--f-dato); font-size: var(--t-dato); font-variation-settings: "wdth" 75;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--hielo);
+  transition: border-color var(--dur-corta), background-color var(--dur-corta);
+}
+.cs__luz:hover { border-color: var(--hielo); background: var(--pizarra); }
+.cs__luz[disabled] { display: none; }
+.cs__estado { color: var(--niebla); }
+
+.cs-linterna[data-modo="linterna"]:not([data-revelada]) { cursor: none; }
+@media (hover: none) { .cs-linterna[data-modo="linterna"] { cursor: auto; } }
+
+@media print {
+  .cs__tachado, .cs__halo, .cs__luz { display: none !important; }
+  .cs-linterna .cs__texto { -webkit-mask-image: none !important; mask-image: none !important; background: none !important; }
+}
