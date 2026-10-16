@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Paleta Hielo y rubí</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1240px; height: 980px; box-sizing: border-box; padding: 56px 64px; background-color: #0A0B0E; color: #DCE1E6; font-family: 'Space Grotesk', sans-serif; display: flex; flex-direction: column; gap: 34px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 40px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.22em; color: #E23E57">PALETA · HIELO Y RUBÍ</div>
+<div style="font-size: 44px; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; color: #F4F6F8">Todo es hielo. El rubí late dos veces.</div>
+</div>
+<div style="font-size: 15px; line-height: 1.6; color: #8F96A0; max-width: 46ch">Un sistema frío de grises con matiz acero, y un solo color vivo que se reserva para lo esencial: la cerradura, el fragmento y la acción principal.</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; color: #8F96A0">{{g.name}}</div>
+<sc-for list="{{g.items}}" as="c" hint-placeholder-count="3">
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: center; padding: 8px; border: 1px solid rgba(220,225,230,0.12); border-radius: 10px">
+<div style="width: 64px; height: 52px; border-radius: 6px; background-color: {{c.hex}}; border: 1px solid rgba(220,225,230,0.16)"></div>
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+<div style="display: flex; justify-content: space-between; gap: 8px"><span style="font-size: 15px; font-weight: 600; color: #F4F6F8">{{c.name}}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8F96A0">{{c.hex}}</span></div>
+<span style="font-size: 13px; line-height: 1.4; color: #8F96A0">{{c.use}}</span>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; color: #8F96A0">PROPORCIÓN EN PANTALLA</div>
+<div style="display: flex; height: 40px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(220,225,230,0.12)">
+<div style="flex: 64 1 0; background-color: #0A0B0E; display: flex; align-items: center; padding-left: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8F96A0">NOCHE 64%</div>
+<div style="flex: 14 1 0; background-color: #12141A; display: flex; align-items: center; padding-left: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8F96A0">GRAFITO 14%</div>
+<div style="flex: 16 1 0; background-color: #DCE1E6; display: flex; align-items: center; padding-left: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #0A0B0E">HIELO 16%</div>
+<div style="flex: 4 1 0; background-color: #5D6672"></div>
+<div style="flex: 2 1 0; background-color: #E23E57"></div>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 22px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8F96A0"><span>ACERO 4%</span><span style="color: #E23E57">RUBÍ 2%</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 22px; background-color: #12141A; border: 1px solid rgba(220,225,230,0.12); border-radius: 12px">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; color: #8F96A0">TEXTO</div>
+<div style="font-size: 26px; font-weight: 600; line-height: 1.1; color: #F4F6F8">Semana 04 · Competencias</div>
+<div style="font-size: 15px; line-height: 1.6; color: #DCE1E6">La reflexión se lee en hielo sobre noche, con un contraste de 14:1.</div>
+<div style="font-size: 13px; line-height: 1.5; color: #8F96A0">Lo secundario va en niebla (6,4:1).</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 22px; background-color: #12141A; border: 1px solid rgba(220,225,230,0.12); border-radius: 12px">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; color: #8F96A0">ACCIONES</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 999px; background-color: #E23E57; color: #0A0B0E; font-weight: 600; font-size: 15px; text-decoration: none">Ver la semana</a>
+<a href="#" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid #DCE1E6; color: #DCE1E6; font-size: 15px; text-decoration: none">Índice</a>
+</div>
+<div style="font-size: 13px; line-height: 1.5; color: #8F96A0">Sobre rubí, el texto va en noche (4,8:1), nunca en blanco. El foco se marca con un anillo rubí claro.</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 22px; background-color: #12141A; border: 1px solid rgba(220,225,230,0.12); border-radius: 12px">
+<div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.2em; color: #8F96A0">ESTADO DE CADA SEMANA</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 10px; font-size: 14px"><span style="width: 22px; height: 8px; border-radius: 4px; background-color: #DCE1E6"></span>Completada · hielo lleno</div>
+<div style="display: flex; align-items: center; gap: 10px; font-size: 14px"><span style="width: 22px; height: 8px; border-radius: 4px; background-color: #E23E57"></span>En curso · rubí</div>
+<div style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #8F96A0"><span style="width: 22px; height: 8px; border-radius: 4px; border: 1px dashed #5D6672"></span>Pendiente · acero punteado</div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1240,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      groups: [
+        { name: 'NOCHES · FONDOS', items: [
+          { name: 'Noche', hex: '#0A0B0E', use: 'Fondo principal de toda la bitácora.' },
+          { name: 'Grafito', hex: '#12141A', use: 'Superficies: tarjetas, bloques, visualizaciones.' },
+          { name: 'Pizarra', hex: '#1B1E25', use: 'Superficie elevada, separadores sólidos, hover.' }
+        ] },
+        { name: 'FRÍOS · TEXTO Y LÍNEA', items: [
+          { name: 'Escarcha', hex: '#F4F6F8', use: 'Titulares y los números grandes de cada semana.' },
+          { name: 'Hielo', hex: '#DCE1E6', use: 'Texto principal, anillo y párpados del símbolo.' },
+          { name: 'Niebla', hex: '#8F96A0', use: 'Texto secundario, etiquetas, fibras del iris.' },
+          { name: 'Acero', hex: '#5D6672', use: 'Dial, líneas finas, estados pendientes. Nunca texto.' }
+        ] },
+        { name: 'RUBÍES · EL LATIDO', items: [
+          { name: 'Rubí', hex: '#E23E57', use: 'La cerradura, el fragmento y la acción principal.' },
+          { name: 'Rubí hondo', hex: '#9E2338', use: 'Botón presionado, brillos y halos detrás del rubí.' },
+          { name: 'Rubí claro', hex: '#FF7A8E', use: 'Anillo de foco, destello del encaje final.' }
+        ] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
