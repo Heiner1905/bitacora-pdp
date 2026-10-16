@@ -38,31 +38,58 @@
   }
   function pad2(n) { return (n < 10 ? "0" : "") + n; }
 
-  /* Construye el dial dentro de un <svg class="bisel"> */
+  var uid = 0;
+
+  /* Construye el dial dentro de un <svg class="bisel">.
+     Capas (de atrás hacia adelante): fondo que gira (banda torneada y estrías) ·
+     luz rasante fija (copia de la banda y las estrías recortada a un sector) ·
+     frente que gira (marcas, números) · ventana e índice fijos. */
   function construirBisel(svg, N, rotular, escala) {
-    var giro = svg.querySelector(".bisel__giro");
+    var reten = svg.querySelector(".bisel__reten");
     var fijo = svg.querySelector(".bisel__fijo");
-    giro.innerHTML = ""; fijo.innerHTML = "";
+    reten.innerHTML = '<g class="bisel__giro"></g>';
+    fijo.innerHTML = "";
+    var fondo = reten.querySelector(".bisel__giro");
     var s = 360 / N;
-    var partes = { giro: giro, segs: [], etqs: [], s: s };
+    var id = "luz-" + (++uid);
+    var partes = { giros: [], segs: [], etqs: [], s: s, sectores: [] };
 
-    // la perilla: una banda sólida con estrías en el canto
-    el("circle", { cx: C, cy: C, r: 229, "class": "bisel__banda" }, giro);
-    el("circle", { cx: C, cy: C, r: 196, "class": "bisel__canto" }, giro);
-    el("circle", { cx: C, cy: C, r: 262, "class": "bisel__canto bisel__canto--ext" }, giro);
-    var gEst = el("g", { "class": "bisel__estrias" }, giro);
+    // fondo: la perilla de metal mate, torneada, con estrías en el canto
+    el("circle", { cx: C, cy: C, r: 229, "class": "bisel__banda" }, fondo);
+    for (var r = 201; r < 260; r += 3.5) el("circle", { cx: C, cy: C, r: r, "class": "bisel__torno" }, fondo);
+    var gEst = el("g", { "class": "bisel__estrias" }, fondo);
     for (var a = 0; a < 360; a += 2.5) linea(264, 273, a, "bisel__estria", gEst);
+    partes.giros.push(fondo);
 
-    var gT = el("g", { "class": "bisel__ticks" }, giro);
-    var gE = el("g", { "class": "bisel__etqs" }, giro);
+    // luz rasante: dos escalones de tono, fijos respecto a la pantalla
+    var defs = el("defs", {}, reten);
+    var zonas = [["exterior", -112, 2], ["interior", -82, -28]];
+    zonas.forEach(function (z) {
+      var cp = el("clipPath", { id: id + "-" + z[0] }, defs);
+      partes.sectores.push(el("path", { d: sector(150, 300, z[1], z[2]) }, cp));
+      var g = el("g", { "clip-path": "url(#" + id + "-" + z[0] + ")", "class": "bisel__brillo bisel__brillo--" + z[0] }, reten);
+      var gi = el("g", {}, g);
+      el("circle", { cx: C, cy: C, r: 229, "class": "bisel__banda-luz" }, gi);
+      for (var a2 = 0; a2 < 360; a2 += 2.5) linea(264, 273, a2, "bisel__estria-luz", gi);
+      partes.giros.push(gi);
+    });
+
+    // frente: cantos, marcas, segmentos y números (giran con la perilla)
+    var frente = el("g", { "class": "bisel__frente" }, reten);
+    partes.giros.push(frente);
+    el("circle", { cx: C, cy: C, r: 196, "class": "bisel__canto" }, frente);
+    el("circle", { cx: C, cy: C, r: 262, "class": "bisel__canto bisel__canto--ext" }, frente);
+    var gT = el("g", { "class": "bisel__ticks" }, frente);
+    var gE = el("g", { "class": "bisel__etqs" }, frente);
     partes.gTicks = gT; partes.gEtqs = gE; partes.gEstrias = gEst;
+    partes.brillos = Array.prototype.slice.call(reten.querySelectorAll(".bisel__brillo"));
     var tam = f2(Math.max(22, 13 / (escala || 1)));
 
     for (var i = 1; i <= N; i++) {
       var c = -(i - 1) * s;
       linea(198, 214, c, "bisel__mayor", gT);
       for (var j = 1; j < 5; j++) linea(198, 205, c + j * s / 5, "bisel__tick", gT);
-      partes.segs.push(el("path", { d: arco(190, c - s / 2 + 1.5, c + s / 2 - 1.5), "class": "bisel__seg", "data-k": i }, giro));
+      partes.segs.push(el("path", { d: arco(190, c - s / 2 + 1.5, c + s / 2 - 1.5), "class": "bisel__seg", "data-k": i }, frente));
       var pe = polar(238, c);
       var t = el("text", {
         x: f2(pe[0]), y: f2(pe[1]), "class": "bisel__etq", "data-k": i, "font-size": tam,
@@ -90,7 +117,8 @@
   function R(k, N) { return HUECO + (k - 1) * 360 / N; }
 
   function aplicarGiro(partes, rot) {
-    partes.giro.setAttribute("transform", "rotate(" + rot.toFixed(3) + " " + C + " " + C + ")");
+    var t = "rotate(" + rot.toFixed(3) + " " + C + " " + C + ")";
+    for (var i = 0; i < partes.giros.length; i++) partes.giros[i].setAttribute("transform", t);
   }
 
   function aplicarFragmento(frag, avance) {
@@ -144,7 +172,7 @@
   function copiaEstatica(contenedor, k, rotular) {
     contenedor.innerHTML = "";
     var b = D.svg.cloneNode(false);
-    b.innerHTML = '<g class="bisel__reten"><g class="bisel__giro"></g></g><g class="bisel__fijo"></g>';
+    b.innerHTML = '<g class="bisel__reten"></g><g class="bisel__fijo"></g>';
     contenedor.appendChild(b);
     var p = construirBisel(b, D.N, rotular, Reticula.G.S / 560);
     aplicarGiro(p, R(k, D.N));

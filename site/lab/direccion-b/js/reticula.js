@@ -1,9 +1,8 @@
-/* Retícula: geometría de la lámina, hairlines fijas y nodos en los cruces.
-   Todo se mide desde el ancho real de la ventana; nada se mueve después de dibujado. */
+/* Retícula: geometría de la lámina (columnas mayores, filas, sitio del dial)
+   medida desde el ancho real de la ventana, e hilos horizontales de las filas en móvil. */
 (function () {
   "use strict";
 
-  var NS = "http://www.w3.org/2000/svg";
   var PULSO = 60 / 124;          // 0,4839 s · 124 BPM
   var PASO = PULSO / 2;          // 0,242 s · corchea
 
@@ -57,62 +56,10 @@
     return G;
   }
 
-  function el(tag, attrs, parent) {
-    var n = document.createElementNS(NS, tag);
-    for (var k in attrs) n.setAttribute(k, attrs[k]);
-    if (parent) parent.appendChild(n);
-    return n;
-  }
-
-  /* Hairlines verticales fijas con un hueco circular alrededor del dial */
+  // sin retícula a pantalla completa: las líneas viven en los bordes de las celdas
   function dibujarFija() {
-    var svg = document.querySelector(".reticula");
-    svg.innerHTML = "";
-    svg.setAttribute("viewBox", "0 0 " + G.W + " " + G.H);
-    var defs = el("defs", {}, svg);
-    var mask = el("mask", { id: "hueco-dial", maskUnits: "userSpaceOnUse", x: 0, y: 0, width: G.W, height: G.H }, defs);
-    el("rect", { x: 0, y: 0, width: G.W, height: G.H, fill: "#fff" }, mask);
-    var c = el("circle", { cx: G.cx, cy: G.cy, r: G.hueco, fill: "#000", "class": "hueco" }, mask);
-    var grupo = el("g", { mask: "url(#hueco-dial)" }, svg);
-    var y0 = G.barra;
-    G.verticales = G.xs.map(function (x) {
-      return el("line", { x1: x + 0.5, x2: x + 0.5, y1: y0, y2: G.H, "class": "vertical" }, grupo);
-    });
-    G.huecos = [c];
-
-  }
-
-  /* Nodos de 6 px en los cruces de un hilo horizontal con las verticales */
-  function nodosHilo(hilo) {
-    hilo.querySelectorAll(".nodo").forEach(function (n) { n.remove(); });
-    var prev = hilo.style.transform;
-    hilo.style.transform = "none";
-    var r = hilo.getBoundingClientRect();
-    hilo.style.transform = prev;
-    if (!r.width) return;
-    var izq = r.left;
-    var nodos = [];
-    G.xs.forEach(function (x) {
-      if (x >= izq - 2 && x <= r.right + 2) {
-        var n = document.createElement("span");
-        n.className = "nodo";
-        n.style.left = (x - izq + 0.5) + "px";
-        hilo.appendChild(n);
-        nodos.push(n);
-      }
-    });
-    return nodos;
-  }
-
-  function nodosBarra() {
-    var cont = document.querySelector(".lecturas__nodos");
-    cont.innerHTML = "";
-    G.xs.forEach(function (x) {
-      var n = document.createElement("span");
-      n.className = "nodo";
-      n.style.left = (x + 0.5) + "px";
-      cont.appendChild(n);
-    });
+    G.verticales = [];
+    G.huecos = [];
   }
 
   /* Hilos en flujo para móvil: uno arriba de cada [data-fila] */
@@ -129,10 +76,6 @@
 
   function dibujarHilos() {
     hilosMovil();
-    document.querySelectorAll(".hilo").forEach(function (h) {
-      nodosHilo(h);
-    });
-    nodosBarra();
   }
 
   window.Reticula = {

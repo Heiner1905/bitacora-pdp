@@ -18,6 +18,7 @@
   --reticula-2: rgba(230, 234, 228, .32);
   --nodo: rgba(230, 234, 228, .55);
   --pendiente-borde: #647884;
+  --metal-luz: #1E3E53;     /* escalón de luz rasante sobre la perilla */
 
   --f-texto: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --f-lectura: "Fragment Mono", ui-monospace, Menlo, monospace;
@@ -166,7 +167,8 @@ button { font: inherit; color: inherit; }
   border-left: 1px solid var(--reticula);
 }
 .lecturas__celda:last-of-type { border-right: 1px solid var(--reticula); }
-.lecturas__celda--fin { justify-content: flex-end; padding-right: 2px; }
+.lecturas__celda--fin { justify-content: space-between; padding-right: 2px; }
+.ranura--movil { display: none; }
 .lecturas__celda--comb { grid-column: 2 / 4; }
 .comb { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
 .comb__ns { display: inline-flex; gap: 10px; }
@@ -178,7 +180,6 @@ button { font: inherit; color: inherit; }
   width: 36px;
   height: 36px;
 }
-.lecturas__nodos { position: absolute; inset: auto 0 -1px 0; height: 1px; pointer-events: none; }
 
 .movimiento {
   min-height: 44px;
@@ -200,19 +201,8 @@ button { font: inherit; color: inherit; }
 .movimiento[aria-pressed="false"] .movimiento__estado { color: var(--lectura); }
 
 /* ==========================================================================
-   Retícula fija + nodos
+   Líneas de fila
    ========================================================================== */
-.reticula {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  overflow: visible;
-}
-.reticula line { stroke: var(--reticula); stroke-width: 1; shape-rendering: crispEdges; }
-
 .hilo {
   position: absolute;
   height: 1px;
@@ -220,23 +210,6 @@ button { font: inherit; color: inherit; }
   pointer-events: none;
   transform-origin: 0 50%;
 }
-.nodo {
-  position: absolute;
-  top: -3px;
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-  background: var(--nodo);
-}
-.nodo--menor {
-  top: -1px;
-  width: 3px;
-  height: 3px;
-  margin-left: -1.5px;
-  background: var(--reticula-2);
-}
-.lecturas__nodos .nodo { top: -2px; }
-
 /* ==========================================================================
    Dial
    ========================================================================== */
@@ -268,6 +241,10 @@ button { font: inherit; color: inherit; }
 #hr { font-stretch: 100%; }
 
 .bisel__banda { fill: none; stroke: var(--panel); stroke-width: 66; }
+.bisel__torno { fill: none; stroke: var(--panel-2); stroke-width: .8; }
+.bisel__banda-luz { fill: none; stroke: var(--metal-luz); stroke-width: 66; }
+.bisel__estria-luz { stroke: var(--tinta); stroke-width: 1.2; opacity: .75; }
+.bisel__brillo--exterior { opacity: .5; }
 .bisel__canto { fill: none; stroke: var(--reticula-2); stroke-width: 1; }
 .bisel__canto--ext { stroke: var(--reticula); }
 .bisel__estria { stroke: var(--reticula-2); stroke-width: 1.2; }
@@ -410,16 +387,46 @@ main { position: relative; z-index: 1; }
   grid-template-rows: 1fr 1fr;
 }
 .ficha .rotulo { display: block; min-height: 1lh; margin-bottom: 6px; }
+.celda--ficha { border-left: 1px solid var(--reticula); }
 .valor {
   font-size: 1.0625rem;
   font-weight: 500;
   line-height: 1.3;
   max-width: 24ch;
+  text-wrap: balance;
 }
 .valor--cifra { font-variant-numeric: tabular-nums; }
 .valor__extra { display: block; color: var(--lectura); font-weight: 400; }
 
 .lecturas-movil { display: none; }
+
+/* --- La combinación marcándose (mientras gira la perilla) --- */
+.tira { display: none; }
+.con-escena .tira--escritorio {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  grid-row: 3;
+  grid-column: 1 / 5;
+  padding: var(--pad-y) var(--pad-x) 28px;
+  background: var(--campo);
+  clip-path: inset(100% 0% 0% 0%);
+}
+.tira__ns { display: grid; column-gap: 12px; margin: 14px 0 18px; }
+.tira__n {
+  font-stretch: 125%;
+  font-weight: 250;
+  font-size: clamp(2.25rem, 1rem + 3vw, 4rem);
+  line-height: 1;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--lectura);
+}
+.tira__n.activa { color: var(--tinta); }
+.tira__n.marcada { color: var(--luz); font-weight: 400; }
+.tira__barra { display: block; height: 2px; margin-top: 12px; background: var(--reticula); }
+.tira__barra i { display: block; height: 100%; background: var(--luz); transform-origin: 0 50%; transform: scaleX(0); }
+.tira__pie { display: flex; justify-content: space-between; gap: 16px; }
 
 /* --- Cabecera de semana --- */
 .semana { position: relative; outline: none; }
@@ -544,6 +551,8 @@ main { position: relative; z-index: 1; }
 /* --- GIRO: la celda se inunda de luz --- */
 .giro { padding-top: 0; }
 .giro__rotulo {
+  margin: 0;
+  font-weight: 400;
   grid-column: 1;
   grid-row: 1;
   padding: var(--pad-y) var(--pad-x) 0;
@@ -682,7 +691,7 @@ main { position: relative; z-index: 1; }
   .lecturas { grid-template-columns: var(--c1) var(--c2); }
   .lecturas__celda--escritorio { display: none; }
   .lecturas__celda--comb { grid-column: 2; justify-content: space-between; padding-right: 6px; gap: 6px; border-right: 1px solid var(--reticula); }
-  .lecturas__celda--comb .ranura { order: 2; }
+  .lecturas__celda--comb .ranura { order: 2; display: block; }
   .comb__ns { display: none; }
   .comb__corta { display: inline; }
 
@@ -750,11 +759,27 @@ main { position: relative; z-index: 1; }
   .celda--numero { clip-path: inset(-10% 0 -10% 0); }
   .numero__cifra { margin-left: calc(var(--pad-x) - .06em); }
   .semana__datos { display: contents; }
-  .semana__datos .celda:first-child { grid-column: 2; padding-bottom: 24px; }
-  .semana__datos .celda + .celda { grid-column: 1 / 3; padding: var(--pad-y) var(--pad-x) 28px; }
+  .semana__datos .celda:first-child { grid-row: 2; grid-column: 2; padding-bottom: 24px; }
+  .numero { grid-row: 2; }
+  .tira--movil {
+    display: flex;
+    flex-direction: column;
+    grid-row: 2;
+    grid-column: 1 / 3;
+    z-index: 1;
+    background: var(--campo);
+    clip-path: inset(100% 0% 0% 0%);
+  }
+  .sin-movimiento .tira--movil { display: none; }
+  .tira--movil .tira__ns { column-gap: 6px; margin: 12px 0 14px; }
+  .tira--movil .tira__n { font-size: 1.375rem; }
+  .tira--movil .tira__barra { margin-top: 8px; }
+  .tira__pie { flex-direction: column; gap: 4px; }
+  .celda--ficha:nth-child(odd) { border-left: 0; }
+  .semana__datos .celda + .celda { grid-row: 3; grid-column: 1 / 3; padding: var(--pad-y) var(--pad-x) 28px; }
   .semana__titulo { font-size: 2.125rem; }
   .estado { flex-direction: column; align-items: flex-start; }
-  .celda--reflexion { grid-row: auto; grid-column: 1 / 3; }
+  .celda--reflexion { grid-row: 4; grid-column: 1 / 3; }
 
   .semana__cuerpo { padding: 0 var(--m) 96px; }
   .bloque, .giro, .siguiente { grid-template-columns: var(--c1) var(--c2); }
@@ -769,6 +794,7 @@ main { position: relative; z-index: 1; }
   .semana__ranura {
     display: block;
     position: relative;
+    grid-row: 1;
     grid-column: 1 / 3;
     height: calc(var(--dial-s) + 16px);
   }
@@ -786,7 +812,7 @@ main { position: relative; z-index: 1; }
     --pendiente-borde: #888;
   }
   html, body { background: #fff !important; color: #000; }
-  .reticula, .inspeccion, .saltar, .movimiento, .giro__control, .ranura, .semana__ranura, .anillo-luz { display: none !important; }
+  .tira, .inspeccion, .saltar, .movimiento, .giro__control, .ranura, .semana__ranura, .anillo-luz { display: none !important; }
   .lecturas { position: static; height: auto; border-bottom: 1px solid #bbb; }
   .lecturas__celda--escritorio { display: flex !important; }
   .escena, .lamina, .portada, .semana__cabecera { position: relative !important; height: auto !important; min-height: 0 !important; transform: none !important; }

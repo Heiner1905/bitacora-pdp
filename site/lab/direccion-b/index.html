@@ -23,20 +23,17 @@
       <span class="lectura" data-campo="proyecto"></span>
     </div>
     <div class="lecturas__celda lecturas__celda--comb">
-      <span class="ranura" aria-hidden="true"></span>
+      <span class="ranura ranura--movil" aria-hidden="true"></span>
       <p class="lectura comb" role="status" aria-live="polite"><span class="lectura__rotulo comb__rotulo">Combinación</span> <span class="comb__ns" data-comb aria-hidden="true"></span><span class="comb__corta" aria-hidden="true"><span data-lectura="n">00</span>/<span data-lectura="total">00</span></span></p>
     </div>
     <div class="lecturas__celda lecturas__celda--escritorio lecturas__celda--fin">
+      <span class="ranura ranura--escritorio" aria-hidden="true"></span>
       <button class="movimiento" type="button" aria-pressed="true" data-movimiento>Movimiento <span class="movimiento__estado">[SÍ]</span></button>
     </div>
-    <span class="lecturas__nodos" aria-hidden="true"></span>
   </nav>
 
-  <!-- Retícula: fija, nunca se mueve -->
-  <svg class="reticula" aria-hidden="true" focusable="false"></svg>
-
   <!-- El dial: símbolo HR + bisel graduado -->
-  <figure class="dial" role="img" aria-label="Símbolo HR como dial: un anillo abierto con un ojo cuya pupila es una cerradura; el fragmento naranja que le falta flota afuera y se acerca una distancia exacta con cada semana.">
+  <figure class="dial" role="img" aria-label="Símbolo HR como perilla de caja fuerte: un anillo abierto con un ojo cuya pupila es una cerradura. Cada semana es un número de la combinación; el fragmento naranja que le falta al anillo se acerca con cada semana marcada.">
     <svg class="bisel" viewBox="0 0 560 560" aria-hidden="true" focusable="false">
       <g class="bisel__reten"><g class="bisel__giro"></g></g>
       <g class="bisel__fijo"></g>
@@ -89,6 +86,9 @@
           <p class="proposito" data-campo="proposito"></p>
         </div>
 
+        <!-- La combinación marcándose: ocupa la fila inferior mientras la perilla gira -->
+        <div class="celda tira tira--escritorio" data-tira aria-hidden="true"></div>
+
         <dl class="ficha" data-fila>
           <div class="celda celda--ficha" data-celda="fila"><dt class="rotulo">Autor</dt><dd class="valor" data-campo="autor.nombre"></dd></div>
           <div class="celda celda--ficha" data-celda="fila"><dt class="rotulo">Código</dt><dd class="valor valor--cifra" data-campo="autor.codigo"></dd></div>
@@ -109,6 +109,7 @@
         <div class="semana__cabecera lamina" data-fila>
           <span class="hilo hilo--fila" data-hilo="mayores" aria-hidden="true"></span>
           <div class="semana__ranura" aria-hidden="true"><div class="dial-estatico"></div></div>
+          <div class="celda tira tira--movil" data-tira aria-hidden="true"></div>
 
           <div class="numero" aria-hidden="true">
             <span class="celda celda--numero" data-celda="numero"><span class="numero__cifra" data-campo="semana.numero2"></span></span>
@@ -139,7 +140,7 @@
 
           <div class="giro" data-giro>
             <span class="hilo" data-hilo="mayores" aria-hidden="true"></span>
-            <p class="giro__rotulo lectura">Giro <span class="giro__n" data-campo="semana.numero2"></span></p>
+            <h3 class="giro__rotulo lectura">Giro <span class="giro__n" data-campo="semana.numero2"></span></h3>
             <div class="giro__celda">
               <span class="giro__luz" aria-hidden="true"></span>
               <p class="giro__frase" data-giro-frase></p>
