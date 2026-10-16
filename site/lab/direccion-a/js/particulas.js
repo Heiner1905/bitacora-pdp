@@ -142,7 +142,7 @@
     var ctx = canvas.getContext("2d");
     var dpr = Math.min(window.devicePixelRatio || 1, movil ? 1.5 : 2);
     var atlas = crearAtlas(dpr);
-    var paso = movil ? 4.2 : 2.9;
+    var paso = movil ? 3.3 : 2.9;
 
     var n = 0, tx, ty, x, y, vx, vy, z, delay, glifo, color, grupo, ox, oy, z0;
     var rangos = [];
@@ -151,6 +151,7 @@
     var mirada = { x: 0, y: 0 }, flota = { y: 0 };
     var mouse = { x: -9999, y: -9999, sx: -9999, sy: -9999, dentro: false };
     var quieto = 0, ultimo = 0, alAcabar = null, pausado = false;
+    var respirando = false, inicioRespiro = 0, nx, ny, rd;
 
     function muestrear() {
       rect = svg.getBoundingClientRect();
@@ -232,6 +233,11 @@
         x[i] = tx[i]; y[i] = ty[i]; vx[i] = 0; vy[i] = 0;
       }
       for (i = 0; i < rangos.length; i++) rangos[i][2] = (i + 1 < rangos.length) ? rangos[i + 1][1] : n;
+      nx = new Float32Array(n); ny = new Float32Array(n); rd = new Float32Array(n);
+      for (i = 0; i < n; i++) {
+        var ddx = tx[i] - fuga.x, ddy = ty[i] - fuga.y, l = Math.hypot(ddx, ddy) || 1;
+        nx[i] = ddx / l; ny[i] = ddy / l; rd[i] = l;
+      }
     }
 
     function dimensionar() {
@@ -296,16 +302,43 @@
       mouse.sy = lerp(mouse.sy, mouse.y, 0.18);
       var mx = mouse.sx - bx, my = mouse.sy - by;
       var radio = movil ? 60 : 84, rad2 = radio * radio;
+      var iman = 260 * Math.max(escala, 0.7), iman2 = iman * iman;
       var maxV = 0;
+      // Respiración en reposo: una onda lenta que nace en la pupila (el símbolo está vivo)
+      // y, cada pocos segundos, un pulso que recorre el símbolo y vuelve glifos lo que toca.
+      var T = ahora / 1000;
+      var fase = respirando ? T * 1.3 : 0;
+      var amp = respirando ? 0.75 * escala : 0;
+      var radioPulso = -1;
+      if (respirando) {
+        var tp = (T - inicioRespiro) % 7;
+        if (T - inicioRespiro > 2.5 && tp < 1.6) radioPulso = tp * 230 * escala;
+      }
       for (var i = 0; i < n; i++) {
         var o = offset(i);
-        var dx = x[i] - mx, dy = y[i] - my, d2 = dx * dx + dy * dy;
-        if (!movil && d2 < rad2 && d2 > 0.01) {
-          var d = Math.sqrt(d2), f = (1 - d / radio); f = f * f * 6;
-          vx[i] += dx / d * f; vy[i] += dy / d * f;
+        var gx = tx[i] + o[0], gy = ty[i] + o[1];
+        if (respirando) {
+          var r0 = rd[i], b = amp * Math.sin(fase - r0 * 0.022 / escala);
+          if (radioPulso >= 0) {
+            var dd = Math.abs(r0 - radioPulso);
+            if (dd < 26 * escala) b += (1 - dd / (26 * escala)) * 3.4 * escala;
+          }
+          gx += nx[i] * b; gy += ny[i] * b;
         }
-        vx[i] += (tx[i] + o[0] - x[i]) * 0.08;
-        vy[i] += (ty[i] + o[1] - y[i]) * 0.08;
+        var dx = x[i] - mx, dy = y[i] - my, d2 = dx * dx + dy * dy;
+        if (!movil && d2 < iman2 && d2 > 0.01) {
+          var d = Math.sqrt(d2);
+          if (d < radio) {
+            var f = (1 - d / radio); f = f * f * 6;
+            vx[i] += dx / d * f; vy[i] += dy / d * f;
+          } else {
+            // imán suave: antes de tocarlo, el símbolo ya se inclina hacia el cursor
+            var k2 = (1 - d / iman) * 2.2 * escala;
+            gx -= dx / d * k2; gy -= dy / d * k2;
+          }
+        }
+        vx[i] += (gx - x[i]) * 0.08;
+        vy[i] += (gy - y[i]) * 0.08;
         vx[i] *= 0.82; vy[i] *= 0.82;
         x[i] += vx[i]; y[i] += vy[i];
         var v = Math.abs(vx[i]) + Math.abs(vy[i]);
@@ -327,8 +360,8 @@
           }
         }
       }
-      // apagado: quieto y sin cursor encima durante 1,5 s
-      if (maxV < 0.06 && !mouse.dentro) {
+      // apagado: quieto y sin cursor encima durante 1,5 s (nunca mientras respira)
+      if (!respirando && maxV < 0.06 && !mouse.dentro) {
         if (!quieto) quieto = ahora;
         if (ahora - quieto > 1500 && op.alReposar) { op.alReposar(); return false; }
       } else quieto = 0;
@@ -362,6 +395,10 @@
       },
       ensamblando: function () { return ensamblando; },
       activar: function () { if (ensamblando) return; vivo = true; quieto = 0; arrancar(); },
+      respirar: function (v) {
+        respirando = !!v;
+        if (v) { inicioRespiro = performance.now() / 1000; vivo = true; quieto = 0; arrancar(); }
+      },
       detener: function () {
         vivo = false; ensamblando = false;
         if (raf) cancelAnimationFrame(raf); raf = 0;

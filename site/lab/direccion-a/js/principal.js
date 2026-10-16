@@ -51,6 +51,8 @@
     $(".claqueta__n").textContent = pad(N);
   }
 
+  function comoPlano(el) { if (el.classList.contains("pendiente")) el.classList.add("plano"); return el; }
+
   function pintarSemana(s) {
     var k = pad(s.numero);
     var sec = crear("section", "semana");
@@ -58,65 +60,87 @@
     sec.setAttribute("aria-labelledby", "s" + k + "-titulo");
     sec.tabIndex = -1;
 
+    /* Cabecera: plano «01» + ficha (billing block) + título + la reflexión como plano */
     var cab = crear("div", "semana__cabecera");
     var luz = crear("div", "semana__luz");
     luz.setAttribute("aria-hidden", "true");
-    cab.appendChild(luz);
-    var num = crear("p", "semana__numero", k);
+    var num = crear("p", "semana__numero");
     num.setAttribute("aria-hidden", "true");
+    num.append(crear("span", "num__capa num__contorno", k), crear("span", "num__capa num__lleno", k));
     var txt = crear("div", "semana__texto");
-    var clave = crear("p", "semana__clave", "SEMANA_" + k);
+    var ficha = crear("dl", "ficha");
+    [["Escena", "SEMANA_" + k, "semana__clave"], ["Fecha", s.fecha], ["Estado", ESTADOS[s.estado] || s.estado]].forEach(function (par) {
+      var d = crear("div");
+      d.append(crear("dt", null, par[0]), crear("dd", par[2] || null, par[1]));
+      ficha.appendChild(d);
+    });
     var h2 = crear("h2", "semana__titulo", s.titulo);
     h2.id = "s" + k + "-titulo";
-    var dl = crear("dl", "semana__datos");
-    [["Fecha", s.fecha], ["Estado", ESTADOS[s.estado] || s.estado]].forEach(function (par) {
-      var d = crear("div");
-      d.appendChild(crear("dt", null, par[0]));
-      d.appendChild(crear("dd", null, par[1]));
-      dl.appendChild(d);
-    });
-    var refl = crear("p", "semana__reflexion", s.reflexion);
-    txt.append(clave, h2, dl, refl);
-    cab.append(num, txt);
+    var plano = crear("div", "semana__plano");
+    plano.append(crear("span", "plano__rol", "Reflexión"), comoPlano(crear("p", "semana__reflexion", s.reflexion)));
+    txt.append(ficha, h2, plano);
+    cab.append(luz, num, txt);
 
+    /* Cuerpo: índice de planos (sticky) + bloques en el eje de lectura */
     var cuerpo = crear("div", "semana__cuerpo");
-    (s.bloques || []).forEach(function (b) {
+    var indice = crear("nav", "indice");
+    indice.setAttribute("aria-label", "Planos de la semana " + k);
+    var it = crear("p", "indice__titulo", s.titulo);
+    it.setAttribute("aria-hidden", "true");
+    var ol = crear("ol", "indice__lista");
+    var bloques = crear("div", "bloques");
+    var pasos = (s.bloques || []).map(function (b, i) { return { id: s.id + "-plano-" + (i + 1), paso: "Plano " + pad(i + 1), nombre: b.titulo, b: b }; });
+    pasos.push({ id: "giro-" + k, paso: "Cierre", nombre: "Giro" });
+    pasos.forEach(function (p) {
+      var li = crear("li");
+      li.dataset.destino = p.id;
+      var a = crear("a");
+      a.href = "#" + p.id;
+      a.append(crear("span", "indice__paso", p.paso), crear("span", "indice__nombre", p.nombre));
+      li.appendChild(a);
+      ol.appendChild(li);
+      if (!p.b) return;
+      var b = p.b;
       var art = crear("article", "bloque bloque--" + b.tipo);
+      art.id = p.id;
       art.appendChild(crear("h3", "bloque__titulo", b.titulo));
       if (b.tipo === "lista") {
         var ul = crear("ul", "bloque__lista");
-        (b.items || []).forEach(function (it) {
-          var li = crear("li");
-          li.appendChild(crear("span", null, it));
-          ul.appendChild(li);
+        (b.items || []).forEach(function (item) {
+          var li2 = crear("li");
+          li2.appendChild(comoPlano(crear("span", null, item)));
+          ul.appendChild(li2);
         });
         art.appendChild(ul);
       } else {
-        var p = crear("p", "bloque__texto");
-        p.appendChild(crear("span", null, b.texto));
-        art.appendChild(p);
+        var pp = crear("div", "bloque__texto");
+        pp.appendChild(comoPlano(crear("p", null, b.texto)));
+        art.appendChild(pp);
       }
-      cuerpo.appendChild(art);
+      bloques.appendChild(art);
     });
+    indice.append(it, ol);
+    cuerpo.append(indice, bloques);
 
+    /* GIRO: escena propia */
     var giro = crear("section", "giro");
     giro.id = "giro-" + k;
     giro.setAttribute("aria-labelledby", "giro-" + k + "-rotulo");
     giro.setAttribute("data-cursor", "giro");
     var marco = crear("div", "giro__marco");
+    var gclave = crear("p", "giro__clave", "Semana " + k + " · cierre");
     var rot = crear("h3", "giro__rotulo", "Giro");
     rot.id = "giro-" + k + "-rotulo";
+    var gcuerpo = crear("div", "giro__cuerpo");
     var frase = DEMO_GIRO ? "Frase de muestra: aquí irá el giro de la semana, escrito por Heiner." : s.giro;
-    var fr = crear("p", "giro__frase", frase);
-    marco.append(rot, fr);
-    if (DEMO_GIRO) {
-      marco.appendChild(crear("p", "giro__muestra dato", "Muestra del efecto · no es contenido de la bitácora"));
-    }
+    gcuerpo.appendChild(comoPlano(crear("p", "giro__frase", frase)));
+    if (DEMO_GIRO) gcuerpo.appendChild(crear("p", "giro__muestra dato", "Muestra del efecto · no es contenido de la bitácora"));
     var nota = crear("p", "giro__nota");
     var enlace = crear("a", null, DEMO_GIRO ? "Volver a la versión con el pendiente" : "Ver el descifrado con una frase de muestra");
     enlace.href = DEMO_GIRO ? location.pathname + "#giro-" + k : "?demo-giro#giro-" + k;
     nota.appendChild(enlace);
-    marco.appendChild(nota);
+    gcuerpo.appendChild(nota);
+    marco.append(gclave, rot, gcuerpo);
     giro.appendChild(marco);
 
     sec.append(cab, cuerpo, giro);
@@ -126,6 +150,19 @@
   pintarPortada();
   // Alcance del prototipo: solo la semana 01 (el contador y el avance usan N real)
   $("[data-semanas]").appendChild(pintarSemana(B.semanas[0]));
+
+  /* Índice de planos: se enciende el plano que está en el centro de la pantalla (sin movimiento extra) */
+  (function indice() {
+    if (!("IntersectionObserver" in window)) return;
+    var items = $$(".indice__lista li");
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        items.forEach(function (li) { li.classList.toggle("es-activo", li.dataset.destino === en.target.id); });
+      });
+    }, { rootMargin: "-45% 0px -45% 0px" });
+    items.forEach(function (li) { var t = document.getElementById(li.dataset.destino); if (t) io.observe(t); });
+  })();
 
   /* ---------- Grano: una baldosa de ruido generada una sola vez ---------- */
   (function grano() {
@@ -138,6 +175,13 @@
       }
       g.putImageData(img, 0, 0);
       $(".grano").style.backgroundImage = "url(" + c.toDataURL("image/png") + ")";
+      // el corte a negro lleva su propio golpe de grano, mucho más denso
+      for (var j = 0; j < d.length; j += 4) {
+        var w = Math.random() * 255 | 0;
+        d[j] = d[j + 1] = d[j + 2] = w; d[j + 3] = Math.random() < 0.5 ? Math.random() * 110 | 0 : 0;
+      }
+      g.putImageData(img, 0, 0);
+      $(".corte").style.backgroundImage = "url(" + c.toDataURL("image/png") + ")";
     } catch (e) { /* sin grano: no pasa nada */ }
   })();
 
@@ -186,6 +230,11 @@
     else gsap.to(el, { duration: 0.5, scrambleText: { text: txt, chars: "0123456789", speed: 0.8 } });
     var r = 1 - k / N;
     gsap.to("#mini-fragmento", { x: 30 * r, y: -30 * r, duration: inmediato ? 0 : 0.9, ease: "power3.out" });
+    // el fragmento avanzó: un pulso naranja lo celebra (solo hacia adelante y con movimiento)
+    if (!inmediato && k > 0) {
+      gsap.fromTo("#mini-pulso", { scale: 1, opacity: 0.95 }, { scale: 1.9, opacity: 0, duration: 0.9, ease: "expo.out", svgOrigin: "200 200" });
+      gsap.fromTo(".mini", { scale: 1.35 }, { scale: 1, duration: 0.7, ease: "expo.out" });
+    }
   }
 
   /* Navegación por anclas: con Lenis cuando existe; el foco va al destino */
@@ -280,7 +329,29 @@
       gsap.to(svg, { opacity: 1, duration: 0.4, overwrite: true });
       gsap.to(canvas, { autoAlpha: 0, duration: 0.4, overwrite: true, onComplete: function () { if (!canvasActivo) particulas.detener(); } });
     }
+    function reanudarParticulas() {
+      if (!particulas || !entradaHecha || canvasActivo) return;
+      canvasActivo = true;
+      particulas.rehacer();
+      gsap.to(canvas, { autoAlpha: 1, duration: 0.35, overwrite: true });
+      gsap.to(svg, { opacity: 0, duration: 0.35, overwrite: true });
+      particulas.respirar(true);
+    }
+    /* Pista de lectura: dice qué se puede hacer y desaparece en cuanto se hace */
+    var pista = $(".simbolo__pista");
+    var pistaUsada = false;
+    function mostrarPista() {
+      if (!pista || pistaUsada) return;
+      pista.textContent = punteroFino ? "Acerca el cursor: está hecho de fragmentos" : "Toca el símbolo: está hecho de fragmentos";
+      gsap.fromTo(pista, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: 0.4 });
+    }
+    function usarPista() {
+      if (!pista || pistaUsada) return;
+      pistaUsada = true;
+      gsap.to(pista, { opacity: 0, duration: 0.5, delay: 1.2 });
+    }
     function apagarParticulas() {
+      if (pista) gsap.to(pista, { opacity: 0, duration: 0.2, overwrite: true });
       if (!particulas) return;
       if (particulas.ensamblando()) particulas.terminarYa();
       if (canvasActivo || gsap.getProperty(canvas, "opacity") > 0) {
@@ -327,7 +398,7 @@
           if (!particulas) return;
           var dentro = sobreSimbolo(px, py);
           particulas.puntero(px, py, dentro);
-          if (dentro && entradaHecha && !particulas.ensamblando()) mostrarParticulas();
+          if (dentro && entradaHecha && !particulas.ensamblando()) { mostrarParticulas(); usarPista(); }
         }
       });
       limpiezas.push(cursor.destruir);
@@ -338,6 +409,7 @@
         if (!sobreSimbolo(e.clientX, e.clientY)) return;
         mostrarParticulas();
         particulas.dispersar(e.clientX, e.clientY);
+        usarPista();
       };
       simbolo.addEventListener("pointerdown", toque, { passive: true });
       limpiezas.push(function () { simbolo.removeEventListener("pointerdown", toque); });
@@ -388,6 +460,8 @@
     tituloSplit = SplitText.create(titulo, { type: "lines", mask: "lines", linesClass: "linea" });
     gsap.set(tituloSplit.lines, { yPercent: 105 });
     gsap.set(clave, { autoAlpha: 0 });
+    var numLleno = $(".num__lleno", semana);
+    gsap.set(numLleno, { clipPath: "inset(0% 100% 0% 0%)" });
     limpiezas.push(function () { if (tituloSplit) tituloSplit.revert(); clave.textContent = claveTexto; });
 
     function revelarSemana() {
@@ -397,9 +471,20 @@
       tl.set(clave, { autoAlpha: 1, textContent: "_________" })
         .to(clave, { duration: 0.8, scrambleText: { text: claveTexto, chars: "01<>/#_", speed: 0.6, revealDelay: 0.15 } }, 0)
         .to(tituloSplit.lines, { yPercent: 0, duration: 1.1, stagger: 0.09, ease: "expo.out" }, 0.15)
-;
+        // el «01» se proyecta de izquierda a derecha sobre su propio contorno
+        .to(numLleno, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.9, ease: "expo.inOut" }, 0.05);
     }
 
+    var corteEl = $(".corte");
+    function golpeCorte(alVolver) {
+      // 1) negro duro con grano fuerte, 2) se sostiene ~130 ms (8 cuadros), 3) vuelve sin fundido
+      gsap.killTweensOf(corteEl);
+      gsap.timeline()
+        .set(corteEl, { autoAlpha: 1 })
+        .set(corteEl, { autoAlpha: 0 }, 0.13)
+        .add(function () { if (alVolver) alVolver(); }, 0.13);
+    }
+    var cortado = false;
     var tl = gsap.timeline({
       defaults: { ease: "none" },
       scrollTrigger: {
@@ -414,9 +499,12 @@
         onUpdate: function (self) {
           var p = self.progress;
           gsap.set(".bajar__lleno", { scaleX: Math.min(1, p / 0.2) });
+          // corte duro (con tiempo, no scrub) al cruzar el umbral hacia adelante
+          if (p >= 0.86 && !cortado && self.direction > 0) { cortado = true; golpeCorte(); }
+          if (p < 0.8) cortado = false;
           if (p > 0.002) {
             if (mirando) { mirando = false; soltarMirada(); apagarParticulas(); }
-          } else if (!mirando) { mirando = true; }
+          } else if (!mirando) { mirando = true; reanudarParticulas(); }
           // el borde de la cerradura mide 2 px en pantalla a cualquier escala
           var s = G.base * gsap.getProperty(mover, "scale") * gsap.getProperty(zoom, "scale");
           borde.setAttribute("stroke-width", (2 / s).toFixed(4));
@@ -440,7 +528,7 @@
     tl.fromTo(".portada__luz", { opacity: 1 }, { opacity: 0, duration: 2.5, ease: "power2.inOut" }, 1.5)
       .fromTo(".semana__luz", { opacity: 1 }, { opacity: 0, duration: 0.01 }, 8.7);
     tl.fromTo([".portada__proposito", ".creditos", ".claqueta__centro", ".portada__bajar"], { y: 0, autoAlpha: 1 }, { y: 16, autoAlpha: 0, duration: 1.4, stagger: 0.15, ease: "power2.in" }, 0)
-      .fromTo(".grano", { opacity: 0.05 }, { opacity: 0.08, duration: 2 }, 0);
+      .fromTo(".grano", { opacity: 0.065 }, { opacity: 0.09, duration: 2 }, 0);
 
     // 1,5 → 4 · El ojo despierta: el símbolo va al centro, los párpados se abren, el fragmento sale de cuadro
     tl.fromTo(mover, { x: 0, y: 0, scale: 1 }, { x: function () { return G.dx; }, y: function () { return G.dy; }, scale: function () { return G.esc; }, duration: 2.5, ease: "power3.inOut" }, 1.5)
@@ -457,10 +545,8 @@
     // contra-traslación: la cabecera queda quieta detrás de la portada durante todo el pin
     tl.fromTo(cabecera, { y: function () { return -pinLen(); } }, { y: 0, duration: 10, ease: "none" }, 0);
 
-    // 8,5 → 9 · Corte
-    tl.fromTo(".corte", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 8.5)
-      .fromTo(".corte", { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.3, immediateRender: false }, 8.7)
-      .fromTo(simbolo, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01 }, 8.7)
+    // 8,6 · Corte: el símbolo sale de escena (el negro lo pone golpeCorte, con tiempo propio)
+    tl.fromTo(simbolo, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.01 }, 8.6)
       .to({}, { duration: 1 }, 9);
 
     limpiezas.push(function () { flotar.kill(); flotarP.kill(); });
@@ -483,10 +569,11 @@
         gsap.set(canvas, { autoAlpha: 1 });
         tlE.add(function () {
           particulas.ensamblar(function () {
-            // crossfade de 400 ms al SVG nítido y el RAF se detiene
-            gsap.to(svg, { opacity: 1, duration: 0.4 });
-            gsap.to(canvas, { autoAlpha: 0, duration: 0.4, onComplete: function () { if (!canvasActivo) particulas.detener(); } });
+            // en reposo el símbolo sigue hecho de fragmentos: respira y espera al visitante
+            canvasActivo = true;
+            particulas.respirar(true);
             if (!desk) barrido();
+            mostrarPista();
           });
         }, 0.4);
       } else {
@@ -514,38 +601,36 @@
     var giroRot = $(".giro__rotulo", giro);
     var giroFrase = $(".giro__frase", giro);
     var giroHecho = false;
-    gsap.set(giroMarco, { autoAlpha: 0 });
     document.documentElement.classList.add("js-mov");
     limpiezas.push(function () { document.documentElement.classList.remove("js-mov"); });
-    function deshacerGiro() {
-      giro.classList.remove("es-corte");
-      gsap.set(giroMarco, { autoAlpha: 0 });
-    }
+    function deshacerGiro() { giro.classList.remove("es-corte"); }
     function cortarGiro() {
+      if (giro.classList.contains("es-corte")) return;
       giro.classList.add("es-corte");
-      if (giroHecho) { gsap.set(giroMarco, { autoAlpha: 1 }); return; }
+      if (giroHecho) return;
       giroHecho = true;
-      // un instante de negro puro (corte de montaje) y aparece la frase
-      gsap.delayedCall(0.18, function () {
-        gsap.set(giroMarco, { autoAlpha: 1 });
-        Descifrado.revelar(giroRot, { duracion: 0.9 });
-        if (!giroFrase.classList.contains("pendiente")) Descifrado.revelar(giroFrase, { duracion: 1.3 });
+      // corte de montaje: negro con golpe de grano y, al volver la luz, el GIRO se descifra
+      golpeCorte(function () {
+        Descifrado.revelar(giroRot, { duracion: 1.1 });
+        if (!giroFrase.classList.contains("pendiente")) Descifrado.revelar(giroFrase, { duracion: 1.4 });
       });
     }
     ScrollTrigger.create({
       trigger: giro,
       start: "top top",
-      end: "+=60%",
+      end: "+=100%",
       pin: true,
       onEnter: cortarGiro,
       onLeaveBack: deshacerGiro
     });
-    limpiezas.push(function () { giro.classList.remove("es-corte"); });
+    // teclado: si el foco entra al GIRO antes de llegar con scroll, el corte ocurre igual
+    giro.addEventListener("focusin", cortarGiro);
+    limpiezas.push(function () { giro.classList.remove("es-corte"); giro.removeEventListener("focusin", cortarGiro); });
 
     // Si la página abre más abajo (ancla o recarga), los estados quedan resueltos
     ScrollTrigger.refresh();
     var st = tl.scrollTrigger;
-    if (st && st.scroll() >= st.end - 1) { revelarSemana(); fijarEscena(1, true); entradaHecha = true; apagarParticulas(); }
+    if (st && st.scroll() >= st.end - 1) { revelarSemana(); fijarEscena(1, true); entradaHecha = true; apagarParticulas(); gsap.set(svg, { opacity: 1 }); }
     if (location.hash) {
       var dest = document.getElementById(location.hash.slice(1));
       if (dest && lenis) lenis.scrollTo(dest, { immediate: true, force: true });

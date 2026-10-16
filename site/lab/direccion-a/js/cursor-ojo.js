@@ -11,10 +11,10 @@
     el.setAttribute("aria-hidden", "true");
     el.innerHTML =
       '<svg viewBox="0 0 28 28">' +
-      '<g class="c-ojo" fill="none" stroke="#ECE5D3" stroke-width="1.5" stroke-linecap="round">' +
+      '<g class="c-ojo" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">' +
       '<path d="M2 14 Q14 3 26 14"/><path d="M2 14 Q14 25 26 14"/></g>' +
-      '<circle class="c-punto" cx="14" cy="14" r="3.2" fill="#F28C38"/>' +
-      '<g class="c-llave" fill="#F28C38"><circle cx="14" cy="11" r="3.4"/><polygon points="12.2,13 15.8,13 17.6,21 10.4,21"/></g>' +
+      '<circle class="c-punto" cx="14" cy="14" r="3.2" fill="var(--fragmento)"/>' +
+      '<g class="c-llave" fill="var(--fragmento)"><circle cx="14" cy="11" r="3.4"/><polygon points="12.2,13 15.8,13 17.6,21 10.4,21"/></g>' +
       "</svg>";
     document.body.appendChild(el);
     document.documentElement.classList.add("cursor-activo");
@@ -30,11 +30,18 @@
       var dx = e.clientX - px, dy = e.clientY - py;
       var vel = Math.hypot(dx, dy) / dt; // px por ms
       px = e.clientX; py = e.clientY; ultimo = ahora;
-      if (!visible) { gsap.set(el, { x: px, y: py }); gsap.to(el, { opacity: 1, duration: 0.25 }); visible = true; }
       xTo(px); yTo(py);
       // se estira con la velocidad (máx. 1,4); el ojo siempre queda horizontal
       sTo(gsap.utils.clamp(1, 1.4, 1 + vel * 0.18));
       var t = e.target, modo = "";
+      // el ojo solo vive en la sala (portada y GIRO); en la lectura vuelve el cursor del sistema
+      var enSala = t.closest && t.closest(".portada, .giro, .claqueta");
+      if (!enSala) {
+        if (visible) { gsap.to(el, { opacity: 0, duration: 0.15 }); visible = false; }
+        if (op.alMover) op.alMover(px, py);
+        return;
+      }
+      if (!visible) { gsap.set(el, { x: px, y: py }); gsap.to(el, { opacity: 1, duration: 0.25 }); visible = true; }
       if (t.closest) {
         if (t.closest("[data-cursor='giro']")) modo = "giro";
         else if (t.closest("a, button")) modo = "enlace";

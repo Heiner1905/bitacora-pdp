@@ -11,6 +11,13 @@
   <script>
     (function (d) {
       d.classList.replace('no-js', 'js');
+      // Preload de Zodiak solo en http(s): en file:// Chrome bloquea el preload con crossorigin
+      if (location.protocol.indexOf('http') === 0) {
+        var l = document.createElement('link');
+        l.rel = 'preload'; l.as = 'font'; l.type = 'font/woff2'; l.crossOrigin = 'anonymous';
+        l.href = 'fonts/zodiak-variable.woff2';
+        document.head.appendChild(l);
+      }
       // Estado previo a la entrada (solo con movimiento). Seguro: si el JS falla, todo se ve a los 4 s.
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
         d.classList.add('precarga');
@@ -19,7 +26,6 @@
     })(document.documentElement);
   </script>
 
-  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Martian+Mono:wdth,wght@75..112.5,300..500&display=swap">
@@ -35,6 +41,7 @@
     <p class="claqueta__centro" data-campo="ficha"></p>
     <p class="claqueta__escena">
       <svg class="mini" viewBox="-20 -60 460 460" aria-hidden="true" focusable="false">
+        <circle id="mini-pulso" cx="200" cy="200" r="150" fill="none" stroke="#F28C38" stroke-width="22" opacity="0"/>
         <path id="mini-anillo" d="M 326.9 140.8 A 140 140 0 1 1 247.9 68.4" fill="none" stroke="#ECE5D3" stroke-width="30"/>
         <g id="mini-fragmento" transform="translate(30,-30)">
           <path d="M 247.9 68.4 A 140 140 0 0 1 326.9 140.8" fill="none" stroke="#F28C38" stroke-width="30"/>
@@ -87,6 +94,7 @@
             </svg>
           </div>
         </div>
+        <p class="simbolo__pista dato" aria-hidden="true"></p>
       </div>
 
       <p class="portada__proposito" data-campo="proposito"></p>

@@ -3,14 +3,14 @@
    Tokens → base → claqueta → portada → semana → GIRO → motion → print
    ========================================================= */
 
-/* Zodiak variable (Fontshare). Se declara aquí solo con el woff2 variable: los respaldos .woff/.ttf
-   que entrega la hoja de Fontshare pueden caer en una instancia estática gruesa si el woff2 falla. */
+/* Zodiak variable (Indian Type Foundry, Fontshare, licencia ITF FFL) alojada aquí con preload:
+   el nombre nunca se pinta en otra fuente. Ojo: la instancia por defecto del archivo es 900. */
 @font-face {
   font-family: "Zodiak";
-  src: url("https://cdn.fontshare.com/wf/UDGW4K5KDO2WNP2256GU5CP7HQDVADLQ/LML445TYWQT7TRPDYZPCIVB3BJWX7NTD/2O5TXCJMYUDHI5FO6N4PXN6WNROSBHNU.woff2") format("woff2");
+  src: url("../fonts/zodiak-variable.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 :root {
@@ -40,7 +40,7 @@
 
   /* Escala */
   --t-nombre: min(clamp(6rem, 1rem + 15.5vw, 16.5rem), 27svh);
-  --t-escena: clamp(11rem, 36vw, 32rem);
+  --t-escena: min(46vw, 80svh);
   --t-titulo: clamp(2.25rem, 1rem + 3.4vw, 4.25rem);
   --t-giro: clamp(2rem, .75rem + 4vw, 4.5rem);
   --t-proposito: clamp(1.375rem, 1rem + .9vw, 1.875rem);
@@ -86,7 +86,7 @@ body::before {
 :focus-visible { outline: 2px solid var(--fragmento); outline-offset: 4px; }
 a { color: inherit; }
 h1, h2, h3, p, dl, dd, ul { margin: 0; }
-ul { padding: 0; list-style: none; }
+ul, ol { padding: 0; margin: 0; list-style: none; }
 
 .sr-only {
   position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -106,9 +106,11 @@ ul { padding: 0; list-style: none; }
 .claqueta,
 .creditos dt,
 .bajar__texto,
+.ficha dt,
 .semana__clave,
-.semana__datos dt,
-.giro__rotulo,
+.indice__paso,
+.plano__rol,
+.giro__clave,
 .pie {
   font-family: var(--f-dato);
   font-variation-settings: "wdth" 75;
@@ -135,6 +137,25 @@ ul { padding: 0; list-style: none; }
   font-variation-settings: normal !important;
   line-height: 1.5 !important;
 }
+/* Un pendiente grande se monta como un plano vacío: visor de cámara con marcas de encuadre.
+   Sigue siendo punteado, estático y en la fuente de lectura. */
+.pendiente.plano {
+  display: block;
+  position: relative;
+  outline-offset: 0;
+  padding: 20px 24px;
+  min-height: var(--alto-plano, 9rem);
+}
+.pendiente.plano::before,
+.pendiente.plano::after {
+  content: "";
+  position: absolute;
+  width: 18px; height: 18px;
+  border: 0 solid var(--proyeccion);
+  opacity: .55;
+}
+.pendiente.plano::before { left: -6px; top: -6px; border-top-width: 1px; border-left-width: 1px; }
+.pendiente.plano::after { right: -6px; bottom: -6px; border-bottom-width: 1px; border-right-width: 1px; }
 
 /* Antes de la entrada (la clase la quita principal.js tras fijar los estados iniciales) */
 html.precarga .portada__nombre,
@@ -150,7 +171,7 @@ html.precarga .claqueta { opacity: 0; }
   inset: -50%;
   z-index: 60;
   pointer-events: none;
-  opacity: .05;
+  opacity: .065;
   background-repeat: repeat;
   background-size: 200px 200px;
   animation: grano .8s steps(8) infinite;
@@ -168,7 +189,8 @@ html.precarga .claqueta { opacity: 0; }
 }
 .corte {
   position: fixed; inset: 0; z-index: 55;
-  background: var(--corte);
+  background-color: var(--corte);
+  background-size: 160px 160px;
   opacity: 0; visibility: hidden; pointer-events: none;
 }
 
@@ -272,6 +294,10 @@ main { position: relative; }
 }
 .simbolo__mover, .simbolo__zoom { width: 100%; height: 100%; }
 .simbolo__zoom { transform-origin: 50% 47.5%; }
+.simbolo__pista {
+  position: absolute; right: 0; top: calc(100% + 6px);
+  color: var(--niebla); opacity: 0; white-space: nowrap; text-transform: none; letter-spacing: .02em;
+}
 .simbolo__svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .simbolo__svg .marco, .simbolo__svg .borde { opacity: 0; visibility: hidden; }
 #anillo, #ojo-sup, #ojo-inf { stroke: var(--proyeccion); }
@@ -340,7 +366,7 @@ main { position: relative; }
 .bajar__lleno { display: block; height: 100%; background: var(--proyeccion); transform: scaleX(0); transform-origin: 0 50%; }
 .sinjs { grid-column: 1 / -1; color: var(--plata); }
 
-/* ---------- Semana ---------- */
+/* ---------- Semana: una escena con retícula de afiche ---------- */
 .semana { position: relative; z-index: 1; overflow-x: clip; }
 .semana__cabecera {
   position: relative;
@@ -349,88 +375,125 @@ main { position: relative; }
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--medianil);
   align-content: start;
-  padding: 180px var(--margen) 40px;
+  padding: 120px var(--margen) 56px;
   overflow: clip;
   transform-origin: 50% 47.5%;
 }
-.semana__texto { grid-column: 7 / -1; position: relative; z-index: 2; }
 /* Lo que se ve por la cerradura está iluminado (solo durante la transición) */
 .semana__luz {
   position: absolute; inset: 0; z-index: 0; opacity: 0; pointer-events: none;
   background: radial-gradient(ellipse 70% 70% at 50% 47%, transparent 35%, rgba(5, 5, 6, .5) 100%), var(--butaca);
 }
-.semana__clave { color: var(--fragmento); margin-bottom: 22px; font-variation-settings: "wdth" 75; }
+.semana__texto { grid-column: 7 / -1; position: relative; z-index: 2; }
+
+/* Ficha de la escena: el mismo billing block de la portada, ahora con los datos de la semana */
+.ficha {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--medianil);
+  border-top: 1px solid var(--hairline);
+  padding-top: 14px;
+}
+.ficha dt { color: var(--niebla); min-height: 1lh; margin-bottom: 6px; }
+.ficha dd { font-size: 1.0625rem; line-height: 1.35; }
+.ficha dd.pendiente { display: inline-block; font-size: .9375rem !important; outline-offset: 4px; }
+.semana__clave { color: var(--fragmento); font-size: .9375rem; letter-spacing: .08em; }
+
 .semana__titulo {
+  margin-top: 56px;
   font-family: var(--f-display);
   font-weight: 300;
   font-size: var(--t-titulo);
   line-height: .98;
   letter-spacing: -.03em;
   text-wrap: balance;
-  max-width: 16ch;
+  max-width: 15ch;
 }
-.semana__datos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px 40px;
-  margin-top: 40px;
-  align-items: baseline;
-}
-.semana__datos > div { display: flex; align-items: baseline; gap: 14px; }
-.semana__datos dt { color: var(--niebla); }
-.semana__datos dd { font-size: 1.0625rem; }
+.semana__plano { margin-top: 56px; max-width: 64ch; }
+.plano__rol { display: block; color: var(--niebla); margin-bottom: 16px; }
 .semana__reflexion {
-  margin-top: 48px;
-  max-width: 64ch;
   font-size: var(--t-reflexion);
   line-height: 1.62;
   color: var(--plata);
   text-wrap: pretty;
   hanging-punctuation: first;
   font-variant-numeric: oldstyle-nums proportional-nums;
+  --alto-plano: 11rem;
 }
-.semana__reflexion.pendiente { display: inline-block; }
+
+/* El «01» es el plano de la escena: hairline, enorme, recortado por el borde izquierdo y el inferior.
+   Dos capas: el contorno se ve ya por la cerradura; el relleno se proyecta al llegar. */
 .semana__numero {
   position: absolute;
   z-index: 1;
-  left: calc(var(--margen) - .06em);
-  bottom: 40px;
+  left: -.1em;
+  bottom: -.13em;
   margin: 0;
   font-family: var(--f-display);
   font-weight: 100;
   font-size: var(--t-escena);
-  line-height: .75;
-  letter-spacing: -.06em;
-  color: var(--proyeccion);
+  line-height: .8;
+  letter-spacing: -.07em;
   pointer-events: none;
   user-select: none;
 }
+.num__capa { display: block; }
+.num__contorno { color: transparent; -webkit-text-stroke: 1px rgba(236, 229, 211, .38); }
+.num__lleno { position: absolute; inset: 0; color: var(--proyeccion); }
 
+/* Cuerpo: índice de la escena a la izquierda, planos de lectura en el eje de la col 7 */
 .semana__cuerpo {
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--medianil);
-  row-gap: 72px;
-  padding: 72px var(--margen) 160px;
+  padding: 120px var(--margen) 34svh;
+  border-top: 1px solid var(--hairline);
+  margin: 0 var(--margen);
+  padding-left: 0; padding-right: 0;
 }
-.bloque { border-top: 1px solid var(--hairline); padding-top: 20px; }
-.bloque:nth-child(odd) { grid-column: 2 / span 5; }
-.bloque:nth-child(even) { grid-column: 8 / span 5; margin-top: 120px; }
+.indice { grid-column: 1 / span 4; align-self: start; position: sticky; top: 96px; }
+.indice__titulo {
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: clamp(1.25rem, .9rem + .7vw, 1.625rem);
+  line-height: 1.1;
+  letter-spacing: -.015em;
+  max-width: 18ch;
+  text-wrap: balance;
+  color: var(--plata);
+}
+.indice__lista { margin-top: 28px; border-left: 1px solid var(--hairline); }
+.indice__lista li { position: relative; padding: 10px 0 10px 18px; }
+.indice__lista a { text-decoration: none; color: var(--niebla); display: inline-block; padding: 4px 0; transition: color .25s; }
+.indice__lista a:hover { color: var(--proyeccion); }
+.indice__lista li::before {
+  content: ""; position: absolute; left: -1px; top: 12px; bottom: 12px; width: 1px;
+  background: var(--fragmento); transform: scaleY(0); transform-origin: 50% 0; transition: transform .45s cubic-bezier(.2, .7, .2, 1);
+}
+.indice__lista li.es-activo::before { transform: scaleY(1); }
+.indice__lista li.es-activo a { color: var(--proyeccion); }
+.indice__paso { display: block; color: inherit; margin-bottom: 4px; }
+.indice__nombre { font-size: 1rem; line-height: 1.35; }
+
+.bloques { grid-column: 7 / -1; display: grid; row-gap: 140px; }
+.bloque { scroll-margin-top: 120px; }
 .bloque__titulo {
   font-family: var(--f-display);
   font-weight: 300;
-  font-size: clamp(1.5rem, 1rem + 1.2vw, 2.125rem);
-  line-height: 1.05;
-  letter-spacing: -.02em;
+  font-size: clamp(2rem, 1rem + 2.4vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: -.025em;
   text-wrap: balance;
-  margin-bottom: 24px;
+  max-width: 14ch;
+  margin-bottom: 36px;
 }
 .bloque__lista li { color: var(--plata); font-size: var(--t-reflexion); line-height: 1.55; }
 .bloque__lista li + li { margin-top: 12px; }
+.bloque__lista .pendiente.plano { --alto-plano: 8rem; }
 .bloque__texto { color: var(--plata); font-size: var(--t-reflexion); line-height: 1.62; max-width: 60ch; }
-.bloque .pendiente { display: inline-block; }
+.bloque__texto .pendiente.plano { --alto-plano: 12rem; }
 
-/* ---------- GIRO ---------- */
+/* ---------- GIRO: escena propia, a pantalla completa, tras un corte duro ---------- */
 .giro {
   position: relative;
   z-index: 2;
@@ -439,15 +502,24 @@ main { position: relative; }
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--medianil);
   align-content: center;
-  padding: 120px var(--margen);
-  background: var(--sala);
+  padding: 120px var(--margen) 80px;
+  background: var(--corte);
+  overflow: clip;
 }
-.giro.es-corte { background: var(--corte); }
-/* Con movimiento, el GIRO se monta encima del final del cuerpo: transparente hasta el corte */
-.js-mov .giro { margin-top: -55svh; background: transparent; pointer-events: none; }
-.js-mov .giro.es-corte { background: var(--corte); pointer-events: auto; }
-.giro__marco { grid-column: 2 / span 9; }
-.giro__rotulo { color: var(--fragmento); margin-bottom: 28px; display: block; width: max-content; }
+.giro__marco { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; }
+.giro__clave { grid-column: 1 / span 3; color: var(--fragmento); align-self: start; padding-top: 1.2em; }
+.giro__rotulo {
+  grid-column: 1 / -1;
+  margin: 0 0 0 -.06em;
+  font-family: var(--f-display);
+  font-weight: 200;
+  font-size: clamp(6rem, 25vw, 23rem);
+  line-height: .78;
+  letter-spacing: -.055em;
+  color: var(--proyeccion);
+  width: max-content;
+}
+.giro__cuerpo { grid-column: 7 / -1; margin-top: 48px; }
 .giro__frase {
   font-family: var(--f-display);
   font-weight: 300;
@@ -457,10 +529,15 @@ main { position: relative; }
   max-width: 20ch;
   text-wrap: balance;
 }
-.giro__frase.pendiente { display: inline-block; }
-.giro__nota { margin-top: 56px; color: var(--niebla); font-size: .9375rem; max-width: 52ch; }
+.giro__frase.pendiente { --alto-plano: 10rem; max-width: 46ch; }
+.giro__nota { margin-top: 40px; color: var(--niebla); font-size: .9375rem; max-width: 52ch; }
 .giro__nota a { color: var(--proyeccion); text-underline-offset: 4px; display: inline-block; padding: 10px 0; }
 .giro__muestra { margin-top: 18px; color: var(--niebla); }
+/* Con movimiento, el GIRO se monta encima del final del cuerpo, transparente, y llega con un corte duro.
+   Se oculta solo con opacity: el enlace sigue en el orden de Tab (al recibir foco, corta). */
+.js-mov .giro { margin-top: -60svh; }
+.js-mov .giro:not(.es-corte) { background: transparent; pointer-events: none; }
+.js-mov .giro:not(.es-corte) .giro__marco { opacity: 0; }
 
 /* Descifrado por estados tipográficos (patrón 2xA): el glifo nunca cambia, solo su tratamiento */
 .ch { transition: none; }
@@ -471,11 +548,10 @@ main { position: relative; }
 .ch.e5 { color: var(--niebla); }
 
 .pie {
-  padding: 40px var(--margen) 48px;
+  padding: 40px 0 48px;
+  margin: 0 var(--margen);
   color: var(--niebla);
   border-top: 1px solid var(--hairline);
-  margin: 0 var(--margen);
-  padding-left: 0; padding-right: 0;
 }
 
 /* ---------- Cursor-ojo ---------- */
@@ -485,6 +561,7 @@ main { position: relative; }
   pointer-events: none;
   opacity: 0;
 }
+.cursor { color: var(--proyeccion); }
 .cursor svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .cursor .c-ojo, .cursor .c-llave, .cursor .c-punto { transition: transform .25s cubic-bezier(.2, .7, .2, 1), opacity .25s; transform-origin: 14px 14px; transform-box: view-box; }
 .cursor .c-llave { opacity: 0; }
@@ -493,7 +570,9 @@ main { position: relative; }
 .cursor[data-modo="enlace"] .c-ojo { transform: scale(1.35, 1.6); }
 .cursor[data-modo="giro"] .c-ojo, .cursor[data-modo="giro"] .c-punto { opacity: 0; }
 .cursor[data-modo="giro"] .c-llave { opacity: 1; }
-html.cursor-activo, html.cursor-activo a, html.cursor-activo * { cursor: none; }
+html.cursor-activo .portada, html.cursor-activo .portada *,
+html.cursor-activo .giro, html.cursor-activo .giro *,
+html.cursor-activo .claqueta, html.cursor-activo .claqueta * { cursor: none; }
 
 /* ---------- Tableta y móvil (≤ 899): otra composición, el símbolo encabeza el afiche ---------- */
 @media (max-width: 899px) {
@@ -514,8 +593,9 @@ html.cursor-activo, html.cursor-activo a, html.cursor-activo * { cursor: none; }
   .creditos { grid-column: 1 / -1; grid-row: 4; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 18px; margin-top: 32px; }
   .portada__bajar { grid-row: 5; margin-top: 12px; }
   .semana__texto { grid-column: 3 / -1; }
-  .bloque:nth-child(odd), .bloque:nth-child(even) { grid-column: 1 / -1; margin-top: 0; }
-  .giro__marco { grid-column: 1 / -1; }
+  .indice { grid-column: 1 / -1; position: relative; top: auto; margin-bottom: 72px; }
+  .bloques { grid-column: 1 / -1; row-gap: 96px; }
+  .giro__cuerpo { grid-column: 2 / -1; }
 }
 
 @media (max-width: 599px) {
@@ -527,6 +607,7 @@ html.cursor-activo, html.cursor-activo a, html.cursor-activo * { cursor: none; }
   .mini { width: 24px; height: 24px; }
   .portada { padding-bottom: 20px; }
   .simbolo { width: min(66vw, 46svh); margin: 48px 8px 0 0; }
+  .simbolo__pista { top: auto; bottom: 8%; right: calc(100% + 4px); width: 26vw; white-space: normal; line-height: 1.35; }
   .nombre__linea--b { margin-left: 12vw; }
   .portada__proposito { grid-column: 1 / -1; font-size: 1.1875rem; line-height: 1.32; margin-top: 18px; }
   .creditos { margin-top: 22px; row-gap: 14px; column-gap: 12px; }
@@ -535,13 +616,18 @@ html.cursor-activo, html.cursor-activo a, html.cursor-activo * { cursor: none; }
   .portada__bajar { margin-top: 8px; }
 
   .semana__cabecera { padding: 0 var(--margen) 56px; }
-  .semana__numero { position: relative; left: auto; bottom: auto; grid-column: 1 / -1; margin: 64px 0 28px -.06em; line-height: .8; }
+  .semana__numero { position: relative; left: auto; bottom: auto; grid-column: 1 / -1; margin: 52px 0 24px -.1em; line-height: .8; }
   .semana__texto { grid-column: 1 / -1; }
-  .semana__titulo { font-size: 2.25rem; }
-  .semana__datos { flex-direction: column; gap: 14px; margin-top: 28px; }
-  .semana__reflexion { margin-top: 36px; }
-  .semana__cuerpo { padding: 40px var(--margen) 120px; row-gap: 56px; }
-  .giro { padding: 96px var(--margen); }
+  .ficha { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+  .ficha > div:first-child { grid-column: 1 / -1; }
+  .semana__titulo { font-size: 2.25rem; margin-top: 36px; }
+  .semana__plano { margin-top: 40px; }
+  .semana__cuerpo { padding: 72px 0 30svh; }
+  .bloque__titulo { margin-bottom: 24px; }
+  .giro { padding: 96px var(--margen) 64px; }
+  .giro__rotulo { font-size: 31vw; }
+  .giro__clave { grid-column: 1 / -1; padding: 0 0 12px; }
+  .giro__cuerpo { grid-column: 1 / -1; margin-top: 32px; }
 }
 
 /* ---------- Movimiento: estado sin JS / reduced motion ---------- */
@@ -578,7 +664,18 @@ html.cursor-activo, html.cursor-activo a, html.cursor-activo * { cursor: none; }
   .portada, .pin-spacer { position: static !important; transform: none !important; width: auto !important; height: auto !important; max-width: none !important; max-height: none !important; top: auto !important; left: auto !important; padding: 0 !important; margin: 0 !important; }
   .giro, .js-mov .giro { margin-top: 0 !important; position: static !important; transform: none !important; top: auto !important; left: auto !important; width: auto !important; height: auto !important; max-width: none !important; max-height: none !important; }
   .semana { margin-top: 0 !important; }
-  .semana__luz, .portada__luz { display: none !important; }
+  .semana__luz, .portada__luz, .indice, .simbolo__pista { display: none !important; }
+  .semana__cabecera, .semana, .giro { overflow: visible !important; height: auto !important; }
+  .semana__titulo .linea-mask, .semana__titulo .linea { overflow: visible !important; }
+  .num__contorno { display: none; }
+  .num__lleno { position: static; clip-path: none !important; color: #111; }
+  .semana__cuerpo { border-top: 1px solid #bbb; margin: 8mm 0 0; padding-bottom: 0 !important; }
+  .pin-spacer { display: block !important; }
+  .giro { break-before: page; }
+  .giro__rotulo { font-size: 96pt; }
+  .bloques { display: block; }
+  .bloque { break-inside: avoid; }
+  :focus, :focus-visible { outline: none !important; }
   .giro__marco { opacity: 1 !important; visibility: visible !important; }
   .giro__frase, .giro__rotulo { color: #111; }
   .giro__rotulo { color: #8a4a12; }
