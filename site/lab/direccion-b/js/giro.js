@@ -42,6 +42,34 @@
     });
     p.appendChild(vis);
     G.letras = Array.prototype.slice.call(p.querySelectorAll(".letra"));
+    medir();
+  }
+
+  /* Las líneas se fijan con el ancho final (wdth 100): durante la calibración
+     la frase es más estrecha, así que nunca gana ni pierde líneas. */
+  function medir() {
+    if (!G.frase || !G.letras.length) return;
+    var vis = G.frase.querySelector("span[aria-hidden]");
+    // deshacer líneas anteriores
+    var pals = Array.prototype.slice.call(vis.querySelectorAll(".palabra"));
+    vis.innerHTML = "";
+    pals.forEach(function (w, i) { vis.appendChild(w); if (i < pals.length - 1) vis.appendChild(document.createTextNode(" ")); });
+    var prev = G.letras.map(function (l) { return l.style.getPropertyValue("--w"); });
+    G.letras.forEach(function (l) { l.style.setProperty("--w", "100"); });
+    var lineas = [], top = null;
+    pals.forEach(function (w) {
+      var t = Math.round(w.getBoundingClientRect().top);
+      if (top === null || Math.abs(t - top) > 4) { lineas.push([]); top = t; }
+      lineas[lineas.length - 1].push(w);
+    });
+    vis.innerHTML = "";
+    lineas.forEach(function (ln) {
+      var l = document.createElement("span");
+      l.className = "linea";
+      ln.forEach(function (w, i) { l.appendChild(w); if (i < ln.length - 1) l.appendChild(document.createTextNode(" ")); });
+      vis.appendChild(l);
+    });
+    G.letras.forEach(function (l, i) { l.style.setProperty("--w", prev[i] || "100"); });
   }
 
   function inundar(animado) {
@@ -105,6 +133,10 @@
       onEnter: function () { G.revelado = true; revelar(true); }
     });
   }
+
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+  var tR;
+  window.addEventListener("resize", function () { clearTimeout(tR); tR = setTimeout(medir, 200); });
 
   window.Giro = { iniciar: iniciar, observar: observar };
 })();

@@ -1,6 +1,8 @@
 /* Principal: pinta los datos, monta Lenis + GSAP y coreografía
-   carga de la portada → transición (cierre de celdas, giro del dial, clic de encaje,
-   apertura de la lectura 01) → acople del dial a la barra. */
+   carga de la portada → el dial de combinación gira con retenes (cada número
+   que pasa por la ranura cierra una celda de la portada) → clic de la cerradura:
+   luz por todo el anillo, el iris se dilata y se cierra, el cilindro cede,
+   el fragmento avanza y la lectura 01 se abre → el dial se acopla a la barra. */
 (function () {
   "use strict";
 
@@ -109,12 +111,8 @@
   Reticula.medir();
   Reticula.dibujar();
   Dial.iniciar(N, rotular);
-  Lecturas.fijarTotal(N);
+  Lecturas.construirComb();
   Lecturas.fijarN(0);
-  Lecturas.fijarDistancia(Dial.distancia(0));
-  $$('[data-lectura="ang"]').forEach(function (e) { e.textContent = Lecturas.pad(Dial.R(0).toFixed(1).replace(".", ","), 5); });
-  $$('[data-lectura="meta"]').forEach(function (e) { e.textContent = Lecturas.pad(Dial.R(1).toFixed(1).replace(".", ","), 5) + "°"; });
-  Lecturas.iniciarReloj();
   prepararBotones();
 
   if (window.gsap) {
@@ -125,27 +123,22 @@
   if (!conMovimiento) modoQuieto(); else modoVivo();
 
   /* ======================================================================
-     Sin movimiento: estado final, sin pin, sin Lenis, sin secuenciador
+     Sin movimiento: estado final, sin pin, sin Lenis, sin inspección
      ====================================================================== */
   function modoQuieto() {
     root.classList.add("sin-movimiento");
     root.classList.remove("js-cargando");
     Dial.copiaEstatica($(".dial-estatico"), 1, rotular);
     if (window.gsap) {
-      Lecturas.prepararMira(true);
       Giro.iniciar(S1.giro, false);
     } else {
-      var f = $("[data-giro-frase]");
-      pintarTexto(f, S1.giro);
+      pintarTexto($("[data-giro-frase]"), S1.giro);
       $("[data-giro]").classList.add("inundado");
     }
-    Lecturas.prepararToque();
-    // Las lecturas de la barra cambian al instante al entrar a la semana
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (e) {
         var dentro = e[0].isIntersecting || e[0].boundingClientRect.top < 0;
         Lecturas.fijarN(dentro ? 1 : 0, false);
-        Lecturas.fijarDistancia(Dial.distancia(dentro ? 1 / N : 0));
       }, { rootMargin: "0px 0px -50% 0px" }).observe($("#semana-01"));
     }
     var t;
@@ -164,11 +157,13 @@
   function modoVivo() {
     var PULSO = Reticula.PULSO, PASO = Reticula.PASO;
     var D = Dial.estado;
+    var S = 360 / N;
+    var PASOS = N + 1;                       // una vuelta completa más un número
+    var R0 = Dial.R(0);
 
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
 
-    /* Lenis + ScrollTrigger */
     var lenis = null;
     if (window.Lenis) {
       lenis = new Lenis({ lerp: 0.12, wheelMultiplier: 1 });
@@ -176,8 +171,9 @@
       gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
       gsap.ticker.lagSmoothing(0);
     }
+    ScrollTrigger.config({ ignoreMobileResize: true });
 
-    Lecturas.prepararMira(false);
+    Lecturas.prepararInspeccion();
     Lecturas.prepararToque();
     Giro.iniciar(S1.giro, true);
 
@@ -191,45 +187,45 @@
     var celdaProp = $(".celda--proposito");
     var celdasFicha = $$(".celda--ficha");
     var celdasLectMovil = $$(".lecturas-movil .celda");
-    var celdasSemana = [].concat($$(".celda--numero"), $$(".semana__datos .celda"), [$(".celda--reflexion")]);
+    var celdasNumero = $$(".celda--numero");
+    var celdasSemana = [].concat($$(".semana__datos .celda"), [$(".celda--reflexion")]);
+    var cifras = $$(".numero__cifra");
+    var ojo = ["#ojo-sup", "#ojo-inf", "#iris", "#hr"];
 
-    /* ---------------- Carga de la portada (≈ 2,9 s) ---------------- */
+    // la lectura 01 está cerrada hasta que la cerradura hace clic
+    celdasSemana.concat(celdasNumero).forEach(function (c) { gsap.set(c, { clipPath: clips(c).abajo }); });
+    gsap.set(D.iris, { svgOrigin: "200 196" });
+    gsap.set(D.pupila, { svgOrigin: "200 200", rotation: 0 });
+
+    /* ---------------- Carga de la portada (≈ 2,9 s, a 124 BPM) ---------------- */
     var esMovil = Reticula.G.movil;
-    if (!esMovil) celdasSemana.forEach(function (c) { gsap.set(c, { clipPath: clips(c).abajo }); });
-
     var anilloLong = D.anillo.getTotalLength();
     var intro = gsap.timeline({ paused: true, onComplete: alTerminarIntro });
     var G0 = Reticula.G;
 
-    // 1 · la retícula se traza
     intro.from(G0.verticales, { scaleY: 0, transformOrigin: "50% 0%", duration: PULSO, ease: "power2.out", stagger: PASO / 2 }, 0);
     intro.fromTo(".lecturas__celda", { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: PASO, ease: "steps(4)", stagger: PASO / 2 }, 0);
-    var hilosPortada = $$(".portada .hilo, .portada [data-fila] > .hilo");
-    intro.from(hilosPortada, { scaleX: 0, duration: PULSO, ease: "power2.out", stagger: PASO / 2 }, PASO / 2);
-    intro.from(".lecturas__nodos .nodo, .portada .nodo:not(.nodo--menor)", { scale: 0, duration: PASO, ease: "steps(2)", stagger: PASO / 4 }, PASO);
-    intro.from(".portada .nodo--menor", { opacity: 0, duration: PASO, ease: "steps(1)", stagger: PASO / 8 }, PULSO);
+    intro.from($$(".portada .hilo"), { scaleX: 0, duration: PULSO, ease: "power2.out", stagger: PASO / 2 }, PASO / 2);
+    intro.from(".lecturas__nodos .nodo, .portada .nodo", { scale: 0, duration: PASO, ease: "steps(2)", stagger: PASO / 4 }, PASO);
 
-    // 2 · el nombre se descubre celda por celda, a tempo (bombo en 1, 3, 5, 7)
-    var orden = [0, 1, 2, 3];
-    orden.forEach(function (idx, i) {
-      var c = celdasNombre[idx];
+    // el nombre se descubre celda por celda (bombo en 1, 3, 5, 7)
+    celdasNombre.forEach(function (c, i) {
       intro.fromTo(c, { clipPath: clips(c).abajo }, { clipPath: clips(c).abierta, duration: PASO, ease: "power2.out" }, PULSO + i * PULSO);
     });
 
-    // 3 · el anillo se traza como plóter (saltos de 10°) y los ticks se encienden en barrido
+    // la perilla aparece: banda, estrías en barrido, marcas y números
+    intro.from(".dial .bisel__banda, .dial .bisel__canto", { opacity: 0, duration: PASO, ease: "steps(2)" }, PULSO);
+    intro.from(".dial .bisel__estria", { opacity: 0, duration: 0.01, stagger: 0.005, ease: "none" }, PULSO + PASO);
     intro.fromTo(D.anillo, { strokeDasharray: anilloLong, strokeDashoffset: anilloLong }, { strokeDashoffset: 0, duration: 1.21, ease: "steps(36)" }, PULSO + PASO);
-    intro.from(D.partes.ticks, { opacity: 0, duration: 0.01, stagger: 0.006, ease: "none" }, PULSO + PASO);
-    intro.from([].concat(D.partes.limites, D.partes.segs), { opacity: 0, duration: PASO, ease: "steps(2)", stagger: PASO / 4 }, 1.2);
-    intro.from(D.partes.etqs, { opacity: 0, duration: PASO, ease: "steps(2)", stagger: PASO / 4 }, 1.45);
-
-    // 4 · ojo, iris, pupila, HR: un paso cada uno
+    intro.from(".dial .bisel__mayor, .dial .bisel__tick", { opacity: 0, duration: PASO, ease: "steps(2)", stagger: 0.01 }, 1.1);
+    intro.from(D.partes.etqs, { opacity: 0, duration: PASO, ease: "steps(2)", stagger: PASO / 4 }, 1.3);
     ["#ojo-sup", "#ojo-inf", "#iris", "#pupila", "#hr"].forEach(function (s, i) {
       intro.from(s, { opacity: 0, duration: PASO, ease: "steps(2)" }, 1.452 + i * PASO * 0.5);
     });
+    intro.from(".dial .bisel__ventana", { opacity: 0, duration: PASO, ease: "steps(2)" }, 1.936);
     intro.from(D.frag, { opacity: 0, duration: PASO, ease: "steps(2)" }, 1.936);
     intro.fromTo(D.partes.indice, { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: PASO, ease: "back.out(3)" }, 1.936);
 
-    // 5 · propósito y ficha se abren por filas
     var filas = esMovil
       ? [[celdaProp], [celdasFicha[0], celdasFicha[1]], [celdasFicha[2], celdasFicha[3]], celdasLectMovil]
       : [[celdaProp, celdasFicha[0], celdasFicha[1]], [celdasFicha[2], celdasFicha[3]]];
@@ -237,10 +233,6 @@
       intro.fromTo(f, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: PASO * 2, ease: "power2.inOut" }, 1.936 + i * PASO);
     });
 
-    // 6 · arranca el secuenciador
-    intro.call(function () { Reticula.secuenciador.preparar(); Reticula.secuenciador.iniciar(); }, null, 2.42);
-
-    // saltar la carga con cualquier scroll o tecla
     function saltar() {
       if (intro.progress() < 1) intro.progress(1);
       ["wheel", "touchstart", "keydown"].forEach(function (ev) { window.removeEventListener(ev, saltar); });
@@ -248,59 +240,129 @@
     ["wheel", "touchstart", "keydown"].forEach(function (ev) { window.addEventListener(ev, saltar, { passive: true }); });
 
     root.classList.remove("js-cargando");
-    var arrancar = function () { intro.play(0); };
+    intro.progress(0).pause();
     var fuentes = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     Promise.race([fuentes, new Promise(function (r) { setTimeout(r, 1200); })]).then(function () {
-      requestAnimationFrame(arrancar);
+      requestAnimationFrame(function () { intro.play(0); });
     });
-    // mientras tanto, la escena queda en el estado inicial de la carga
-    intro.progress(0).pause();
 
-    /* ---------------- Encaje (clic mecánico) ---------------- */
-    var encajado = false;
+    /* ---------------- El giro con retenes ---------------- */
+    // el dial se detiene en cada número y salta al siguiente (como una combinación)
+    function reten(x) {
+      var i = Math.floor(x), f = x - i;
+      if (f <= 0.3) return i;
+      if (f >= 0.7) return i + 1;
+      var t = (f - 0.3) / 0.4;
+      return i + t * t * (3 - 2 * t);
+    }
+    var ultimoNumero = 0, enVentana = -1;
+    function girar(u) {
+      var x = reten(u * PASOS);
+      Dial.fijarGiro(R0 + S * x);
+      // el número grande es la ventana del dial, ampliada: muestra qué número cae en la ranura
+      var k = ((Math.round(x - 1) % N) + N) % N + 1;
+      if (k !== enVentana) {
+        enVentana = k;
+        cifras.forEach(function (c) { c.textContent = pad2(k); });
+      }
+      var n = Math.floor(x + 0.5);
+      if (n !== ultimoNumero) {
+        ultimoNumero = n;
+        if (n < PASOS) tic();
+      }
+    }
+    // cada número que pasa por la ranura: un golpe seco del índice
+    function tic() {
+      gsap.fromTo(D.reten, { rotation: 1.2, svgOrigin: "280 280" }, { rotation: 0, svgOrigin: "280 280", duration: 0.18, ease: "power3.out", overwrite: true });
+      gsap.fromTo(D.partes.indice, { scale: 1.25 }, { scale: 1, transformOrigin: "50% 50%", duration: PASO, ease: "power2.out", overwrite: true });
+    }
+
+    /* ---------------- El clic de la cerradura ---------------- */
+    var encajado = false, tlEnc = null;
+    var frag = { a: 0 };
     function encaje(on) {
       if (on === encajado) return;
       encajado = on;
+      if (tlEnc) tlEnc.kill();
+      var L = D.largoAnillo;
       if (on) {
         Dial.marcarActiva(1);
-        Lecturas.fijarN(1, true);
-        gsap.fromTo(D.reten, { rotation: 0.8, svgOrigin: "280 280" }, { rotation: 0, svgOrigin: "280 280", duration: 0.3, ease: "back.out(4)", overwrite: true });
-        gsap.fromTo(D.partes.indice, { scale: 1 }, { scale: 1.45, transformOrigin: "50% 50%", duration: PASO / 2, ease: "power2.out", yoyo: true, repeat: 1, overwrite: true });
-        gsap.fromTo(D.pupila, { opacity: 1 }, { keyframes: { opacity: [1, 0.45, 1, 0.45, 1] }, duration: PASO * 2, ease: "none", overwrite: true });
-        Reticula.secuenciador.resincronizar();
+        tlEnc = gsap.timeline();
+        // el retén: la perilla se pasa y vuelve
+        tlEnc.fromTo(D.reten, { rotation: 4, svgOrigin: "280 280" }, { rotation: 0, svgOrigin: "280 280", duration: 0.45, ease: "back.out(3)" }, 0);
+        tlEnc.fromTo(D.partes.indice, { scale: 1 }, { scale: 1.7, transformOrigin: "50% 50%", duration: PASO / 2, ease: "power2.out", yoyo: true, repeat: 1 }, 0);
+        tlEnc.fromTo(D.partes.ventanaLuz, { opacity: 0.95 }, { opacity: 0, duration: PULSO * 1.5, ease: "power2.in" }, 0);
+        // la luz recorre todo el anillo y se va
+        tlEnc.fromTo(D.luzAnillo, { strokeDashoffset: L }, { strokeDashoffset: 0, duration: PULSO, ease: "power2.inOut" }, 0.04);
+        tlEnc.to(D.luzAnillo, { strokeDashoffset: -L, duration: PULSO, ease: "power2.in" }, 0.04 + PULSO);
+        // el iris, lente del mecanismo, se dilata y se cierra
+        tlEnc.to(D.iris, { scale: 1.5, duration: 0.14, ease: "power2.out" }, 0);
+        tlEnc.to(D.iris, { scale: 0.68, duration: 0.22, ease: "power2.inOut" }, 0.14);
+        tlEnc.to(D.iris, { scale: 1, duration: 0.36, ease: "reten" }, 0.36);
+        // el cilindro de la cerradura cede: gira un cuarto y se asienta en su avance
+        tlEnc.to(D.pupila, { rotation: 90, duration: PASO, ease: "power3.out" }, PASO / 2);
+        tlEnc.to(D.pupila, { rotation: 90 / N, duration: PULSO, ease: "reten" }, PASO * 1.6);
+        // el fragmento avanza un tramo claro hacia la ranura
+        tlEnc.to(frag, { a: 1 / N, duration: PULSO * 1.4, ease: "reten", onUpdate: function () { Dial.fijarAvance(frag.a); } }, PASO);
+        tlEnc.call(function () { Lecturas.fijarN(1, true); }, null, PASO);
+        tlEnc.fromTo(cifras, { color: "#F28C38" }, { color: "#E6EAE4", duration: PULSO * 2, ease: "power2.in" }, 0);
+        // la lectura 01 se abre al compás
+        celdasSemana.forEach(function (c, i) {
+          var k = clips(c);
+          tlEnc.fromTo(c, { clipPath: k.abajo }, { clipPath: k.abierta, duration: PASO * 2, ease: "power2.out" }, PASO * 1.5 + i * PASO / 2);
+        });
       } else {
         Dial.marcarActiva(0);
         Lecturas.fijarN(0, false);
+        tlEnc = gsap.timeline();
+        tlEnc.to(frag, { a: 0, duration: PASO * 2, ease: "power2.out", onUpdate: function () { Dial.fijarAvance(frag.a); } }, 0);
+        tlEnc.to(D.pupila, { rotation: 0, duration: PASO * 2, ease: "power2.out" }, 0);
+        tlEnc.to(D.iris, { scale: 1, duration: PASO }, 0);
+        tlEnc.set(D.luzAnillo, { strokeDashoffset: L }, 0);
+        celdasSemana.slice().reverse().forEach(function (c, i) {
+          tlEnc.to(c, { clipPath: clips(c).abajo, duration: PASO, ease: "power2.in" }, i * PASO / 4);
+        });
       }
     }
 
-    var angEls = $$('[data-lectura="ang"]'), ultimoAng = "";
-    function aplicarGiro(r, a) {
-      var t = Lecturas.pad((((r % 360) + 360) % 360).toFixed(1).replace(".", ","), 5);
-      if (t !== ultimoAng) { ultimoAng = t; angEls.forEach(function (e) { e.textContent = t; }); }
-      Dial.fijarGiro(r);
-      Dial.fijarAvance(a);
-      Lecturas.fijarDistancia(Dial.distancia(a));
-    }
-
-    /* ---------------- Acople del dial a la barra ---------------- */
+    /* ---------------- Pose del dial: en su sitio ↔ acoplado en la barra ----------------
+       El dial sigue a su sitio reservado mientras ese sitio se desplaza, y se encoge
+       dentro de él antes de subir a la barra: nunca tapa contenido. */
+    var fase = { a: 0, b: 0, c: 0 };
+    var escena = $(".escena"), portada = $(".portada"), ranuraSemana = $(".semana__ranura");
     function destinoAcople() {
       var G = Reticula.G;
       var r = $(".ranura").getBoundingClientRect();
-      var s = 36 / (G.S * 440 / 560);
-      return { x: r.left + r.width / 2 - G.cx, y: r.top + r.height / 2 - G.cy, s: s };
+      return { x: r.left + r.width / 2 - G.cx, y: r.top + r.height / 2 - G.cy, s: 40 / (G.S * 600 / 560) };
     }
-    function tlAcople(tl) {
-      tl.to(".dial", {
-        x: function () { return destinoAcople().x; },
-        y: function () { return destinoAcople().y; },
-        scale: function () { return destinoAcople().s; },
-        ease: "none", duration: 1
-      }, 0);
-      tl.to([D.partes.gEtqs, D.partes.gTicks, "#ojo-sup", "#ojo-inf", "#iris", "#pupila", "#hr"], { opacity: 0, ease: "none", duration: 0.5 }, 0);
-      tl.to(Reticula.G.huecos, { attr: { r: 0 }, ease: "none", duration: 0.6 }, 0);
-      return tl;
+    function desfaseCasa(cual) {
+      var G = Reticula.G;
+      if (!G.movil) return escena.getBoundingClientRect().top;
+      if (cual === "a") return portada.getBoundingClientRect().top;
+      return ranuraSemana.getBoundingClientRect().top - G.barra;
     }
+    var irse = gsap.parseEase("power3.in"), encoger = gsap.parseEase("power2.out");
+    var setDial = gsap.quickSetter(".dial", "css");
+    var ultimaPose = "";
+    function pose() {
+      var d = destinoAcople();
+      var t, cual;
+      if (fase.c > 0) { t = fase.c; cual = "c"; }
+      else if (fase.b > 0) { t = 1 - fase.b; cual = "b"; }
+      else { t = fase.a; cual = "a"; }
+      var cy = t >= 1 ? 0 : desfaseCasa(cual);
+      var tp = irse(t), ts = encoger(t);
+      var x = d.x * tp, y = cy + (d.y - cy) * tp, s = 1 + (d.s - 1) * ts;
+      var clave = x.toFixed(1) + "|" + y.toFixed(1) + "|" + s.toFixed(4);
+      if (clave === ultimaPose) return;
+      ultimaPose = clave;
+      setDial({ x: x, y: y, scale: s });
+      var vis = Math.max(0, Math.min(1, 1 - ts * 1.6));
+      gsap.set([D.partes.gEtqs, D.partes.gTicks, D.partes.gEstrias].concat(ojo), { opacity: vis });
+      Reticula.G.huecos.forEach(function (h) { h.setAttribute("r", (Reticula.G.hueco * (1 - ts)).toFixed(1)); });
+      Reticula.G.huecos.forEach(function (h) { h.setAttribute("cy", (Reticula.G.cy + y).toFixed(1)); });
+    }
+    function fijarFase(k) { return function (st) { fase[k] = st.progress; pose(); }; }
 
     /* ---------------- Transición: se monta al terminar la carga ---------------- */
     var mm = null;
@@ -311,101 +373,82 @@
 
       mm.add("(min-width: 900px)", function () {
         root.classList.add("con-escena");
-        var p = { r: Dial.R(0), a: 0 };
-        var cerrar = celdasNombre.concat([celdaProp], celdasFicha);
+        var G = 8.6;                                  // el giro ocupa 8,6 de 10
+        var giro = { u: 0 };
         var tl = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
-            id: "escena",
-            trigger: ".escena",
-            start: "top top",
-            end: "+=160%",
-            pin: true,
-            scrub: true,
-            anticipatePin: 1,
-            onUpdate: function (st) { encaje(st.progress >= 0.6); }
+            id: "escena", trigger: ".escena", start: "top top", end: "+=130%",
+            pin: true, scrub: true, anticipatePin: 1,
+            onUpdate: function (st) { encaje(st.progress >= 0.86); }
           }
         });
-        cerrar.forEach(function (c, i) {
+        tl.fromTo(giro, { u: 0 }, { u: 1, duration: G, onUpdate: function () { girar(giro.u); } }, 0);
+        // cada número que pasa por la ranura cierra una celda de la portada;
+        // al irse el nombre, su sitio lo toma la ventana ampliada del dial
+        var paso = G / PASOS, dur = paso * 0.42;
+        var plan = [0.3, 1.1, 1.9, 2.7];                       // nombre (4 celdas)
+        celdasNombre.forEach(function (c, i) {
           var k = clips(c);
-          tl.fromTo(c, { clipPath: k.abierta }, { clipPath: k.arriba, duration: 0.6, ease: "power2.inOut" }, i * 0.3);
+          tl.fromTo(c, { clipPath: k.abierta }, { clipPath: k.arriba, duration: dur, ease: "power2.inOut" }, paso * plan[i]);
         });
-        var tr = $(".transito");
-        tl.fromTo(tr, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power2.inOut" }, 2.1);
-        tl.to(tr, { clipPath: "inset(0% 0% 100% 0%)", duration: 0.6, ease: "power2.inOut" }, 6.3);
-        tl.fromTo(".hilo--ficha", { scaleX: 1 }, { scaleX: 0, transformOrigin: "100% 50%", duration: 0.6, ease: "power2.inOut" }, 2.4);
-        tl.fromTo(p, { r: Dial.R(0), a: 0 }, {
-          r: Dial.R(1), a: 1 / N, duration: 4,
-          onUpdate: function () { aplicarGiro(p.r, p.a); }
-        }, 2);
-        celdasSemana.forEach(function (c, i) {
+        celdasNumero.forEach(function (c, i) {
           var k = clips(c);
-          tl.fromTo(c, { clipPath: k.abajo }, { clipPath: k.abierta, duration: 0.6, ease: "power2.inOut" }, 6.5 + i * 0.3);
+          tl.fromTo(c, { clipPath: k.abajo }, { clipPath: k.abierta, duration: dur, ease: "power2.inOut" }, paso * (3.4 + i * 0.4));
         });
-        tl.to({}, { duration: 0.5 }, 9.5);
+        [celdaProp].concat(celdasFicha).forEach(function (c, i) {
+          var k = clips(c);
+          tl.fromTo(c, { clipPath: k.abierta }, { clipPath: k.arriba, duration: dur, ease: "power2.inOut" }, paso * (4.6 + i * 1.1));
+        });
+        tl.fromTo(".hilo--ficha", { scaleX: 1 }, { scaleX: 0, transformOrigin: "100% 50%", duration: dur, ease: "power2.inOut" }, paso * 9.6);
+        tl.to({}, { duration: 10 - G }, G);
 
-        var acople = tlAcople(gsap.timeline({
-          scrollTrigger: { trigger: ".semana__cuerpo", pinnedContainer: ".escena", start: "top bottom", end: "top 35%", scrub: true, invalidateOnRefresh: true }
-        }));
+        ScrollTrigger.create({
+          trigger: ".semana__cuerpo", pinnedContainer: ".escena", start: "top bottom", end: "top 35%",
+          onUpdate: fijarFase("c"), onRefresh: fijarFase("c")
+        });
         Giro.observar(".escena");
 
         return function () {
           root.classList.remove("con-escena");
-          encaje(false);
-          aplicarGiro(Dial.R(0), 0);
+          encaje(false); girar(0);
+          fase.c = 0; pose();
         };
       });
 
       mm.add("(max-width: 899px)", function () {
-        var cab = function () { return Reticula.G.cabezal; };
-        var p = { r: Dial.R(0), a: 0 };
-
-        // las filas de la portada se recogen hacia el cabezal
-        var filasM = [[celdasNombre[0], celdasNombre[1]], [celdasNombre[2], celdasNombre[3]], [celdaProp],
-                      [celdasFicha[0], celdasFicha[1]], [celdasFicha[2], celdasFicha[3]], celdasLectMovil];
-        filasM.forEach(function (f) {
-          var k = clips(f[0]);
-          gsap.fromTo(f, { clipPath: k.abierta }, {
-            clipPath: k.arriba, ease: "power2.in",
-            scrollTrigger: { trigger: f[0], start: function () { return "top top+=" + cab(); }, end: function () { return "bottom top+=" + cab(); }, scrub: true, invalidateOnRefresh: true }
-          });
+        var giro = { u: 0 };
+        // 1 · al empezar a bajar, el dial se acopla a la barra (no tapa la portada)
+        ScrollTrigger.create({ start: 0, end: function () { return Reticula.G.S * 0.8; }, onUpdate: fijarFase("a"), onRefresh: fijarFase("a") });
+        // 2 · vuelve a su ranura en la cabecera de la semana
+        ScrollTrigger.create({
+          trigger: ".semana__cabecera", start: "top bottom", end: function () { return "top " + Reticula.G.barra + "px"; },
+          onUpdate: fijarFase("b"), onRefresh: fijarFase("b")
         });
-
-        // el dial gira mientras la lectura 01 entra; encaja al llegar
-        gsap.fromTo(p, { r: Dial.R(0), a: 0 }, {
-          r: Dial.R(1), a: 1 / N, ease: "none",
-          onUpdate: function () { aplicarGiro(p.r, p.a); },
-          scrollTrigger: {
-            trigger: ".semana__cabecera", start: "top bottom", end: "top 62%", scrub: true,
-            onUpdate: function (st) { encaje(st.progress >= 0.98); }
-          }
+        // 3 · gira y hace clic mientras la cabecera se queda quieta
+        var pin = ScrollTrigger.create({
+          id: "escena", trigger: ".semana__cabecera", start: function () { return "top " + Reticula.G.barra + "px"; }, end: "+=90%",
+          pin: true, scrub: true,
+          animation: gsap.timeline()
+            .fromTo(giro, { u: 0 }, { u: 1, duration: 0.86, ease: "none", onUpdate: function () { girar(giro.u); } }, 0)
+            .fromTo(celdasNumero, { clipPath: clips(celdasNumero[0]).abajo }, { clipPath: clips(celdasNumero[0]).abierta, duration: 0.08, ease: "power2.out" }, 0)
+            .to({}, { duration: 0.14 }, 0.86),
+          onUpdate: function (st) { encaje(st.progress >= 0.86); }
         });
-
-        // las celdas de la semana 01 se abren desde abajo
-        celdasSemana.forEach(function (c) {
-          if (!c.offsetParent) return;
-          var k = clips(c);
-          gsap.fromTo(c, { clipPath: k.abajo }, {
-            clipPath: k.abierta, ease: "power2.out",
-            scrollTrigger: { trigger: c, start: "top bottom", end: "top 78%", scrub: true }
-          });
+        // 4 · se acopla de nuevo para leer
+        ScrollTrigger.create({
+          start: function () { return pin.end; }, end: function () { return pin.end + Reticula.G.S * 0.8; },
+          onUpdate: fijarFase("c"), onRefresh: fijarFase("c")
         });
-
-        // acople: el cabezal se recoge a la barra y el dial va a su ranura
-        var acople = tlAcople(gsap.timeline({
-          scrollTrigger: { trigger: ".semana__cabecera", start: "top 50%", end: "top 8%", scrub: true, invalidateOnRefresh: true }
-        }));
-        acople.to(".cabezal__fondo", { scaleY: function () { return Reticula.G.barra / Reticula.G.cabezal; }, ease: "none", duration: 1 }, 0);
-        acople.to(".cabezal__lineas", { opacity: 0, ease: "none", duration: 0.4 }, 0);
         Giro.observar(null);
 
-        return function () { encaje(false); aplicarGiro(Dial.R(0), 0); };
+        return function () { encaje(false); girar(0); fase.a = fase.b = fase.c = 0; pose(); };
       });
 
       ScrollTrigger.refresh();
     }
 
-    /* Saltar a la semana: al final del pin, no al principio de la escena */
+    /* Saltar a la semana: al final del giro */
     $(".saltar").addEventListener("click", function (e) {
       var st = ScrollTrigger.getById("escena");
       if (!st) return;
@@ -415,9 +458,7 @@
       $("#semana-01").focus({ preventScroll: true });
     });
 
-    /* Redimensionar: se vuelve a medir la retícula */
     var t, anchoPrevio = root.clientWidth;
-    ScrollTrigger.config({ ignoreMobileResize: true });
     window.addEventListener("resize", function () {
       clearTimeout(t);
       t = setTimeout(function () {
@@ -425,7 +466,7 @@
         anchoPrevio = root.clientWidth;
         Reticula.medir();
         Reticula.dibujar();
-        Reticula.secuenciador.preparar();
+        ultimaPose = "";
         ScrollTrigger.refresh();
       }, 180);
     });

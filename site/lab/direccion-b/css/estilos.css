@@ -166,7 +166,13 @@ button { font: inherit; color: inherit; }
   border-left: 1px solid var(--reticula);
 }
 .lecturas__celda:last-of-type { border-right: 1px solid var(--reticula); }
-.lecturas__celda--fin { justify-content: space-between; padding-right: 2px; }
+.lecturas__celda--fin { justify-content: flex-end; padding-right: 2px; }
+.lecturas__celda--comb { grid-column: 2 / 4; }
+.comb { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+.comb__ns { display: inline-flex; gap: 10px; }
+.comb__n { color: var(--lectura); }
+.comb__n.marcado { color: var(--luz); }
+.comb__corta { display: none; color: var(--tinta); }
 .ranura {
   flex: none;
   width: 36px;
@@ -205,7 +211,7 @@ button { font: inherit; color: inherit; }
   pointer-events: none;
   overflow: visible;
 }
-.reticula line, .cabezal__lineas line { stroke: var(--reticula); stroke-width: 1; shape-rendering: crispEdges; }
+.reticula line { stroke: var(--reticula); stroke-width: 1; shape-rendering: crispEdges; }
 
 .hilo {
   position: absolute;
@@ -231,25 +237,6 @@ button { font: inherit; color: inherit; }
 }
 .lecturas__nodos .nodo { top: -2px; }
 
-.secuenciador {
-  position: absolute;
-  top: -3px;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-  background: var(--luz);
-  opacity: 0;
-  will-change: transform;
-}
-.secuenciador.activo { opacity: 1; }
-.nodo.nodo--tiempo { background: var(--luz); }
-
-/* ==========================================================================
-   Cabezal móvil
-   ========================================================================== */
-.cabezal { display: none; }
-
 /* ==========================================================================
    Dial
    ========================================================================== */
@@ -261,8 +248,8 @@ button { font: inherit; color: inherit; }
   height: var(--dial-s);
   z-index: 35;
   transform-origin: 50% 50%;
-  will-change: transform;
 }
+.con-inspeccion .dial { cursor: crosshair; }
 .dial .bisel, .dial-estatico .bisel {
   position: absolute;
   inset: 0;
@@ -280,96 +267,62 @@ button { font: inherit; color: inherit; }
 }
 #hr { font-stretch: 100%; }
 
-.bisel__base { fill: none; stroke: var(--reticula); stroke-width: 1; }
+.bisel__banda { fill: none; stroke: var(--panel); stroke-width: 66; }
+.bisel__canto { fill: none; stroke: var(--reticula-2); stroke-width: 1; }
+.bisel__canto--ext { stroke: var(--reticula); }
+.bisel__estria { stroke: var(--reticula-2); stroke-width: 1.2; }
 .bisel__tick { stroke: var(--reticula-2); stroke-width: 1; }
-.bisel__limite { stroke: var(--nodo); stroke-width: 1.5; }
-.bisel__seg { fill: none; stroke: var(--reticula-2); stroke-width: 2; }
-.bisel__seg.activo { stroke: var(--luz); stroke-width: 3; }
+.bisel__mayor { stroke: var(--lectura); stroke-width: 2; }
+.bisel__seg { fill: none; stroke: var(--reticula); stroke-width: 2; }
+.bisel__seg.activo { stroke: var(--luz); stroke-width: 4; }
 .bisel__etq {
-  font-family: var(--f-lectura);
-  letter-spacing: .04em;
-  fill: var(--lectura);
+  font-family: var(--f-texto);
+  font-stretch: 125%;
+  font-weight: 300;
+  letter-spacing: .02em;
+  fill: var(--tinta);
   text-anchor: middle;
   dominant-baseline: central;
   font-variant-numeric: tabular-nums;
 }
-.bisel__etq.activo { fill: var(--luz); }
+.bisel__etq.activo { fill: var(--luz); font-weight: 600; }
+.bisel__ventana { stroke: var(--tinta); stroke-width: 1.5; }
+.bisel__ventana-luz { fill: var(--luz); opacity: 0; }
 .bisel__indice { fill: var(--luz); }
-.bisel__cota { stroke: var(--reticula-2); stroke-width: 1; }
+.anillo-luz { fill: none; stroke-width: 10; pointer-events: none; }
 
 /* ==========================================================================
-   Mira de inspección
+   Inspección del dial
    ========================================================================== */
-.mira { display: none; }
-.con-mira, .con-mira body { cursor: none; }
-.con-mira a, .con-mira button, .con-mira [tabindex]:not([tabindex="-1"]) { cursor: pointer; }
-.con-mira .mira {
-  display: block;
+.inspeccion {
   position: fixed;
-  inset: 0;
+  left: 0; top: 0;
   z-index: 50;
+  display: grid;
+  gap: 2px;
+  max-width: 260px;
+  padding: 8px 10px 9px;
+  background: var(--panel-2);
   pointer-events: none;
   opacity: 0;
+  transition: opacity .12s linear;
 }
-.mira__h, .mira__v {
-  position: absolute;
-  background: var(--reticula-2);
-  will-change: transform;
-}
-.mira__h { left: 0; top: 0; width: 100%; height: 1px; }
-.mira__v { left: 0; top: 0; width: 1px; height: 100%; }
-.mira__punto {
-  position: absolute;
-  left: -3px; top: -3px;
-  width: 6px; height: 6px;
-  background: var(--tinta);
-  will-change: transform;
-}
-.mira__lectura {
-  position: absolute;
-  left: 0; top: 0;
-  padding: 3px 6px;
-  background: var(--campo);
+.inspeccion.visible { opacity: 1; }
+.inspeccion b {
   font-family: var(--f-lectura);
   font-size: .75rem;
-  line-height: 1.3;
+  font-weight: 400;
   letter-spacing: .04em;
   text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
+  color: var(--luz);
+}
+.inspeccion .insp__t {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.25;
   color: var(--tinta);
-  white-space: nowrap;
-  will-change: transform;
 }
-.mira__lectura b { font-weight: 400; color: var(--lectura); }
-.mira__lectura.es-fragmento { color: var(--luz); }
-.mira.sobre-control .mira__h,
-.mira.sobre-control .mira__v,
-.mira.sobre-control .mira__lectura { opacity: 0; }
-
-/* Lectura polar al tocar (táctil) */
-.toque {
-  position: fixed;
-  z-index: 50;
-  left: 0; top: 0;
-  padding: 3px 6px;
-  background: var(--campo);
-  font-family: var(--f-lectura);
-  font-size: .75rem;
-  line-height: 1.3;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  pointer-events: none;
-  outline: 1px solid var(--reticula-2);
-}
-.toque::before {
-  content: "";
-  position: absolute;
-  left: -9px; top: -9px;
-  width: 6px; height: 6px;
-  background: var(--luz);
-}
+.inspeccion i { font-style: normal; font-size: .875rem; color: var(--lectura); }
 
 /* ==========================================================================
    Láminas (portada y cabecera de semana) — escritorio
@@ -416,7 +369,7 @@ main { position: relative; z-index: 1; }
   font-stretch: 62%;
   font-weight: 800;
   font-size: min(clamp(6rem, 16.5vw, 15.5rem), calc((100svh - var(--barra) - var(--fila-inf)) * .46));
-  line-height: .86;
+  line-height: .9;
   letter-spacing: -.015em;
   text-transform: uppercase;
   color: var(--tinta);
@@ -433,7 +386,7 @@ main { position: relative; z-index: 1; }
   margin-left: calc(var(--pad-x) - .035em);
 }
 .celda--b .nombre__palabra { margin-left: calc(var(--pad-x) - .035em - var(--c1)); }
-.nombre__fila + .nombre__fila .celda { margin-top: .04em; }
+.nombre__fila + .nombre__fila .celda { margin-top: .1em; }
 
 /* --- Propósito --- */
 .celda--proposito {
@@ -467,26 +420,6 @@ main { position: relative; z-index: 1; }
 .valor__extra { display: block; color: var(--lectura); font-weight: 400; }
 
 .lecturas-movil { display: none; }
-
-/* --- Lectura en tránsito (solo mientras el dial gira) --- */
-.transito { display: none; }
-.con-escena .transito {
-  display: block;
-  grid-row: 3;
-  grid-column: 1 / 3;
-  clip-path: inset(100% 0% 0% 0%);
-}
-.transito__valor {
-  margin: 6px 0 4px -.04em;
-  font-stretch: 125%;
-  font-weight: 150;
-  font-size: min(7.5rem, calc(var(--fila-inf) * .44));
-  line-height: 1;
-  letter-spacing: -.03em;
-  font-variant-numeric: tabular-nums;
-}
-.transito__grado { color: var(--lectura); }
-.transito__meta { color: var(--tinta); }
 
 /* --- Cabecera de semana --- */
 .semana { position: relative; outline: none; }
@@ -562,6 +495,7 @@ main { position: relative; z-index: 1; }
 .reflexion.pendiente { display: inline-block; margin-left: 6px; }
 
 .dial-estatico { display: none; }
+.semana__ranura { display: contents; }
 
 /* ==========================================================================
    Cuerpo de la semana
@@ -619,8 +553,11 @@ main { position: relative; z-index: 1; }
   position: relative;
   grid-column: 2 / 5;
   grid-row: 1 / 3;
-  min-height: clamp(220px, 30vw, 380px);
-  padding: 28px var(--pad-x) 32px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: clamp(220px, 24vw, 320px);
+  padding: 36px 32px 48px 28px;
   overflow: hidden;
   isolation: isolate;
 }
@@ -646,6 +583,7 @@ main { position: relative; z-index: 1; }
 .giro.inundado .giro__frase { color: var(--campo); }
 .giro__frase .letra { display: inline-block; font-variation-settings: "wdth" var(--w, 100); }
 .giro__frase .palabra { display: inline-block; white-space: nowrap; }
+.giro__frase .linea { display: block; white-space: nowrap; }
 .giro.inundado .giro__frase.pendiente {
   color: var(--campo) !important;
   outline-color: var(--campo);
@@ -736,7 +674,6 @@ main { position: relative; z-index: 1; }
   height: var(--dial-s);
   pointer-events: none;
 }
-.sin-movimiento .secuenciador { display: none; }
 
 /* ==========================================================================
    Móvil y tableta (< 900 px)
@@ -744,27 +681,10 @@ main { position: relative; z-index: 1; }
 @media (max-width: 899px) {
   .lecturas { grid-template-columns: var(--c1) var(--c2); }
   .lecturas__celda--escritorio { display: none; }
-  .lecturas__celda--lectura { justify-content: space-between; padding-right: 6px; gap: 6px; }
-  .lecturas .lectura { white-space: nowrap; }
-  .lecturas__celda--lectura .ranura { order: 2; }
-  .lecturas__celda:nth-child(2) { border-right: 1px solid var(--reticula); }
-
-  .cabezal {
-    display: block;
-    position: fixed;
-    inset: 0 0 auto 0;
-    height: var(--cabezal);
-    z-index: 15;
-    pointer-events: none;
-  }
-  .cabezal__fondo {
-    position: absolute;
-    inset: 0;
-    background: var(--campo);
-    border-bottom: 1px solid var(--reticula);
-    transform-origin: 50% 0;
-  }
-  .cabezal__lineas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .lecturas__celda--comb { grid-column: 2; justify-content: space-between; padding-right: 6px; gap: 6px; border-right: 1px solid var(--reticula); }
+  .lecturas__celda--comb .ranura { order: 2; }
+  .comb__ns { display: none; }
+  .comb__corta { display: inline; }
 
   .lamina {
     display: grid;
@@ -846,10 +766,13 @@ main { position: relative; z-index: 1; }
   .siguiente .lectura, .siguiente__titulo, .siguiente__nota { grid-column: 1 / 3; }
   .siguiente__titulo { padding-top: 8px; }
 
-  .sin-movimiento .cabezal { position: absolute; }
-  .sin-movimiento .cabezal__fondo { display: none; }
-  .sin-movimiento .semana__cabecera { padding-top: calc(var(--dial-s) + 24px); }
-  .sin-movimiento .dial-estatico { top: 12px; }
+  .semana__ranura {
+    display: block;
+    position: relative;
+    grid-column: 1 / 3;
+    height: calc(var(--dial-s) + 16px);
+  }
+  .sin-movimiento .semana__ranura .dial-estatico { left: calc(50% - var(--dial-s) / 2); top: 8px; }
 }
 
 /* ==========================================================================
@@ -863,7 +786,7 @@ main { position: relative; z-index: 1; }
     --pendiente-borde: #888;
   }
   html, body { background: #fff !important; color: #000; }
-  .reticula, .mira, .cabezal, .secuenciador, .saltar, .movimiento, .giro__control, .toque, .ranura, .transito { display: none !important; }
+  .reticula, .inspeccion, .saltar, .movimiento, .giro__control, .ranura, .semana__ranura, .anillo-luz { display: none !important; }
   .lecturas { position: static; height: auto; border-bottom: 1px solid #bbb; }
   .lecturas__celda--escritorio { display: flex !important; }
   .escena, .lamina, .portada, .semana__cabecera { position: relative !important; height: auto !important; min-height: 0 !important; transform: none !important; }
