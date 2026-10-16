@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es-CO" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>FRAGMENTO.EXE · Heiner Rincón</title>
+  <meta name="description" content="Bitácora semanal de Heiner Rincón para Proyecto de Desarrollo Personal I. Prototipo de la dirección A, «Sala de observación».">
+  <meta name="theme-color" content="#0D0F12">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%230D0F12'/%3E%3Cpath d='M 326.9 140.8 A 140 140 0 1 1 247.9 68.4' fill='none' stroke='%23ECE5D3' stroke-width='26'/%3E%3Cpath d='M 247.9 68.4 A 140 140 0 0 1 326.9 140.8' transform='translate(30,-30)' fill='none' stroke='%23F28C38' stroke-width='26'/%3E%3Ccircle cx='200' cy='190' r='26' fill='%23F28C38'/%3E%3C/svg%3E">
+  <script>
+    (function (d) {
+      d.classList.replace('no-js', 'js');
+      // Estado previo a la entrada (solo con movimiento). Seguro: si el JS falla, todo se ve a los 4 s.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        d.classList.add('precarga');
+        setTimeout(function () { d.classList.remove('precarga'); }, 4000);
+      }
+    })(document.documentElement);
+  </script>
+
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=zodiak@1&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Martian+Mono:wdth,wght@75..112.5,300..500&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.css">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="saltar" href="#semana-01">Saltar a la semana 01</a>
+
+  <!-- Claqueta: el hilo persistente (marca, escena actual de N y el mini-símbolo que mide el avance) -->
+  <nav class="claqueta" aria-label="Escenas de la bitácora">
+    <a class="claqueta__marca" href="#portada" data-campo="proyecto"></a>
+    <p class="claqueta__centro" data-campo="ficha"></p>
+    <p class="claqueta__escena">
+      <svg class="mini" viewBox="-20 -60 460 460" aria-hidden="true" focusable="false">
+        <path id="mini-anillo" d="M 326.9 140.8 A 140 140 0 1 1 247.9 68.4" fill="none" stroke="#ECE5D3" stroke-width="30"/>
+        <g id="mini-fragmento" transform="translate(30,-30)">
+          <path d="M 247.9 68.4 A 140 140 0 0 1 326.9 140.8" fill="none" stroke="#F28C38" stroke-width="30"/>
+        </g>
+      </svg>
+      <span class="claqueta__contador"><span class="sr-only">Escena actual: </span>Escena <span class="claqueta__k">00</span><span class="claqueta__sep"> / </span><span class="claqueta__n">00</span></span>
+    </p>
+  </nav>
+
+  <canvas class="particulas" aria-hidden="true"></canvas>
+  <div class="corte" aria-hidden="true"></div>
+  <div class="grano" aria-hidden="true"></div>
+
+  <main id="contenido">
+    <header class="portada" id="portada">
+      <div class="portada__fondo" aria-hidden="true"><div class="portada__luz"></div></div>
+
+      <h1 class="portada__nombre">
+        <span class="nombre__linea nombre__linea--a"><span class="nombre__txt" data-campo="nombre-1"></span></span>
+        <span class="nombre__linea nombre__linea--b"><span class="nombre__txt" data-campo="nombre-2"></span></span>
+        <span class="sr-only" data-campo="h1-sufijo"></span>
+      </h1>
+
+      <div class="simbolo">
+        <div class="simbolo__mover">
+          <div class="simbolo__zoom">
+            <svg class="simbolo__svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Símbolo HR: círculo abierto con un ojo de pupila en cerradura y el fragmento faltante flotando afuera">
+              <!-- Marco de la cerradura: cubre la sala salvo el hueco de la pupila (solo visible durante la transición) -->
+              <path class="marco" fill-rule="evenodd" d="M -20000 -20000 H 20400 V 20400 H -20000 Z M 204.377 196.697 L 208 213 L 192 213 L 195.623 196.697 A 8 8 0 1 1 204.377 196.697 Z" fill="#050506"/>
+              <path id="anillo" d="M 326.9 140.8 A 140 140 0 1 1 247.9 68.4" fill="none" stroke="#ECE5D3" stroke-width="10"/>
+              <path id="ojo-sup" d="M 112 196 Q 200 116 288 196" fill="none" stroke="#ECE5D3" stroke-width="5" stroke-linecap="round"/>
+              <path id="ojo-inf" d="M 112 196 Q 200 276 288 196" fill="none" stroke="#ECE5D3" stroke-width="5" stroke-linecap="round"/>
+              <circle id="iris" cx="200" cy="196" r="30" fill="none" stroke="#4F8EF7" stroke-width="4"/>
+              <g id="pupila" fill="#F28C38">
+                <circle cx="200" cy="190" r="8"/>
+                <polygon points="196,195 204,195 208,213 192,213"/>
+              </g>
+              <path class="borde" d="M 204.377 196.697 L 208 213 L 192 213 L 195.623 196.697 A 8 8 0 1 1 204.377 196.697 Z" fill="none" stroke="#F28C38" stroke-width="2"/>
+              <text id="hr" x="205" y="300" text-anchor="middle" fill="#ECE5D3" font-family="'Zodiak', 'Times New Roman', serif" font-weight="500" font-size="40" letter-spacing="10">HR</text>
+              <g class="flota">
+                <g id="fragmento" transform="translate(30,-30)">
+                  <path d="M 247.9 68.4 A 140 140 0 0 1 326.9 140.8" fill="none" stroke="#F28C38" stroke-width="10"/>
+                  <g id="bits">
+                    <polygon points="275,122 272.5,126.3 267.5,126.3 265,122 267.5,117.7 272.5,117.7" fill="none" stroke="#3DBE8B" stroke-width="2"/>
+                    <rect x="286" y="136" width="6" height="6" fill="#4F8EF7"/>
+                    <polygon points="252,108 262,111 256,119" fill="#F28C38" opacity="0.6"/>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <p class="portada__proposito" data-campo="proposito"></p>
+
+      <dl class="creditos">
+        <div class="creditos__celda">
+          <dt>Autor</dt>
+          <dd data-campo="nombre"></dd>
+        </div>
+        <div class="creditos__celda">
+          <dt>Código</dt>
+          <dd class="creditos__codigo" data-campo="codigo"></dd>
+        </div>
+        <div class="creditos__celda">
+          <dt>Programa</dt>
+          <dd><span data-campo="programa"></span><span class="creditos__extra" data-campo="semestre"></span></dd>
+        </div>
+        <div class="creditos__celda">
+          <dt>Materia</dt>
+          <dd><span data-campo="materia"></span><span class="creditos__extra creditos__periodo" data-campo="periodo"></span></dd>
+        </div>
+      </dl>
+
+      <a class="portada__bajar" href="#semana-01">
+        <span class="bajar__texto">Desliza para entrar</span>
+        <span class="bajar__barra" aria-hidden="true"><span class="bajar__lleno"></span></span>
+      </a>
+
+      <noscript>
+        <p class="sinjs">Esta bitácora necesita JavaScript para pintar sus textos. Heiner Danit Rincón Carrillo · A00402510 · Ingeniería de Sistemas · Proyecto de Desarrollo Personal I · 2026-2.</p>
+      </noscript>
+    </header>
+
+    <!-- Las semanas se pintan desde js/datos.js (window.BITACORA) -->
+    <div class="semanas" data-semanas></div>
+
+    <footer class="pie">
+      <p data-campo="pie"></p>
+    </footer>
+  </main>
+
+  <script defer src="js/datos.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomEase.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+  <script defer src="js/particulas.js"></script>
+  <script defer src="js/descifrado.js"></script>
+  <script defer src="js/cursor-ojo.js"></script>
+  <script defer src="js/principal.js"></script>
+</body>
+</html>
