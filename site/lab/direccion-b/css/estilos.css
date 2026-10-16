@@ -1,0 +1,877 @@
+/* ==========================================================================
+   FRAGMENTO.EXE · Dirección B · "Sistema vivo"
+   Instrumento de medición calibrado: retícula fija, dial que gira, lecturas reales.
+   Las medidas de la retícula (--x0…--x4, --c1…--c4, --dial-*) las calcula js/reticula.js;
+   aquí hay valores de respaldo equivalentes para el primer pintado.
+   ========================================================================== */
+
+:root {
+  --campo: #0C1F2C;
+  --panel: #12293A;
+  --panel-2: #183447;
+  --tinta: #E6EAE4;
+  --lectura: #9FB3BF;
+  --luz: #F28C38;
+  --senal: #3DBE8B;
+  --iris-texto: #7FB0FF;
+  --reticula: rgba(230, 234, 228, .16);
+  --reticula-2: rgba(230, 234, 228, .32);
+  --nodo: rgba(230, 234, 228, .55);
+  --pendiente-borde: #647884;
+
+  --f-texto: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-lectura: "Fragment Mono", ui-monospace, Menlo, monospace;
+
+  /* Retícula (respaldo para 1440 × 900; js/reticula.js los reescribe en px) */
+  --m: 32px;
+  --barra: 56px;
+  --fila-inf: clamp(220px, 29svh, 260px);
+  --x0: 32px; --x1: 371px; --x2: 720px; --x3: 1069px; --x4: 1408px;
+  --c1: calc((100vw - 64px) * .2464);
+  --c2: calc((100vw - 64px) * .2536);
+  --c3: calc((100vw - 64px) * .2536);
+  --c4: calc((100vw - 64px) * .2464);
+  --dial-s: 560px;
+  --dial-cx: 1069px;
+  --dial-cy: 348px;
+  --cabezal: 420px;
+
+  --pad-x: 10px;   /* desde la hairline izquierda */
+  --pad-y: 20px;   /* desde la hairline superior */
+}
+
+@media (max-width: 899px) {
+  :root {
+    --m: 16px;
+    --barra: 48px;
+    --c1: calc((100vw - 32px) / 2);
+    --c2: calc((100vw - 32px) / 2);
+  }
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  overflow-x: clip;
+  background: var(--campo);
+  color: var(--tinta);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--campo);
+  color: var(--tinta);
+  font-family: var(--f-texto);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, p, dl, dd, figure { margin: 0; }
+button { font: inherit; color: inherit; }
+::selection { background: var(--luz); color: var(--campo); }
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--luz);
+  outline-offset: 3px;
+  border-radius: 0;
+}
+
+.solo-lector {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.saltar {
+  position: fixed;
+  left: var(--m);
+  top: 8px;
+  z-index: 60;
+  padding: 10px 12px;
+  background: var(--luz);
+  color: var(--campo);
+  font-family: var(--f-lectura);
+  font-size: .75rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 16px));
+}
+.saltar:focus-visible { transform: none; outline-color: var(--tinta); }
+
+.sin-js {
+  position: relative;
+  z-index: 40;
+  margin: 120px var(--m);
+  max-width: 40ch;
+  font-size: 1.125rem;
+}
+
+/* ---------- Voz del instrumento: lecturas ---------- */
+.lectura,
+.rotulo {
+  font-family: var(--f-lectura);
+  font-size: .75rem;
+  line-height: 1.3;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta);
+}
+.lectura__rotulo, .rotulo { color: var(--lectura); }
+.lectura--luz { color: var(--luz); }
+.lectura__valor { white-space: nowrap; }
+
+/* ---------- Marcador [PENDIENTE] (común a las dos direcciones) ---------- */
+.pendiente {
+  outline: 1px dashed var(--pendiente-borde);
+  outline-offset: 6px;
+  border-radius: 2px;
+  color: var(--lectura) !important;
+  font-family: var(--f-texto) !important;
+  font-stretch: 100% !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+/* ==========================================================================
+   Barra de lecturas (fija)
+   ========================================================================== */
+.lecturas {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 30;
+  height: var(--barra);
+  display: grid;
+  grid-template-columns: var(--c1) var(--c2) var(--c3) var(--c4);
+  padding-inline: var(--m);
+  background: var(--campo);
+  border-bottom: 1px solid var(--reticula);
+}
+.lecturas__celda {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding-left: var(--pad-x);
+  border-left: 1px solid var(--reticula);
+}
+.lecturas__celda:last-of-type { border-right: 1px solid var(--reticula); }
+.lecturas__celda--fin { justify-content: space-between; padding-right: 2px; }
+.ranura {
+  flex: none;
+  width: 36px;
+  height: 36px;
+}
+.lecturas__nodos { position: absolute; inset: auto 0 -1px 0; height: 1px; pointer-events: none; }
+
+.movimiento {
+  min-height: 44px;
+  padding: 0 8px;
+  margin-right: -2px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--f-lectura);
+  font-size: .75rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--lectura);
+  white-space: nowrap;
+}
+.movimiento__estado { color: var(--tinta); }
+.movimiento:hover .movimiento__estado { color: var(--luz); }
+.movimiento[aria-pressed="false"] .movimiento__estado { color: var(--lectura); }
+
+/* ==========================================================================
+   Retícula fija + nodos
+   ========================================================================== */
+.reticula {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.reticula line, .cabezal__lineas line { stroke: var(--reticula); stroke-width: 1; shape-rendering: crispEdges; }
+
+.hilo {
+  position: absolute;
+  height: 1px;
+  background: var(--reticula);
+  pointer-events: none;
+  transform-origin: 0 50%;
+}
+.nodo {
+  position: absolute;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  background: var(--nodo);
+}
+.nodo--menor {
+  top: -1px;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  background: var(--reticula-2);
+}
+.lecturas__nodos .nodo { top: -2px; }
+
+.secuenciador {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  background: var(--luz);
+  opacity: 0;
+  will-change: transform;
+}
+.secuenciador.activo { opacity: 1; }
+.nodo.nodo--tiempo { background: var(--luz); }
+
+/* ==========================================================================
+   Cabezal móvil
+   ========================================================================== */
+.cabezal { display: none; }
+
+/* ==========================================================================
+   Dial
+   ========================================================================== */
+.dial {
+  position: fixed;
+  left: calc(var(--dial-cx) - var(--dial-s) / 2);
+  top: calc(var(--dial-cy) - var(--dial-s) / 2);
+  width: var(--dial-s);
+  height: var(--dial-s);
+  z-index: 35;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.dial .bisel, .dial-estatico .bisel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.dial .simbolo, .dial-estatico .simbolo {
+  position: absolute;
+  left: 14.2857%;
+  top: 14.2857%;
+  width: 71.4286%;
+  height: 71.4286%;
+  overflow: visible;
+}
+#hr { font-stretch: 100%; }
+
+.bisel__base { fill: none; stroke: var(--reticula); stroke-width: 1; }
+.bisel__tick { stroke: var(--reticula-2); stroke-width: 1; }
+.bisel__limite { stroke: var(--nodo); stroke-width: 1.5; }
+.bisel__seg { fill: none; stroke: var(--reticula-2); stroke-width: 2; }
+.bisel__seg.activo { stroke: var(--luz); stroke-width: 3; }
+.bisel__etq {
+  font-family: var(--f-lectura);
+  letter-spacing: .04em;
+  fill: var(--lectura);
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-variant-numeric: tabular-nums;
+}
+.bisel__etq.activo { fill: var(--luz); }
+.bisel__indice { fill: var(--luz); }
+.bisel__cota { stroke: var(--reticula-2); stroke-width: 1; }
+
+/* ==========================================================================
+   Mira de inspección
+   ========================================================================== */
+.mira { display: none; }
+.con-mira, .con-mira body { cursor: none; }
+.con-mira a, .con-mira button, .con-mira [tabindex]:not([tabindex="-1"]) { cursor: pointer; }
+.con-mira .mira {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+}
+.mira__h, .mira__v {
+  position: absolute;
+  background: var(--reticula-2);
+  will-change: transform;
+}
+.mira__h { left: 0; top: 0; width: 100%; height: 1px; }
+.mira__v { left: 0; top: 0; width: 1px; height: 100%; }
+.mira__punto {
+  position: absolute;
+  left: -3px; top: -3px;
+  width: 6px; height: 6px;
+  background: var(--tinta);
+  will-change: transform;
+}
+.mira__lectura {
+  position: absolute;
+  left: 0; top: 0;
+  padding: 3px 6px;
+  background: var(--campo);
+  font-family: var(--f-lectura);
+  font-size: .75rem;
+  line-height: 1.3;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta);
+  white-space: nowrap;
+  will-change: transform;
+}
+.mira__lectura b { font-weight: 400; color: var(--lectura); }
+.mira__lectura.es-fragmento { color: var(--luz); }
+.mira.sobre-control .mira__h,
+.mira.sobre-control .mira__v,
+.mira.sobre-control .mira__lectura { opacity: 0; }
+
+/* Lectura polar al tocar (táctil) */
+.toque {
+  position: fixed;
+  z-index: 50;
+  left: 0; top: 0;
+  padding: 3px 6px;
+  background: var(--campo);
+  font-family: var(--f-lectura);
+  font-size: .75rem;
+  line-height: 1.3;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  outline: 1px solid var(--reticula-2);
+}
+.toque::before {
+  content: "";
+  position: absolute;
+  left: -9px; top: -9px;
+  width: 6px; height: 6px;
+  background: var(--luz);
+}
+
+/* ==========================================================================
+   Láminas (portada y cabecera de semana) — escritorio
+   ========================================================================== */
+main { position: relative; z-index: 1; }
+.escena { position: relative; }
+
+.lamina {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--c1) var(--c2) var(--c3) var(--c4);
+  grid-template-rows: var(--barra) minmax(0, 1fr) var(--fila-inf);
+  height: 100vh;
+  height: 100svh;
+  padding-inline: var(--m);
+}
+
+.celda {
+  position: relative;
+  display: block;
+  min-width: 0;
+  padding: var(--pad-y) var(--pad-x) 0;
+}
+
+.hilo--fila {
+  top: calc(100% - var(--fila-inf));
+  left: var(--x0);
+  width: calc(var(--x4) - var(--x0));
+}
+.hilo--ficha {
+  top: calc(100% - var(--fila-inf) / 2);
+  left: var(--x2);
+  width: calc(var(--x4) - var(--x2));
+}
+
+/* --- Nombre: bloque de afiche, partido por la hairline x1 --- */
+.nombre {
+  grid-row: 2;
+  grid-column: 1 / 3;
+  align-self: center;
+  display: grid;
+  grid-template-columns: var(--c1) var(--c2);
+  font-family: var(--f-texto);
+  font-stretch: 62%;
+  font-weight: 800;
+  font-size: min(clamp(6rem, 16.5vw, 15.5rem), calc((100svh - var(--barra) - var(--fila-inf)) * .46));
+  line-height: .86;
+  letter-spacing: -.015em;
+  text-transform: uppercase;
+  color: var(--tinta);
+  padding-bottom: .04em;
+}
+.nombre__fila { display: contents; }
+.celda--nombre {
+  padding: 0;
+  clip-path: inset(-40% 0 -20% 0);
+}
+.nombre__palabra {
+  display: block;
+  white-space: nowrap;
+  margin-left: calc(var(--pad-x) - .035em);
+}
+.celda--b .nombre__palabra { margin-left: calc(var(--pad-x) - .035em - var(--c1)); }
+.nombre__fila + .nombre__fila .celda { margin-top: .04em; }
+
+/* --- Propósito --- */
+.celda--proposito {
+  grid-row: 3;
+  grid-column: 1 / 3;
+}
+.proposito {
+  font-size: clamp(1.25rem, 1rem + .7vw, 1.625rem);
+  line-height: 1.3;
+  letter-spacing: -.01em;
+  max-width: 34ch;
+  text-wrap: pretty;
+}
+
+/* --- Ficha académica --- */
+.ficha {
+  grid-row: 3;
+  grid-column: 3 / 5;
+  display: grid;
+  grid-template-columns: var(--c3) var(--c4);
+  grid-template-rows: 1fr 1fr;
+}
+.ficha .rotulo { display: block; min-height: 1lh; margin-bottom: 6px; }
+.valor {
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.3;
+  max-width: 24ch;
+}
+.valor--cifra { font-variant-numeric: tabular-nums; }
+.valor__extra { display: block; color: var(--lectura); font-weight: 400; }
+
+.lecturas-movil { display: none; }
+
+/* --- Cabecera de semana --- */
+.semana { position: relative; outline: none; }
+.semana__cabecera {
+  grid-template-rows: var(--barra) calc(100svh - var(--barra) - var(--fila-inf)) minmax(var(--fila-inf), auto);
+  height: auto;
+  min-height: 100svh;
+}
+.numero {
+  grid-row: 2;
+  grid-column: 1 / 3;
+  align-self: end;
+  display: grid;
+  grid-template-columns: var(--c1) var(--c2);
+  font-family: var(--f-texto);
+  font-stretch: 125%;
+  font-weight: 150;
+  font-size: min(clamp(10rem, 30vw, 27rem), calc((100svh - var(--barra) - var(--fila-inf)) * .82));
+  line-height: .78;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta);
+  padding-bottom: 28px;
+}
+.celda--numero { padding: 0; clip-path: inset(-10% 0 -10% 0); }
+.numero__cifra { display: block; white-space: nowrap; margin-left: calc(var(--pad-x) - .06em); }
+.celda--numero.celda--b .numero__cifra { margin-left: calc(var(--pad-x) - .06em - var(--c1)); }
+
+.semana__datos {
+  grid-row: 3;
+  grid-column: 1 / 3;
+}
+.semana__datos .celda + .celda { padding-top: 18px; }
+.estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 28px;
+  row-gap: 14px;
+  margin-top: 8px;
+}
+.estado__grupo { display: inline-flex; align-items: center; gap: 8px; }
+.estado__cuadro {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: var(--lectura);
+}
+.estado__cuadro[data-estado="en-curso"] { background: var(--luz); }
+.estado__cuadro[data-estado="completada"] { background: var(--senal); }
+.estado__fecha.pendiente { margin-left: 6px; font-size: .9375rem; }
+.semana__titulo {
+  font-stretch: 88%;
+  font-weight: 620;
+  font-size: min(clamp(2.125rem, 1rem + 3vw, 3.75rem), calc(var(--fila-inf) * .21));
+  line-height: 1;
+  letter-spacing: -.025em;
+  max-width: 20ch;
+  text-wrap: balance;
+}
+.celda--reflexion {
+  grid-row: 3;
+  grid-column: 3 / 5;
+  background: var(--panel);
+  padding-bottom: 32px;
+}
+.celda--reflexion .rotulo { margin-bottom: 14px; }
+.reflexion {
+  font-size: clamp(1.0625rem, 1rem + .25vw, 1.1875rem);
+  line-height: 1.6;
+  max-width: 66ch;
+  text-wrap: pretty;
+}
+.reflexion.pendiente { display: inline-block; margin-left: 6px; }
+
+.dial-estatico { display: none; }
+
+/* ==========================================================================
+   Cuerpo de la semana
+   ========================================================================== */
+.semana__cuerpo {
+  position: relative;
+  padding: 0 var(--m) 120px;
+}
+.bloque, .giro, .siguiente {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--c1) var(--c2) var(--c3) var(--c4);
+}
+.bloque > .hilo, .giro > .hilo, .siguiente > .hilo { top: 0; left: 0; width: 100%; }
+.bloque__titulo {
+  grid-column: 1 / 3;
+  padding: var(--pad-y) var(--pad-x) 40px;
+  font-stretch: 88%;
+  font-weight: 620;
+  font-size: clamp(1.375rem, 1rem + 1vw, 1.875rem);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.bloque__contenido {
+  grid-column: 3 / 5;
+  padding: var(--pad-y) var(--pad-x) 40px;
+  background: var(--panel);
+  font-size: clamp(1.0625rem, 1rem + .25vw, 1.1875rem);
+  line-height: 1.6;
+}
+.bloque__contenido ul { margin: 0; padding: 0; list-style: none; }
+.bloque__contenido li { display: flex; gap: 14px; align-items: baseline; }
+.bloque__contenido li + li { margin-top: 10px; }
+.bloque__contenido li::before {
+  content: "";
+  flex: none;
+  width: 6px; height: 6px;
+  background: var(--nodo);
+  transform: translateY(-2px);
+}
+.bloque__contenido .pendiente { display: inline-block; margin: 6px; }
+.bloque .rotulo { display: block; margin-bottom: 12px; }
+
+/* --- GIRO: la celda se inunda de luz --- */
+.giro { padding-top: 0; }
+.giro__rotulo {
+  grid-column: 1;
+  grid-row: 1;
+  padding: var(--pad-y) var(--pad-x) 0;
+  color: var(--luz);
+}
+.giro__celda {
+  position: relative;
+  grid-column: 2 / 5;
+  grid-row: 1 / 3;
+  min-height: clamp(220px, 30vw, 380px);
+  padding: 28px var(--pad-x) 32px 24px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.giro__luz {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--luz);
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+}
+.giro.inundado .giro__luz { transform: none; }
+.giro__frase {
+  font-weight: 700;
+  font-stretch: 100%;
+  font-size: clamp(2rem, 1rem + 4vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -.02em;
+  max-width: 18ch;
+  text-wrap: balance;
+  color: var(--tinta);
+}
+.giro.inundado .giro__frase { color: var(--campo); }
+.giro__frase .letra { display: inline-block; font-variation-settings: "wdth" var(--w, 100); }
+.giro__frase .palabra { display: inline-block; white-space: nowrap; }
+.giro.inundado .giro__frase.pendiente {
+  color: var(--campo) !important;
+  outline-color: var(--campo);
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+}
+.giro__frase.pendiente { display: inline-block; margin: 6px; font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
+.giro__muestra { margin-top: 24px; color: var(--campo); }
+.giro__control {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  padding: 24px var(--pad-x) 32px;
+}
+.giro__nota {
+  margin-top: 12px;
+  max-width: 28ch;
+  font-size: .875rem;
+  line-height: 1.45;
+  color: var(--lectura);
+}
+.boton-lectura {
+  min-height: 44px;
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid var(--reticula-2);
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--f-lectura);
+  font-size: .75rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+.boton-lectura:hover { border-color: var(--luz); color: var(--luz); }
+.boton-lectura[aria-pressed="true"] { background: var(--luz); border-color: var(--luz); color: var(--campo); }
+
+/* --- Siguiente lectura --- */
+.siguiente { margin-top: 0; }
+.siguiente .lectura { grid-column: 1; padding: var(--pad-y) var(--pad-x) 0; }
+.siguiente__titulo {
+  grid-column: 2 / 4;
+  padding: var(--pad-y) var(--pad-x) 0;
+  font-stretch: 88%;
+  font-weight: 620;
+  font-size: clamp(1.375rem, 1rem + 1vw, 1.875rem);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: var(--lectura);
+}
+.siguiente__nota {
+  grid-column: 4;
+  padding: var(--pad-y) var(--pad-x) 0;
+  font-size: .875rem;
+  line-height: 1.45;
+  color: var(--lectura);
+  max-width: 30ch;
+}
+
+/* ==========================================================================
+   Modo escena (escritorio con movimiento): la portada y la cabecera
+   comparten la misma lámina; la escena se fija durante la transición.
+   ========================================================================== */
+.con-escena .portada {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+}
+.con-escena .semana__cabecera > .hilo--fila { visibility: hidden; }
+
+/* Estado inicial antes de la carga animada (evita un destello) */
+.js-cargando .escena,
+.js-cargando .dial,
+.js-cargando .lecturas > * { visibility: hidden; }
+
+/* ==========================================================================
+   Sin movimiento (prefers-reduced-motion o MOVIMIENTO [NO]): estado final
+   ========================================================================== */
+.sin-movimiento .dial {
+  position: absolute;
+}
+.sin-movimiento .dial-estatico {
+  display: block;
+  position: absolute;
+  left: calc(var(--dial-cx) - var(--dial-s) / 2);
+  top: calc(var(--dial-cy) - var(--dial-s) / 2);
+  width: var(--dial-s);
+  height: var(--dial-s);
+  pointer-events: none;
+}
+.sin-movimiento .secuenciador { display: none; }
+
+/* ==========================================================================
+   Móvil y tableta (< 900 px)
+   ========================================================================== */
+@media (max-width: 899px) {
+  .lecturas { grid-template-columns: var(--c1) var(--c2); }
+  .lecturas__celda--escritorio { display: none; }
+  .lecturas__celda--lectura { justify-content: space-between; padding-right: 8px; }
+  .lecturas__celda--lectura .ranura { order: 2; }
+  .lecturas__celda:nth-child(2) { border-right: 1px solid var(--reticula); }
+
+  .cabezal {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: var(--cabezal);
+    z-index: 15;
+    pointer-events: none;
+  }
+  .cabezal__fondo {
+    position: absolute;
+    inset: 0;
+    background: var(--campo);
+    border-bottom: 1px solid var(--reticula);
+    transform-origin: 50% 0;
+  }
+  .cabezal__lineas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+  .lamina {
+    display: grid;
+    grid-template-columns: var(--c1) var(--c2);
+    grid-template-rows: none;
+    height: auto;
+    min-height: 0;
+  }
+  .portada { padding-top: var(--cabezal); }
+
+  .hilo--fila, .hilo--ficha { display: none; }
+  .fila-hilo { position: relative; }
+
+  .nombre {
+    grid-row: auto;
+    grid-column: 1 / 3;
+    grid-template-columns: var(--c1) var(--c2);
+    font-size: min(30vw, 11rem);
+    padding: 28px 0 8px;
+  }
+  .celda--proposito {
+    grid-row: auto;
+    grid-column: 1 / 3;
+    padding-bottom: 32px;
+  }
+  .proposito { font-size: 1.25rem; }
+
+  .ficha {
+    grid-row: auto;
+    grid-column: 1 / 3;
+    grid-template-columns: var(--c1) var(--c2);
+    grid-template-rows: auto auto;
+  }
+  .celda--ficha { padding-bottom: 20px; }
+  .valor { font-size: 1rem; }
+
+  .lecturas-movil {
+    display: grid;
+    grid-column: 1 / 3;
+    grid-template-columns: var(--c1) var(--c2);
+  }
+  .lecturas-movil .celda { padding-bottom: 16px; }
+  .lecturas-movil .movimiento { margin: 4px 0 0 -8px; }
+
+  /* Hilos horizontales en flujo (los dibuja reticula.js dentro de [data-fila]) */
+  [data-fila] { position: relative; }
+  [data-fila] > .hilo { top: 0; left: 0; width: 100%; }
+
+  .semana__cabecera {
+    grid-template-rows: none;
+    min-height: 0;
+    padding-top: 0;
+  }
+  .numero {
+    grid-row: auto;
+    grid-column: 1;
+    display: block;
+    font-size: 40vw;
+    padding: var(--pad-y) 0 0;
+    align-self: start;
+  }
+  .numero .celda--b { display: none; }
+  .celda--numero { clip-path: inset(-10% 0 -10% 0); }
+  .numero__cifra { margin-left: calc(var(--pad-x) - .06em); }
+  .semana__datos { display: contents; }
+  .semana__datos .celda:first-child { grid-column: 2; padding-bottom: 24px; }
+  .semana__datos .celda + .celda { grid-column: 1 / 3; padding: var(--pad-y) var(--pad-x) 28px; }
+  .semana__titulo { font-size: 2.125rem; }
+  .estado { flex-direction: column; align-items: flex-start; }
+  .celda--reflexion { grid-row: auto; grid-column: 1 / 3; }
+
+  .semana__cuerpo { padding: 0 var(--m) 96px; }
+  .bloque, .giro, .siguiente { grid-template-columns: var(--c1) var(--c2); }
+  .bloque__titulo, .bloque__contenido { grid-column: 1 / 3; }
+  .bloque__titulo { padding-bottom: 20px; }
+  .giro__rotulo { grid-column: 1 / 3; }
+  .giro__celda { grid-column: 1 / 3; grid-row: 2; margin-top: 14px; min-height: 240px; padding: 22px var(--pad-x) 26px; }
+  .giro__control { grid-column: 1 / 3; grid-row: 3; }
+  .siguiente .lectura, .siguiente__titulo, .siguiente__nota { grid-column: 1 / 3; }
+  .siguiente__titulo { padding-top: 8px; }
+
+  .sin-movimiento .cabezal { position: absolute; }
+  .sin-movimiento .cabezal__fondo { display: none; }
+  .sin-movimiento .semana__cabecera { padding-top: calc(var(--dial-s) + 24px); }
+  .sin-movimiento .dial-estatico { top: 12px; }
+}
+
+/* ==========================================================================
+   Impresión: carta, fondo blanco, tinta negra, una semana por página
+   ========================================================================== */
+@media print {
+  @page { size: letter; margin: 16mm; }
+  :root {
+    --campo: #fff; --panel: #fff; --panel-2: #fff;
+    --tinta: #000; --lectura: #444; --reticula: #bbb; --reticula-2: #999; --nodo: #777;
+    --pendiente-borde: #888;
+  }
+  html, body { background: #fff !important; color: #000; }
+  .reticula, .mira, .cabezal, .secuenciador, .saltar, .movimiento, .giro__control, .toque, .ranura { display: none !important; }
+  .lecturas { position: static; height: auto; border-bottom: 1px solid #bbb; }
+  .lecturas__celda--escritorio { display: flex !important; }
+  .escena, .lamina, .portada, .semana__cabecera { position: relative !important; height: auto !important; min-height: 0 !important; transform: none !important; }
+  .pin-spacer { padding: 0 !important; height: auto !important; }
+  .celda, .celda--nombre, .celda--numero { clip-path: none !important; }
+  .portada { display: grid; grid-template-rows: auto auto auto; padding-top: 24px !important; }
+  .nombre { grid-row: 1; font-size: 96pt !important; color: #000; }
+  .celda--proposito, .ficha { grid-row: 3; }
+  .lecturas-movil { display: none !important; }
+  .dial {
+    position: relative !important;
+    left: auto !important; top: auto !important;
+    width: 300px !important; height: 300px !important;
+    margin: 0 0 0 auto;
+    transform: none !important;
+  }
+  .semana { break-before: page; }
+  .semana__cabecera { display: grid; grid-template-rows: auto auto auto !important; padding-top: 0 !important; }
+  .numero { grid-row: 1; font-size: 120pt !important; padding: 0; }
+  .semana__datos, .celda--reflexion { grid-row: 2 !important; }
+  .dial-estatico { display: none !important; }
+  .hilo--ficha, .semana__cabecera > .hilo--fila, .portada > .hilo--fila { display: none; }
+  .giro__luz { transform: none !important; background: #fff !important; outline: 2px solid #000; }
+  .giro__frase { color: #000 !important; }
+  .siguiente { break-inside: avoid; }
+  .bisel__seg.activo, .bisel__etq.activo, .bisel__indice { stroke: #F28C38; }
+}
+
+/* Hilos en flujo (móvil) */
+@media (max-width: 899px) {
+  .lamina[data-fila] > .hilo--movil { left: var(--m); width: calc(100% - 2 * var(--m)); }
+  .celda--reflexion > .hilo--movil { left: 0; width: 100%; }
+}

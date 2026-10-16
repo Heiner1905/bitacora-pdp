@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es-CO" class="js-cargando">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>FRAGMENTO.EXE · Heiner Rincón</title>
+  <meta name="description" content="Bitácora semanal de Heiner Rincón para Proyecto de Desarrollo Personal I. Prototipo de la Dirección B, Sistema vivo.">
+  <meta name="theme-color" content="#0C1F2C">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%230C1F2C'/%3E%3Cpath d='M 326.9 140.8 A 140 140 0 1 1 247.9 68.4' fill='none' stroke='%23E6EAE4' stroke-width='28'/%3E%3Cpath d='M 277.9 38.4 A 140 140 0 0 1 356.9 110.8' fill='none' stroke='%23F28C38' stroke-width='28'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,300..500&family=Fragment+Mono&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.css">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="saltar" href="#semana-01">Saltar a la semana 01</a>
+
+  <!-- Barra de lecturas: fija, todo lo que muestra es verdadero -->
+  <nav class="lecturas" aria-label="Lecturas del instrumento">
+    <div class="lecturas__celda">
+      <span class="lectura" data-campo="proyecto"></span>
+    </div>
+    <div class="lecturas__celda lecturas__celda--lectura">
+      <span class="ranura" aria-hidden="true"></span>
+      <span class="lectura"><span class="lectura__rotulo">Lectura</span> <span class="lectura__valor"><span data-lectura="n">00</span>/<span data-lectura="total">00</span></span></span>
+    </div>
+    <div class="lecturas__celda lecturas__celda--escritorio">
+      <span class="lectura lectura--doble"><span class="lectura__rotulo">Distancia</span> <span class="lectura__valor"><span data-lectura="dist">042,4</span>&#8201;PX</span></span>
+    </div>
+    <div class="lecturas__celda lecturas__celda--escritorio lecturas__celda--fin">
+      <span class="lectura lectura--doble"><span class="lectura__rotulo">Bogotá</span> <span class="lectura__valor"><time data-lectura="reloj">--:--:--</time></span></span>
+      <button class="movimiento" type="button" aria-pressed="true" data-movimiento>Movimiento <span class="movimiento__estado">[SÍ]</span></button>
+    </div>
+    <span class="lecturas__nodos" aria-hidden="true"></span>
+  </nav>
+
+  <!-- Retícula: fija, nunca se mueve -->
+  <svg class="reticula" aria-hidden="true" focusable="false"></svg>
+
+  <!-- Cabezal móvil: el instrumento se queda arriba mientras las lecturas pasan debajo -->
+  <div class="cabezal" aria-hidden="true">
+    <div class="cabezal__fondo"></div>
+    <svg class="cabezal__lineas" focusable="false"></svg>
+  </div>
+
+  <!-- El dial: símbolo HR + bisel graduado -->
+  <figure class="dial" role="img" aria-label="Símbolo HR como dial: un anillo abierto con un ojo cuya pupila es una cerradura; el fragmento naranja que le falta flota afuera y se acerca una distancia exacta con cada semana.">
+    <svg class="bisel" viewBox="0 0 560 560" aria-hidden="true" focusable="false">
+      <g class="bisel__reten"><g class="bisel__giro"></g></g>
+      <g class="bisel__fijo"></g>
+    </svg>
+    <svg class="simbolo" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
+      <path id="anillo" d="M 326.9 140.8 A 140 140 0 1 1 247.9 68.4" fill="none" stroke="var(--tinta)" stroke-width="10"/>
+      <path id="ojo-sup" d="M 112 196 Q 200 116 288 196" fill="none" stroke="var(--tinta)" stroke-width="5" stroke-linecap="round"/>
+      <path id="ojo-inf" d="M 112 196 Q 200 276 288 196" fill="none" stroke="var(--tinta)" stroke-width="5" stroke-linecap="round"/>
+      <circle id="iris" cx="200" cy="196" r="30" fill="none" stroke="#4F8EF7" stroke-width="4"/>
+      <g id="pupila" fill="var(--luz)">
+        <circle cx="200" cy="190" r="8"/>
+        <polygon points="196,195 204,195 208,213 192,213"/>
+      </g>
+      <text id="hr" x="205" y="300" text-anchor="middle" fill="var(--tinta)" font-family="'Archivo', 'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="40" letter-spacing="10">HR</text>
+      <g id="fragmento" transform="translate(30,-30)">
+        <path d="M 247.9 68.4 A 140 140 0 0 1 326.9 140.8" fill="none" stroke="var(--luz)" stroke-width="10"/>
+        <g id="bits">
+          <polygon points="275,122 272.5,126.3 267.5,126.3 265,122 267.5,117.7 272.5,117.7" fill="none" stroke="#3DBE8B" stroke-width="2"/>
+          <rect x="286" y="136" width="6" height="6" fill="#4F8EF7"/>
+          <polygon points="252,108 262,111 256,119" fill="#F28C38" opacity="0.6"/>
+        </g>
+      </g>
+    </svg>
+  </figure>
+
+  <!-- Mira de inspección (solo puntero fino) -->
+  <div class="mira" aria-hidden="true">
+    <span class="mira__h"></span>
+    <span class="mira__v"></span>
+    <span class="mira__punto"></span>
+    <span class="mira__lectura"></span>
+  </div>
+
+  <main id="contenido">
+    <div class="escena">
+      <!-- PORTADA · lectura 00 -->
+      <header class="portada lamina" id="portada">
+        <span class="hilo hilo--fila" data-hilo="mayores" aria-hidden="true"><span class="secuenciador"></span></span>
+        <span class="hilo hilo--ficha" data-hilo="ficha" aria-hidden="true"></span>
+
+        <h1 class="nombre">
+          <span class="solo-lector" data-campo="autor.nombreCorto"></span>
+          <span class="nombre__fila" aria-hidden="true">
+            <span class="celda celda--nombre" data-celda="nombre"><span class="nombre__palabra" data-palabra="0"></span></span>
+            <span class="celda celda--nombre celda--b" data-celda="nombre"><span class="nombre__palabra" data-palabra="0"></span></span>
+          </span>
+          <span class="nombre__fila" aria-hidden="true">
+            <span class="celda celda--nombre" data-celda="nombre"><span class="nombre__palabra" data-palabra="1"></span></span>
+            <span class="celda celda--nombre celda--b" data-celda="nombre"><span class="nombre__palabra" data-palabra="1"></span></span>
+          </span>
+        </h1>
+
+        <div class="celda celda--proposito" data-celda="fila">
+          <p class="proposito" data-campo="proposito"></p>
+        </div>
+
+        <dl class="ficha" data-fila data-secuencia>
+          <div class="celda celda--ficha" data-celda="fila"><dt class="rotulo">Autor</dt><dd class="valor" data-campo="autor.nombre"></dd></div>
+          <div class="celda celda--ficha" data-celda="fila"><dt class="rotulo">Código</dt><dd class="valor valor--cifra" data-campo="autor.codigo"></dd></div>
+          <div class="celda celda--ficha" data-celda="fila"><dt class="rotulo">Programa</dt><dd class="valor"><span data-campo="autor.programa"></span><span class="valor__extra" data-campo="autor.semestre"></span></dd></div>
+          <div class="celda celda--ficha" data-celda="fila"><dt class="rotulo">Materia</dt><dd class="valor"><span data-campo="autor.materia"></span><span class="valor__extra valor--cifra" data-campo="autor.periodo"></span></dd></div>
+        </dl>
+
+        <!-- Lecturas que no caben arriba en móvil -->
+        <div class="lecturas-movil" data-fila>
+          <div class="celda" data-celda="fila">
+            <p class="lectura lectura--doble"><span class="lectura__rotulo">Bogotá</span> <span class="lectura__valor"><time data-lectura="reloj">--:--:--</time></span></p>
+            <button class="movimiento" type="button" aria-pressed="true" data-movimiento>Movimiento <span class="movimiento__estado">[SÍ]</span></button>
+          </div>
+          <div class="celda" data-celda="fila">
+            <p class="lectura lectura--doble"><span class="lectura__rotulo">Distancia</span> <span class="lectura__valor"><span data-lectura="dist">042,4</span>&#8201;PX</span></p>
+          </div>
+        </div>
+      </header>
+
+      <!-- SEMANA 01 · la primera lectura -->
+      <section class="semana" id="semana-01" aria-labelledby="s01-titulo" tabindex="-1">
+        <div class="semana__cabecera lamina" data-fila>
+          <span class="hilo hilo--fila" data-hilo="mayores" aria-hidden="true"></span>
+          <div class="dial-estatico" aria-hidden="true"></div>
+
+          <div class="numero" aria-hidden="true">
+            <span class="celda celda--numero" data-celda="numero"><span class="numero__cifra" data-campo="semana.numero2"></span></span>
+            <span class="celda celda--numero celda--b" data-celda="numero"><span class="numero__cifra" data-campo="semana.numero2"></span></span>
+          </div>
+
+          <div class="semana__datos">
+            <div class="celda" data-celda="fila">
+              <p class="lectura lectura--luz" data-campo="semana.etiqueta"></p>
+              <p class="estado lectura">
+                <span class="estado__grupo"><span class="estado__cuadro" data-estado></span><span class="lectura__rotulo">Estado</span> <span data-campo="semana.estadoTexto"></span></span>
+                <span class="estado__grupo"><span class="lectura__rotulo">Fecha</span> <span class="estado__fecha" data-campo="semana.fecha"></span></span>
+              </p>
+            </div>
+            <div class="celda" data-celda="fila" data-fila>
+              <h2 class="semana__titulo" id="s01-titulo" data-campo="semana.titulo"></h2>
+            </div>
+          </div>
+
+          <div class="celda celda--reflexion" data-celda="fila" data-fila>
+            <p class="rotulo">Reflexión</p>
+            <p class="reflexion" data-campo="semana.reflexion"></p>
+          </div>
+        </div>
+
+        <div class="semana__cuerpo">
+          <div class="bloques" data-bloques></div>
+
+          <div class="giro" data-giro>
+            <span class="hilo" data-hilo="mayores" aria-hidden="true"></span>
+            <p class="giro__rotulo lectura">Giro <span class="giro__n" data-campo="semana.numero2"></span></p>
+            <div class="giro__celda">
+              <span class="giro__luz" aria-hidden="true"></span>
+              <p class="giro__frase" data-giro-frase></p>
+              <p class="giro__muestra lectura" data-giro-muestra hidden>Muestra · frase de prueba, no es contenido de Heiner</p>
+            </div>
+            <div class="giro__control">
+              <button class="boton-lectura" type="button" data-probar-giro aria-pressed="false">Probar calibración</button>
+              <p class="giro__nota">Reproduce la calibración del giro con una frase de muestra. La frase real de la semana sigue pendiente.</p>
+            </div>
+          </div>
+
+          <footer class="siguiente">
+            <span class="hilo" data-hilo="mayores" aria-hidden="true"></span>
+            <p class="lectura"><span class="lectura__rotulo">Siguiente lectura</span> <span data-campo="siguiente.etiqueta"></span></p>
+            <p class="siguiente__titulo" data-campo="siguiente.titulo"></p>
+            <p class="siguiente__nota">Fin del prototipo de la Dirección B: portada y transición a la semana 01.</p>
+          </footer>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <noscript><p class="sin-js">Esta bitácora pinta su contenido con JavaScript. Actívalo para leerla.</p></noscript>
+
+  <script defer src="js/datos.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomEase.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+  <script defer src="js/reticula.js"></script>
+  <script defer src="js/dial.js"></script>
+  <script defer src="js/lecturas.js"></script>
+  <script defer src="js/giro.js"></script>
+  <script defer src="js/principal.js"></script>
+</body>
+</html>
