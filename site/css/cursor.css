@@ -1,1 +1,30 @@
-/* cursor.css — propiedad del constructor 4 (ver docs/DIRECCION.md §9) */
+/* ==========================================================================
+   cursor.css — constructor 4 (docs/DIRECCION.md §9)
+   El ojo reemplaza al cursor solo mientras está visible (html.cursor-ojo-activo,
+   que cursor.js pone únicamente sobre la sala y con puntero fino).
+   ========================================================================== */
+
+.cursor-ojo {
+  position: fixed; left: 0; top: 0; z-index: var(--z-cursor);
+  width: 40px; height: 40px;
+  pointer-events: none;
+  visibility: hidden; opacity: 0;
+  will-change: transform;
+}
+.cursor-ojo svg { width: 100%; height: 100%; overflow: visible; }
+
+.cursor-ojo__parpado { fill: var(--noche); stroke: var(--hielo); stroke-width: 1.6; stroke-linejoin: miter; stroke-miterlimit: 20; }
+.cursor-ojo__aro { fill: none; stroke: var(--niebla); stroke-width: 1.4; }
+.cursor-ojo__cerradura { fill: var(--rubi); }
+
+/* Sobre enlaces y botones: párpados en rubí claro, la acción está aquí */
+.cursor-ojo[data-modo="abierto"] .cursor-ojo__parpado { stroke: var(--rubi-claro); }
+.cursor-ojo__parpado { transition: stroke var(--dur-corta) var(--ease-salida); }
+
+html.cursor-ojo-activo,
+html.cursor-ojo-activo * { cursor: none !important; }
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor-ojo { display: none !important; }
+}
+@media print { .cursor-ojo { display: none !important; } }

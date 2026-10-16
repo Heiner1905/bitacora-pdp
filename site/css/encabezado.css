@@ -1,1 +1,81 @@
-/* encabezado.css — propiedad del constructor 4 (ver docs/DIRECCION.md §9) */
+/* ==========================================================================
+   encabezado.css — constructor 4 (docs/DIRECCION.md §9)
+   Barra fija, baja y sobria: marca · combinación · Índice.
+   Oculta en la portada (no compite con el emblema); aparece con la semana 01.
+   ========================================================================== */
+
+.encabezado {
+  position: fixed; inset: 0 0 auto 0; z-index: var(--z-encabezado);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--medianil);
+  height: 64px;
+  padding: 0 var(--margen);
+  background: color-mix(in srgb, var(--noche) 94%, transparent);
+  border-bottom: 1px solid var(--linea);
+  transform: translate3d(0, -101%, 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .7s var(--ease-salida), opacity .45s var(--ease-salida);
+}
+.encabezado.is-visible { transform: none; opacity: 1; pointer-events: auto; }
+
+/* ---------- Marca ---------- */
+.encabezado__marca { justify-self: start; min-width: 0; display: flex; align-items: center; }
+.encabezado__enlace {
+  display: inline-flex; align-items: center; gap: 14px;
+  min-height: 44px; padding-right: 8px;
+  color: var(--hielo); text-decoration: none;
+}
+.encabezado__nombre { color: var(--niebla); white-space: nowrap; transition: color var(--dur-corta) var(--ease-salida); }
+.encabezado__enlace:hover .encabezado__nombre,
+.encabezado__enlace:focus-visible .encabezado__nombre { color: var(--hielo); }
+
+.marca { width: 36px; height: 36px; flex: none; overflow: visible; }
+.marca * { fill: none; }
+.marca__dial circle:first-child { stroke: var(--acero); }
+.marca__indice { fill: var(--escarcha) !important; stroke: none; }
+.marca__trazo { stroke: var(--hielo); }
+.marca__iris { stroke: var(--niebla); }
+.marca__cerradura * { fill: var(--rubi) !important; }
+.marca__fragmento { stroke: var(--rubi); }
+.marca__pulso { stroke: var(--rubi-claro); opacity: 0; }
+.encabezado__enlace:hover .marca__fragmento { stroke: var(--rubi-claro); }
+
+/* ---------- Combinación (la pinta el constructor 2: aquí solo su lugar) ---------- */
+.encabezado > .combinacion { grid-column: 2; justify-self: center; min-width: 0; max-width: 100%; }
+
+/* ---------- Acciones ---------- */
+.encabezado__acciones { grid-column: 3; justify-self: end; display: flex; align-items: center; }
+.encabezado__boton {
+  display: inline-flex; align-items: center; gap: 10px;
+  min-height: 40px; padding: 0 16px 0 12px;
+  border: 1px solid var(--linea-fuerte); border-radius: 999px;
+  color: var(--hielo);
+  font-family: var(--f-dato); font-size: var(--t-dato); font-variation-settings: "wdth" 75;
+  letter-spacing: .14em; text-transform: uppercase;
+  transition: border-color var(--dur-corta) var(--ease-salida), color var(--dur-corta) var(--ease-salida);
+}
+.encabezado__boton:hover { border-color: var(--hielo); color: var(--escarcha); }
+.encabezado__boton[aria-expanded="true"] { border-color: var(--rubi); }
+.encabezado__glifo { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; transition: transform .6s var(--ease-salida); }
+.encabezado__boton:hover .encabezado__glifo,
+.encabezado__boton:focus-visible .encabezado__glifo { transform: rotate(36deg); }
+.encabezado__boton:active { color: var(--rubi-claro); }
+
+/* ---------- Móvil ---------- */
+@media (max-width: 899px) {
+  .encabezado { height: 56px; }
+  .encabezado__nombre { display: none; }
+  .marca { width: 32px; height: 32px; }
+}
+@media (max-width: 599px) {
+  .encabezado { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 10px; }
+  .encabezado > .combinacion { justify-self: stretch; }
+  .encabezado__boton { padding: 0 12px 0 10px; gap: 8px; min-height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .encabezado { transition: none; }
+}
