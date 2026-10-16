@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Equidad educativa en la era de los LLMs</title>
+<style>
+:root{--bg:#060914;--a:#6ee7c8;--b:#7c9cff;--c:#ffb86b;--d:#ff7a9c;--text:#eef1fb;--muted:#a3aed3;--line:rgba(255,255,255,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#02040a;font-family:'Segoe UI',system-ui,-apple-system,Helvetica,Arial,sans-serif;color:var(--text)}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;overflow:hidden;background:var(--bg);perspective:1800px;--mx:0;--my:0;--hue:0deg}
+#stage.nocur,#stage.nocur *{cursor:none!important}
+.orbs{position:absolute;inset:0;filter:hue-rotate(var(--hue));transition:filter 1.6s ease;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.52;transition:translate 1s ease-out}
+.o1{width:780px;height:780px;left:-220px;top:-240px;background:#1f3fae;translate:calc(var(--mx)*60px) calc(var(--my)*45px);animation:fl1 18s ease-in-out infinite alternate}
+.o2{width:700px;height:700px;right:-200px;bottom:-260px;background:#0d7a68;translate:calc(var(--mx)*-70px) calc(var(--my)*-45px);animation:fl2 22s ease-in-out infinite alternate}
+.o3{width:480px;height:480px;right:25%;top:-220px;background:#7a2a6e;opacity:.36;translate:calc(var(--mx)*35px) calc(var(--my)*60px);animation:fl1 26s ease-in-out infinite alternate-reverse}
+@keyframes fl1{to{margin:130px 0 0 170px}}
+@keyframes fl2{to{margin:-150px 0 0 -210px}}
+.floor{position:absolute;left:-40%;right:-40%;bottom:-6%;height:52%;background-image:linear-gradient(rgba(124,156,255,.5) 2px,transparent 2px),linear-gradient(90deg,rgba(124,156,255,.5) 2px,transparent 2px);background-size:90px 90px;transform:perspective(520px) rotateX(74deg);transform-origin:bottom;-webkit-mask-image:linear-gradient(to top,#000,transparent 75%);mask-image:linear-gradient(to top,#000,transparent 75%);animation:floor 2.6s linear infinite;opacity:.14;pointer-events:none}
+@keyframes floor{to{background-position:0 90px}}
+#bg,#pt{position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none}
+#pt{z-index:6}
+#spot{position:absolute;width:900px;height:900px;left:0;top:0;margin:-450px 0 0 -450px;border-radius:50%;background:radial-gradient(circle,rgba(124,156,255,.13),transparent 60%);pointer-events:none;z-index:4;mix-blend-mode:screen;opacity:0;transition:opacity .6s}
+#prog{position:absolute;left:0;top:0;height:5px;width:0;z-index:70;background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--d));box-shadow:0 0 20px var(--a);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+#shut{position:absolute;inset:0;z-index:60;display:flex;pointer-events:none}
+#shut i{flex:1;background:linear-gradient(180deg,#0b1230,#141f4d);transform:scaleY(0);position:relative}
+#shut i::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--a),var(--b));box-shadow:0 0 18px var(--a)}
+#shut.go i{animation:sh .95s cubic-bezier(.7,0,.3,1) both;animation-delay:calc(var(--k)*32ms)}
+@keyframes sh{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* slides */
+.slide{position:absolute;inset:0;padding:90px 140px;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transform:translate3d(0,0,var(--z,-500px)) rotateY(var(--ry,-10deg));transition:opacity .4s,transform .7s cubic-bezier(.6,0,.3,1),visibility 0s .7s;z-index:10}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .6s,transform 1.1s cubic-bezier(.16,1,.3,1),visibility 0s}
+.slide.prep{transition:none!important}
+.tag{display:inline-flex;align-items:center;gap:18px;font-size:23px;letter-spacing:.24em;text-transform:uppercase;color:var(--a);font-weight:700;margin-bottom:20px;font-family:Consolas,'Courier New',monospace;align-self:flex-start}
+.tag::before{content:"";width:56px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--a),var(--b))}
+h1{font-size:88px;line-height:1.05;font-weight:800;letter-spacing:-.03em}
+h2{font-size:62px;line-height:1.1;font-weight:800;letter-spacing:-.02em;margin-bottom:32px}
+.active .split{animation:glitch .8s steps(1) .55s}
+@keyframes glitch{0%{text-shadow:4px 0 rgba(255,122,156,.8),-4px 0 rgba(110,231,200,.8)}20%{text-shadow:-6px 2px rgba(255,122,156,.8),6px -2px rgba(124,156,255,.8);transform:translateX(3px)}40%{text-shadow:3px -1px rgba(255,184,107,.8),-3px 1px rgba(110,231,200,.8);transform:translateX(-2px)}60%{text-shadow:none;transform:none}80%{text-shadow:2px 0 rgba(124,156,255,.6),-2px 0 rgba(255,122,156,.6)}100%{text-shadow:none}}
+em{font-style:normal}
+.g{background:linear-gradient(100deg,var(--a),var(--b),var(--c),var(--a));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:-300% 0}}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .04em .14em;margin:0 -.04em -.14em}
+.w>i{display:inline-block;font-style:normal;translate:0 115%;rotate:8deg;filter:blur(6px);transform-origin:left bottom;transition:translate 1s cubic-bezier(.16,1,.3,1),rotate 1s cubic-bezier(.16,1,.3,1),filter 1s}
+.active .w>i{translate:0 0;rotate:0deg;filter:blur(0)}
+.slide:not(.active) .w>i{transition-delay:0s!important}
+p{font-size:32px;line-height:1.45;color:var(--muted)}
+p b,li b{color:var(--text);font-weight:600}
+
+/* reveals: visibles cuando la diapositiva está activa y su paso ya se mostró */
+.rv{opacity:0;translate:0 50px;scale:.95;transition:opacity .8s var(--dl),translate 1s cubic-bezier(.16,1,.3,1) var(--dl),scale 1s cubic-bezier(.16,1,.3,1) var(--dl),rotate 1.1s cubic-bezier(.16,1,.3,1) var(--dl),filter .8s var(--dl),transform .25s 0s}
+.rv.l{translate:-90px 0}.rv.r{translate:90px 0}.rv.z{scale:.5;filter:blur(12px)}
+.rv.f{rotate:x -75deg;transform-origin:50% 0;translate:0 0}
+.active .rv:not(.hold,.hold *){opacity:1;translate:0 0;scale:1;filter:none;rotate:x 0deg}
+.slide.out .rv,.rv.hold,.hold .rv{transition:opacity .3s,translate .3s,scale .3s,rotate .3s,filter .3s,transform .25s!important}
+.row{display:flex;gap:30px}
+.card{position:relative;flex:1;background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:28px;padding:34px;backdrop-filter:blur(14px);overflow:hidden}
+.card::before{content:"";position:absolute;inset:-1px;border-radius:28px;padding:2px;background:conic-gradient(from var(--ang,0deg),transparent 0 70%,var(--a) 80%,var(--b) 90%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:ang 5s linear infinite;opacity:.8;pointer-events:none}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes ang{to{--ang:360deg}}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at var(--gx,50%) var(--gy,0%),rgba(255,255,255,.16),transparent 55%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card.tilt:hover::after{opacity:1}
+.card h3{font-size:34px;font-weight:700;margin-bottom:10px}
+.card p{font-size:26px}
+.role{font-family:Consolas,monospace;font-size:19px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.num{font-size:88px;font-weight:800;line-height:1;letter-spacing:-.03em;background:linear-gradient(100deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.num.o{background:linear-gradient(100deg,var(--c),var(--d));-webkit-background-clip:text;background-clip:text}
+.num.s{font-size:58px}
+.lab{font-size:25px;color:var(--muted);margin-top:8px;line-height:1.35}
+.small{font-family:Consolas,monospace;font-size:20px;color:#8590b5;margin-top:10px;letter-spacing:.03em}
+.note{font-size:21px;color:#76819f;margin-top:10px}
+.pill{display:inline-block;padding:10px 24px;border-radius:40px;border:1px solid var(--line);font-size:23px;color:var(--muted);margin:0 10px 10px 0;background:rgba(255,255,255,.04)}
+.pill b{color:var(--a)}
+ul{list-style:none}
+
+/* idea clave */
+.key{margin-top:34px;display:flex;align-items:center;gap:26px;padding:24px 34px;border-radius:24px;background:linear-gradient(90deg,rgba(110,231,200,.14),rgba(124,156,255,.08) 60%,rgba(255,255,255,.02));border:1px solid rgba(110,231,200,.35);box-shadow:0 0 60px -20px var(--a);position:relative;overflow:hidden}
+.key::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%);translate:-100% 0}
+.active .key:not(.hold)::after{animation:glint 2.4s ease-in-out .6s}
+.key .kl{flex:0 0 auto;font-family:Consolas,monospace;font-size:19px;letter-spacing:.22em;color:#06101e;background:linear-gradient(135deg,var(--a),var(--b));padding:10px 16px;border-radius:12px;font-weight:700}
+.key .kt{font-size:33px;font-weight:700;color:var(--text);line-height:1.3}
+
+.goals{display:flex;gap:18px;margin-top:40px}
+.goal{padding:16px 28px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:27px;font-weight:600}
+.goal span{color:var(--a);font-family:Consolas,monospace;margin-right:10px}
+
+/* bars */
+.bar{margin-bottom:28px}
+.bar .top{display:flex;justify-content:space-between;align-items:baseline;font-size:31px;margin-bottom:12px;color:var(--text);font-weight:600}
+.bar .top b{color:#8590b5;white-space:nowrap;margin-left:10px;font-family:Consolas,monospace;font-size:22px;font-weight:400}
+.track{height:52px;background:rgba(255,255,255,.07);border-radius:26px;overflow:hidden;border:1px solid var(--line)}
+.fill{height:100%;width:0;border-radius:26px;background:linear-gradient(90deg,var(--a),var(--b));position:relative;transition:width 1.8s cubic-bezier(.16,1,.3,1) .4s;box-shadow:0 0 30px -4px var(--a)}
+.fill::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.6) 50%,transparent 70%);translate:-100% 0;animation:glint 2.6s ease-in-out infinite 2.2s}
+@keyframes glint{60%,100%{translate:100% 0}}
+.active .fill:not(.hold *){width:var(--w)}
+.explain{display:flex;gap:24px;align-items:center;padding:24px 30px;border-radius:22px;border:1px dashed rgba(124,156,255,.45);background:rgba(124,156,255,.06)}
+.explain .q{flex:0 0 auto;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:800;color:#06101e;background:var(--b)}
+.explain p{font-size:26px}
+
+/* staircase */
+.stair{display:flex;gap:34px;align-items:flex-end;height:460px}
+.col{flex:1;height:var(--h);border-radius:30px 30px 10px 10px;padding:30px 36px;background:linear-gradient(180deg,var(--k),rgba(255,255,255,.03) 135%);border:1px solid var(--line);clip-path:inset(100% 0 0 0);transition:clip-path 1.2s cubic-bezier(.16,1,.3,1) .1s;position:relative;overflow:hidden}
+.active .col:not(.hold){clip-path:inset(0 0 0 0)}
+.col::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%);translate:-120% 0;animation:glint 3.5s ease-in-out infinite 1.5s}
+.col h3{font-size:40px;color:#06101e;margin-bottom:8px}
+.col p{font-size:27px;color:rgba(6,16,30,.85);font-weight:500}
+.col .big{position:absolute;right:26px;bottom:-30px;font-size:220px;font-weight:900;color:rgba(6,16,30,.14);line-height:1}
+
+/* LLM */
+.typed{font-family:Consolas,'Courier New',monospace;font-size:31px;padding:18px 26px;border-radius:18px;border:1px solid var(--line);background:rgba(0,0,0,.35);color:var(--a);min-height:76px}
+.typed .car{display:inline-block;width:15px;height:31px;background:var(--a);vertical-align:middle;margin-left:4px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.attn{position:relative;width:960px;padding-top:180px}
+.attn svg{position:absolute;left:0;top:0;width:100%;height:180px;overflow:visible}
+.chips{display:flex;justify-content:space-between}
+.chipc{width:168px;text-align:center;opacity:0;translate:0 30px;scale:.6;transition:all .6s cubic-bezier(.34,1.56,.64,1)}
+.chipc.in{opacity:1;translate:0 0;scale:1}
+.chip{font-size:30px;font-weight:700;padding:14px 0;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.06);transition:all .35s}
+.chip.q{background:linear-gradient(135deg,var(--a),var(--b));color:#06101e;box-shadow:0 0 50px -4px var(--a);scale:1.1}
+.arc{fill:none;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw .8s ease-out forwards;filter:drop-shadow(0 0 8px rgba(110,231,200,.6))}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pct{font-size:23px;font-weight:700;fill:#fff;text-anchor:middle;animation:fadein .6s .5s both}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.cap{font-size:25px;color:var(--muted);margin-top:22px}
+.cap b{color:var(--text)}
+.prompt{border-radius:22px;padding:22px 26px;border:1px solid var(--line);background:rgba(0,0,0,.3);margin-bottom:18px}
+.prompt .pl{font-family:Consolas,monospace;font-size:18px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px}
+.prompt .pq{font-family:Consolas,monospace;font-size:23px;color:var(--text);line-height:1.4}
+.prompt .pr{display:inline-flex;align-items:center;gap:10px;margin-top:14px;padding:8px 18px;border-radius:30px;font-size:22px;font-weight:700;color:#06101e}
+.prompt.bad{border-color:rgba(255,122,156,.4)}.prompt.bad .pl{color:var(--d)}.prompt.bad .pr{background:linear-gradient(135deg,var(--c),var(--d))}
+.prompt.good{border-color:rgba(110,231,200,.45);box-shadow:0 0 50px -20px var(--a)}.prompt.good .pl{color:var(--a)}.prompt.good .pr{background:linear-gradient(135deg,var(--a),var(--b))}
+
+#dots{width:1640px;height:230px;display:block}
+
+/* charts */
+.chart{width:100%;height:auto;overflow:visible}
+.path{fill:none;stroke-width:7;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.2s cubic-bezier(.4,0,.2,1) var(--dl);filter:drop-shadow(0 0 10px rgba(124,156,255,.6))}
+.active .path:not(.hold *){stroke-dashoffset:0}
+.area{clip-path:inset(0 100% 0 0);transition:clip-path 2.6s cubic-bezier(.4,0,.2,1) var(--dl)}
+.active .area:not(.hold *){clip-path:inset(0 0 0 0)}
+.gapl{stroke:#fff;stroke-width:3;stroke-dasharray:8 8;opacity:0;transition:opacity .6s var(--dl)}
+.active .gapl:not(.hold *){opacity:.8}
+.gapt{fill:#fff;font-size:26px;font-weight:700;opacity:0;transition:opacity .6s var(--dl)}
+.active .gapt:not(.hold *){opacity:1}
+.ax{fill:var(--muted);font-size:26px}
+.dt{opacity:0;transition:opacity .4s var(--dl)}
+.active .dt:not(.hold *){opacity:1}
+.trav{opacity:0;transition:opacity .6s 2.8s}
+.active .trav:not(.hold *){opacity:1}
+.beam{transform-origin:350px 270px;rotate:0deg;transition:rotate 2.2s cubic-bezier(.3,1.7,.5,1) 2.2s}
+.active .beam:not(.hold *){rotate:7deg}
+.drop{transform:translateY(-600px)}
+.active .drop:not(.hold *){animation:drop 1.3s cubic-bezier(.5,0,.5,1) forwards;animation-delay:var(--dl)}
+@keyframes drop{0%{transform:translateY(-600px)}55%{transform:translateY(0)}70%{transform:translateY(-50px)}85%{transform:translateY(0)}92%{transform:translateY(-12px)}100%{transform:translateY(0)}}
+
+/* rings + waffle */
+.rg{width:220px;text-align:center}
+.rg .ringw{position:relative;width:200px;height:200px;margin:0 auto 12px}
+.rg svg{width:200px;height:200px}
+.rg .cen{position:absolute;inset:0;display:grid;place-items:center;font-size:42px;font-weight:800;font-variant-numeric:tabular-nums}
+.rv-c{fill:none;stroke-width:16;stroke-linecap:round;stroke-dasharray:502.65;stroke-dashoffset:502.65;transition:stroke-dashoffset 2.4s cubic-bezier(.16,1,.3,1) var(--dl);filter:drop-shadow(0 0 10px rgba(110,231,200,.7))}
+.active .rv-c:not(.hold *){stroke-dashoffset:calc(502.65px*(1 - var(--p)))}
+.rt{fill:none;stroke:rgba(255,255,255,.08);stroke-width:16}
+.rg .t{font-size:23px;color:var(--muted);line-height:1.25}
+.grp{font-size:28px;font-weight:700;color:var(--text);margin-bottom:24px;text-align:center}
+.waf{display:grid;grid-template-columns:repeat(10,26px);gap:6px}
+.waf span{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.07);transition:background .4s var(--dl),box-shadow .4s var(--dl),scale .4s var(--dl)}
+.active .waf span.on:not(.hold *){background:var(--k);box-shadow:0 0 16px -2px var(--k);scale:1.08}
+.wt{font-size:23px;color:var(--muted);margin-top:14px;text-align:center;line-height:1.3}
+.wt b{font-size:36px}
+.vsep{width:2px;align-self:stretch;background:linear-gradient(180deg,transparent,var(--line),transparent)}
+
+/* flow */
+.flow{display:flex;align-items:center}
+.node{flex:0 0 440px;text-align:center;padding:42px 30px;border-radius:32px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.02));backdrop-filter:blur(14px);animation:np 4.5s ease-in-out infinite;animation-delay:calc(var(--k)*1.2s)}
+.node b{display:block;font-size:40px;margin-bottom:10px}.node span{font-size:25px;color:var(--muted)}
+@keyframes np{0%,100%{box-shadow:0 0 0 rgba(110,231,200,0)}30%{box-shadow:0 0 80px -6px var(--a);border-color:var(--a)}}
+.conn{flex:1;height:4px;position:relative;background:linear-gradient(90deg,rgba(110,231,200,.15),rgba(124,156,255,.4));border-radius:4px}
+.conn i{position:absolute;top:50%;left:0;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#fff;box-shadow:0 0 18px 4px var(--a),0 0 40px 8px var(--b);animation:pk 1.8s linear infinite}
+.conn i:nth-child(2){animation-delay:.6s}.conn i:nth-child(3){animation-delay:1.2s}
+@keyframes pk{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:100%;opacity:0}}
+
+/* kinetic */
+.kin{font-size:76px;font-weight:800;line-height:1.15;letter-spacing:-.02em}
+.strk{position:relative;color:var(--text);transition:color 1s 2s}
+.strk::after{content:"";position:absolute;left:-6px;right:-6px;top:54%;height:8px;border-radius:6px;background:linear-gradient(90deg,var(--c),var(--d));transform-origin:left;scale:0 1;transition:scale .9s cubic-bezier(.65,0,.35,1) 1.4s;box-shadow:0 0 20px var(--d)}
+.active .strk{color:rgba(238,241,251,.35)}
+.active .strk::after{scale:1 1}
+.big2{display:inline-block;font-size:170px;line-height:1;opacity:0;scale:2.2;filter:blur(30px);transition:opacity 1s 2.5s,scale 1.3s cubic-bezier(.16,1,.3,1) 2.5s,filter 1s 2.5s}
+.active .big2{opacity:1;scale:1;filter:blur(0)}
+
+/* conclusiones */
+.chk{position:absolute;left:0;top:.15em;width:44px;height:44px}
+.chk circle{fill:none;stroke:var(--a);stroke-width:4;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s .2s}
+.chk path{fill:none;stroke:var(--a);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .6s .7s}
+.active .chk:not(.hold *) circle,.active .chk:not(.hold *) path{stroke-dashoffset:0}
+.cl li{font-size:34px;color:var(--muted);line-height:1.38;padding-left:72px;position:relative;margin-bottom:24px}
+.lim{margin-top:20px;padding:22px 30px;border-radius:22px;border:1px dashed rgba(255,184,107,.45);background:rgba(255,184,107,.05)}
+.lim .k{font-family:Consolas,monospace;font-size:20px;letter-spacing:.2em;color:var(--c);margin-bottom:12px;text-transform:uppercase}
+.lim .pill{color:var(--text)}
+</style>
+</head>
+<body>
+<div id="stage">
+<div class="orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="floor"></div>
+<canvas id="bg" width="1920" height="1080"></canvas>
+<div id="spot"></div>
+<canvas id="pt" width="1920" height="1080"></canvas>
+<div id="prog"></div>
+<div id="shut"></div>
+
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<linearGradient id="gr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6ee7c8"/><stop offset="1" stop-color="#7c9cff"/></linearGradient>
+<linearGradient id="go" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb86b"/><stop offset="1" stop-color="#ff7a9c"/></linearGradient>
+<linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a9c" stop-opacity=".45"/><stop offset="1" stop-color="#ffb86b" stop-opacity=".08"/></linearGradient>
+</defs>
+</svg>
+
+<!-- 1 PORTADA -->
+<section class="slide" data-accent="0" data-hue="0deg" data-pt="LLM" data-ptx="1540" data-pty="560" data-pts="300">
+  <div class="tag rv scr" style="letter-spacing:.12em;font-size:22px">Universidad Icesi · Facultad Barberi</div>
+  <div style="max-width:1020px"><h1 class="split">Equidad educativa en la era de los <em>modelos de lenguaje</em></h1></div>
+  <p class="rv" style="max-width:980px;margin-top:28px;font-size:34px">¿Todos los estudiantes se benefician igual de herramientas como ChatGPT?</p>
+  <p class="rv" style="margin-top:56px;font-size:31px;color:var(--text)">Daniel Trujillo Marin &nbsp;·&nbsp; Heiner Rincon</p>
+</section>
+
+<!-- 2 PREGUNTA -->
+<section class="slide" data-accent="1" data-hue="30deg" data-pt="?" data-ptx="1500" data-pty="540" data-pts="800">
+  <div class="tag rv scr">Punto de partida</div>
+  <div style="max-width:1080px"><h2 class="split" style="font-size:78px">Una misma herramienta. ¿Los <em>mismos beneficios</em> para todos?</h2></div>
+  <p class="rv" style="max-width:980px">Que todos <b>puedan</b> usar ChatGPT no significa que todos <b>ganen</b> lo mismo.</p>
+  <div class="goals" data-f="1">
+    <div class="goal rv"><span>01</span>¿Quién se beneficia?</div>
+    <div class="goal rv"><span>02</span>¿Bajo qué condiciones?</div>
+    <div class="goal rv"><span>03</span>¿Qué lo limita?</div>
+  </div>
+</section>
+
+<!-- 3 MARCO -->
+<section class="slide" data-accent="1" data-hue="-25deg">
+  <div class="tag rv scr">Marco teórico · van Dijk</div>
+  <h2 class="split">La brecha digital tiene <em>tres niveles</em></h2>
+  <div class="stair">
+    <div class="col" data-f="1" style="--h:250px;--k:#6ee7c8"><h3>1 · Acceso</h3><p>¿La conozco y puedo usarla?</p><div class="big">1</div></div>
+    <div class="col" data-f="2" style="--h:350px;--k:#7c9cff"><h3>2 · Habilidades</h3><p>¿Sé usarla bien y de forma crítica?</p><div class="big">2</div></div>
+    <div class="col" data-f="3" style="--h:450px;--k:#ffb86b"><h3>3 · Beneficios</h3><p>¿Realmente me ayuda a mejorar?</p><div class="big">3</div></div>
+  </div>
+  <div class="key rv" data-f="4"><span class="kl">IDEA CLAVE</span><span class="kt">La brecha ya no es solo tener internet: es saber usar la tecnología y sacarle provecho.</span></div>
+</section>
+
+<!-- 4 LLM -->
+<section class="slide" id="s-attn" data-accent="0" data-hue="0deg">
+  <div class="tag rv scr">Fundamento técnico · Transformer</div>
+  <h2 class="split" style="margin-bottom:28px">¿Cómo funciona un <em>LLM</em>?</h2>
+  <div class="row" style="gap:56px;align-items:flex-start">
+    <div style="flex:0 0 960px">
+      <div class="typed rv"><span id="typed"></span><span class="car"></span></div>
+      <div class="attn" id="attn"><div data-f="1" data-hook="arcs" class="rv" style="position:absolute;inset:0 0 auto 0;height:180px;translate:0 0"><svg id="attnsvg" viewBox="0 0 960 180"></svg></div><div class="chips" id="chips"></div></div>
+      <p class="cap rv" data-f="1">Divide tu texto en piezas y <b>decide qué palabras se relacionan</b> entre sí (mecanismo de atención) para generar la respuesta.</p>
+    </div>
+    <div style="flex:1" data-f="2">
+      <div class="prompt bad rv r"><div class="pl">Instrucción vaga</div><div class="pq">"Hazme un ensayo sobre IA."</div><div class="pr">→ Respuesta genérica</div></div>
+      <div class="prompt good rv r"><div class="pl">Instrucción con contexto</div><div class="pq">"Ensayo de 600 palabras sobre IA y equidad, para primer semestre, con 3 argumentos y ejemplos."</div><div class="pr">→ Respuesta útil</div></div>
+      <div class="note rv">Ejemplo ilustrativo.</div>
+    </div>
+  </div>
+  <div class="key rv" data-f="3"><span class="kl">IDEA CLAVE</span><span class="kt">La respuesta depende de lo que el usuario escribe: saber preguntar es una habilidad, y no todos la tienen por igual.</span></div>
+</section>
+
+<!-- 5 ESTUDIOS -->
+<section class="slide" data-accent="3" data-hue="40deg">
+  <div class="tag rv scr">Metodología · Revisión crítica</div>
+  <h2 class="split">Analizamos <em>cuatro estudios</em></h2>
+  <div class="row" data-f="1">
+    <div class="card tilt rv f"><div class="role">Estudio central</div><h3 style="color:var(--a)">Yu et al.</h3><div class="num s cnt" style="font-size:46px" data-to="1140328">0</div><div class="lab">textos de estudiantes analizados</div></div>
+    <div class="card tilt rv f"><div class="role">Nivel 1 · Acceso</div><h3 style="color:var(--b)">Arum et al.</h3><div class="num s cnt" data-to="938">0</div><div class="lab">estudiantes encuestados</div></div>
+    <div class="card tilt rv f"><div class="role">Nivel 2 · Habilidades</div><h3 style="color:var(--c)">Zhang et al.</h3><div class="num s o cnt" data-to="947">0</div><div class="lab">estudiantes encuestados</div></div>
+    <div class="card tilt rv f"><div class="role">Alto impacto</div><h3 style="color:var(--d)">Lee et al.</h3><div class="num s o cnt" data-to="81663">0</div><div class="lab">solicitudes de admisión</div></div>
+  </div>
+  <div class="key rv" data-f="2"><span class="kl">IDEA CLAVE</span><span class="kt">Un estudio grande como base y tres más que explican el porqué, organizados con los tres niveles de la brecha.</span></div>
+</section>
+
+<!-- 6 ESCALA -->
+<section class="slide" id="s-dots" data-accent="0" data-hue="-15deg">
+  <div class="tag rv scr">Estudio central · Yu et al.</div>
+  <h2 class="split" style="margin-bottom:22px">Un estudio con <em>datos reales</em></h2>
+  <div class="row" style="margin-bottom:22px">
+    <div class="card tilt rv" style="padding:22px 32px"><div class="num cnt" style="font-size:70px" data-to="1140328">0</div><div class="lab">textos escritos</div></div>
+    <div class="card tilt rv" style="padding:22px 32px"><div class="num cnt" style="font-size:70px" data-to="16791">0</div><div class="lab">estudiantes</div></div>
+    <div class="card tilt rv" style="padding:22px 32px"><div class="num cnt" style="font-size:70px" data-to="2391">0</div><div class="lab">cursos · 2021 a 2024 · EE. UU.</div></div>
+  </div>
+  <canvas id="dots" width="1640" height="230"></canvas>
+  <div class="note">Cada punto representa ≈ 100 textos. Se comparó la escritura <b style="color:var(--text)">antes y después</b> de que llegara ChatGPT.</div>
+  <div class="key rv" data-f="1"><span class="kl">IDEA CLAVE</span><span class="kt">Son tareas reales de clase, no un experimento. Muestra una relación, no prueba que ChatGPT sea la causa.</span></div>
+</section>
+
+<!-- 7 RES 1 -->
+<section class="slide" data-accent="1" data-hue="20deg">
+  <div class="tag rv scr">Resultado 1 · Todos los estudiantes</div>
+  <h2 class="split">Después de ChatGPT, <em>todos escribieron mejor</em></h2>
+  <div class="bar rv l" data-f="1"><div class="top"><span>Primeros meses (ene–jun 2023): mejora pequeña</span><b>hasta +0,039 DE</b></div><div class="track"><div class="fill" style="--w:24%"></div></div></div>
+  <div class="bar rv l" data-f="2"><div class="top"><span>Un año después (oct 2023–mar 2024): mejora clara</span><b>hasta +0,162 DE</b></div><div class="track"><div class="fill" style="--w:100%"></div></div></div>
+  <div class="explain rv" data-f="3"><div class="q">?</div><p><b>DE = desviación estándar.</b> Mide cuánto cambió un grupo comparado con la variación normal entre estudiantes. Son cambios pequeños, pero medibles en una muestra tan grande. Se midió legibilidad, vocabulario y complejidad de las frases.</p></div>
+  <div class="key rv" data-f="4"><span class="kl">IDEA CLAVE</span><span class="kt">La escritura mejoró en general, y la mejora creció con el tiempo.</span></div>
+</section>
+
+<!-- 8 RES 2 -->
+<section class="slide" data-accent="0" data-hue="-30deg">
+  <div class="tag rv scr">Resultado 2 · Idioma</div>
+  <h2 class="split" style="margin-bottom:20px">La brecha por idioma <em>se redujo</em></h2>
+  <div class="row" style="align-items:center">
+    <div class="rv" style="flex:1.35">
+      <svg class="chart" viewBox="0 0 900 400">
+        <line x1="100" y1="360" x2="800" y2="360" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+        <text class="ax" x="100" y="396" text-anchor="middle">Antes de ChatGPT</text>
+        <text class="ax" x="450" y="396" text-anchor="middle">Fase 1</text>
+        <text class="ax" x="800" y="396" text-anchor="middle">Fase 2</text>
+        <path class="area" style="--dl:.8s" fill="url(#ga)" d="M100 110 C 250 106,300 106,450 106 S 650 102,800 102 L 800 156 S 650 156,450 223 C 300 223,250 250,100 290 Z"/>
+        <line class="gapl" style="--dl:.9s" x1="100" y1="110" x2="100" y2="290"/>
+        <line class="gapl" style="--dl:2s" x1="450" y1="106" x2="450" y2="223"/>
+        <line class="gapl" style="--dl:3s" x1="800" y1="102" x2="800" y2="156"/>
+        <path id="pA" class="path" style="--dl:.6s" pathLength="1" stroke="url(#gr)" d="M100 110 C 250 106,300 106,450 106 S 650 102,800 102"/>
+        <path id="pB" class="path" style="--dl:.8s" pathLength="1" stroke="url(#go)" d="M100 290 C 250 250,300 223,450 223 S 650 156,800 156"/>
+        <g class="trav"><circle r="9" fill="#fff" style="filter:drop-shadow(0 0 10px #6ee7c8)"><animateMotion dur="3.2s" repeatCount="indefinite"><mpath href="#pA"/></animateMotion></circle><circle r="9" fill="#fff" style="filter:drop-shadow(0 0 10px #ff7a9c)"><animateMotion dur="3.2s" repeatCount="indefinite"><mpath href="#pB"/></animateMotion></circle></g>
+        <text class="gapt" style="--dl:1.3s" x="125" y="205">brecha</text>
+        <text class="gapt" style="--dl:2.4s" x="475" y="175">menor</text>
+        <text class="gapt" style="--dl:3.4s" x="800" y="205" text-anchor="middle">casi cerrada</text>
+        <text x="180" y="70" fill="#6ee7c8" font-size="26" font-weight="700">Escribían mejor en inglés</text>
+        <text x="180" y="335" fill="#ffb86b" font-size="26" font-weight="700">Tenían más dificultad con el inglés</text>
+      </svg>
+      <div class="note">Esquema ilustrativo construido con los promedios reportados en el estudio.</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:18px" data-f="1">
+      <div class="card tilt rv r" style="padding:26px 32px"><h3>Partían en desventaja</h3><p>Estudiantes internacionales, sin inglés en casa o con bajo puntaje de escritura al ingresar.</p><div class="small">0,043–0,209 DE por debajo</div></div>
+      <div class="card tilt rv r" style="padding:26px 32px"><h3 style="color:var(--a)">Y mejoraron más que el resto</h3><p>En algunos casos, incluso superaron a sus compañeros.</p><div class="small">mejora extra: +0,044 DE (fase 1) · +0,088 DE (fase 2)</div></div>
+    </div>
+  </div>
+  <div class="key rv" data-f="2"><span class="kl">IDEA CLAVE</span><span class="kt">Quienes tenían más dificultad con el idioma fueron los que más mejoraron.</span></div>
+</section>
+
+<!-- 9 RES 3 -->
+<section class="slide" data-accent="2" data-hue="45deg">
+  <div class="tag rv scr">Resultado 3 · Nivel socioeconómico</div>
+  <h2 class="split" style="margin-bottom:20px">Pero no todos <em>aprovecharon igual</em></h2>
+  <div class="row" style="align-items:center">
+    <div style="flex:1.1">
+      <svg class="chart" viewBox="0 0 700 420">
+        <polygon points="350,270 280,400 420,400" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+        <g class="beam">
+          <rect x="60" y="260" width="580" height="20" rx="10" fill="url(#gr)"/>
+          <g class="drop" style="--dl:.6s"><circle cx="110" cy="200" r="56" fill="url(#go)"/><text x="110" y="196" text-anchor="middle" font-size="21" font-weight="800" fill="#06101e">Menos</text><text x="110" y="220" text-anchor="middle" font-size="21" font-weight="800" fill="#06101e">recursos</text></g>
+          <g class="drop" style="--dl:1s"><circle cx="590" cy="185" r="72" fill="url(#gr)"/><text x="590" y="180" text-anchor="middle" font-size="25" font-weight="800" fill="#06101e">Más</text><text x="590" y="208" text-anchor="middle" font-size="25" font-weight="800" fill="#06101e">recursos</text></g>
+        </g>
+        <circle cx="350" cy="270" r="14" fill="#fff"/>
+      </svg>
+      <div class="note" style="text-align:center">Dentro del grupo con dificultad en el idioma. Esquema ilustrativo: la diferencia es pequeña.</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:18px" data-f="1">
+      <div class="card tilt rv r"><h3 style="color:var(--c)">Bajos ingresos</h3><p>Mejoraron un poco menos que los de mayores ingresos.</p><div class="small">0,025 DE menos</div></div>
+      <div class="card tilt rv r"><h3 style="color:var(--d)">Primera generación universitaria</h3><p>Mejoraron un poco menos que quienes tienen padres con estudios universitarios.</p><div class="small">0,015 DE menos</div></div>
+    </div>
+  </div>
+  <div class="key rv" data-f="2"><span class="kl">IDEA CLAVE</span><span class="kt">La misma herramienta que redujo una brecha mantuvo otra: los de más recursos aprovecharon un poco más.</span></div>
+</section>
+
+<!-- 10 ACCESO -->
+<section class="slide" data-accent="1" data-hue="-20deg">
+  <div class="tag rv scr">Nivel 1 · Acceso · Arum et al. · inicios de 2023</div>
+  <h2 class="split" style="margin-bottom:34px">Desde el inicio, <em>no todos la conocían</em></h2>
+  <div class="row" style="gap:50px;align-items:flex-start;justify-content:center">
+    <div data-f="1">
+      <div class="grp rv">¿Conocían ChatGPT?</div>
+      <div style="display:flex;gap:20px">
+        <div class="rg rv z"><div class="ringw"><svg viewBox="0 0 200 200"><circle class="rt" cx="100" cy="100" r="80"/><circle class="rv-c" style="--p:.937;--dl:.3s" cx="100" cy="100" r="80" stroke="url(#gr)" transform="rotate(-90 100 100)"/></svg><div class="cen cnt" data-to="93.7" data-dec="1" data-suf="%">0</div></div><div class="t">Estudiante promedio</div></div>
+        <div class="rg rv z"><div class="ringw"><svg viewBox="0 0 200 200"><circle class="rt" cx="100" cy="100" r="80"/><circle class="rv-c" style="--p:.891;--dl:.5s" cx="100" cy="100" r="80" stroke="url(#gr)" transform="rotate(-90 100 100)"/></svg><div class="cen cnt" data-to="89.1" data-dec="1" data-suf="%">0</div></div><div class="t">Primera generación universitaria</div></div>
+        <div class="rg rv z"><div class="ringw"><svg viewBox="0 0 200 200"><circle class="rt" cx="100" cy="100" r="80"/><circle class="rv-c" style="--p:.838;--dl:.7s" cx="100" cy="100" r="80" stroke="url(#go)" transform="rotate(-90 100 100)"/></svg><div class="cen cnt" data-to="83.8" data-dec="1" data-suf="%">0</div></div><div class="t">Minorías subrepresentadas</div></div>
+      </div>
+    </div>
+    <div class="vsep"></div>
+    <div data-f="2">
+      <div class="grp rv">¿La usaban para estudiar?</div>
+      <div style="display:flex;gap:40px">
+        <div class="rv"><div class="waf" data-n="18" style="--k:#6ee7c8"></div><div class="wt"><b style="color:var(--a)">18</b> de cada 100<br>Estudiante promedio</div></div>
+        <div class="rv"><div class="waf" data-n="9" style="--k:#ff7a9c"></div><div class="wt"><b style="color:var(--d)">9</b> de cada 100<br>Minorías subrepresentadas</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="key rv" data-f="3"><span class="kl">IDEA CLAVE</span><span class="kt">Antes de hablar de beneficios, ya había diferencias en quién conocía y usaba la herramienta.</span></div>
+</section>
+
+<!-- 11 HABILIDADES -->
+<section class="slide" data-accent="2" data-hue="35deg">
+  <div class="tag rv scr">Nivel 2 · Habilidades · Zhang et al.</div>
+  <h2 class="split" style="margin-bottom:64px">Saber usar la IA <em>también depende de los recursos</em></h2>
+  <div class="flow rv z">
+    <div class="node" style="--k:0"><b>Más recursos</b><span>nivel socioeconómico</span></div>
+    <div class="conn"><i></i><i></i><i></i></div>
+    <div class="node" style="--k:1;flex-basis:480px"><b class="g">Más alfabetización en IA</b><span>saber usarla de forma crítica</span></div>
+    <div class="conn"><i></i><i></i><i></i></div>
+    <div class="node" style="--k:2"><b>Más usos</b><span>de ChatGPT</span></div>
+  </div>
+  <p class="rv" style="margin-top:44px;text-align:center;font-size:28px">El nivel socioeconómico se relaciona <b>más</b> con saber usar la IA que con saber usar tecnología en general.</p>
+  <div class="key rv" data-f="1"><span class="kl">IDEA CLAVE</span><span class="kt">Tener acceso no basta: quien tiene más recursos suele saber usar mejor la IA.</span></div>
+</section>
+
+<!-- 12 ALTO IMPACTO -->
+<section class="slide" data-accent="3" data-hue="60deg">
+  <div class="tag rv scr">Alto impacto · Lee et al.</div>
+  <h2 class="split" style="margin-bottom:20px">¿Y cuando hay mucho en juego? <em>Admisiones</em></h2>
+  <div class="row" style="align-items:center">
+    <div class="rv" style="flex:1.2">
+      <svg class="chart" viewBox="0 0 800 400">
+        <line x1="60" y1="360" x2="760" y2="360" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+        <line x1="60" y1="30" x2="60" y2="360" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+        <path id="pU" class="path" style="--dl:.7s" pathLength="1" stroke="url(#gr)" d="M60 300 C 250 280,500 150,740 80"/>
+        <path id="pD" class="path" style="--dl:.9s" pathLength="1" stroke="url(#go)" d="M60 120 C 250 135,500 250,740 320"/>
+        <g class="trav"><circle r="9" fill="#fff" style="filter:drop-shadow(0 0 10px #6ee7c8)"><animateMotion dur="2.8s" repeatCount="indefinite"><mpath href="#pU"/></animateMotion></circle><circle r="9" fill="#fff" style="filter:drop-shadow(0 0 10px #ff7a9c)"><animateMotion dur="2.8s" repeatCount="indefinite"><mpath href="#pD"/></animateMotion></circle></g>
+        <circle class="dt" style="--dl:2.6s" cx="740" cy="80" r="12" fill="#6ee7c8"/><circle class="dt" style="--dl:2.6s" cx="740" cy="320" r="12" fill="#ff7a9c"/>
+        <text x="90" y="395" class="ax">2020</text><text x="690" y="395" class="ax">2024</text>
+        <text x="80" y="345" fill="#6ee7c8" font-size="26" font-weight="700">Uso de IA ↑</text>
+        <text x="400" y="45" fill="#ff7a9c" font-size="26" font-weight="700">Probabilidad de admisión ↓</text>
+      </svg>
+      <div class="note">Esquema ilustrativo del patrón en solicitantes de menores recursos.</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:18px" data-f="1">
+      <div class="card tilt rv r"><div class="num s cnt" data-to="81663">0</div><div class="lab">ensayos de admisión a una universidad muy selectiva (2020–2024)</div></div>
+      <div class="card tilt rv r"><p style="font-size:27px">Los aspirantes con <b>menos recursos</b> usaron más la IA… y eso se asoció con <b>menos probabilidad</b> de ser admitidos.</p></div>
+    </div>
+  </div>
+  <div class="key rv" data-f="2"><span class="kl">IDEA CLAVE</span><span class="kt">En evaluaciones importantes, usar más IA no se tradujo en más oportunidades.</span></div>
+</section>
+
+<!-- 13 IDEA CENTRAL -->
+<section class="slide" data-accent="1" data-hue="-35deg">
+  <div class="tag rv scr">Discusión</div>
+  <div class="kin">La pregunta no es <span class="strk">si ChatGPT mejora el desempeño</span>,</div>
+  <div class="kin" style="margin-top:20px">sino <span class="big2 g">para quién.</span></div>
+  <div class="row" style="margin-top:50px" data-f="1">
+    <div class="card tilt rv l" style="padding:28px 34px"><h3 style="color:var(--a)">Reduce brechas</h3><p>Ayudó más a quienes tenían dificultad con el idioma.</p></div>
+    <div class="card tilt rv r" style="padding:28px 34px"><h3 style="color:var(--c)">Mantiene otras</h3><p>Los estudiantes con más recursos la aprovecharon un poco más.</p></div>
+  </div>
+</section>
+
+<!-- 14 CONCLUSIONES -->
+<section class="slide" data-accent="0" data-hue="15deg">
+  <div class="tag rv scr">Conclusiones</div>
+  <h2 class="split" style="font-size:58px;margin-bottom:30px">La IA puede ayudar a la equidad, <em>pero no lo hace sola</em></h2>
+  <ul class="cl">
+    <li class="rv l" data-f="1"><svg class="chk" viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" pathLength="1"/><path d="M13 23 L20 30 L32 15" pathLength="1"/></svg>Enseñar <b>alfabetización en IA</b> a todos los estudiantes.</li>
+    <li class="rv l" data-f="2"><svg class="chk" viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" pathLength="1"/><path d="M13 23 L20 30 L32 15" pathLength="1"/></svg><b>Medir los efectos por grupos</b>, no solo el promedio.</li>
+  </ul>
+  <div class="lim rv" data-f="4">
+    <div class="k">Limitaciones</div>
+    <span class="pill">No prueba causa directa</span><span class="pill">Solo universidades de EE. UU.</span><span class="pill">Tareas de poco peso en la nota</span><span class="pill">Escribir mejor ≠ aprender más</span>
+  </div>
+</section>
+
+<!-- 15 GRACIAS -->
+<section class="slide" data-accent="1" data-hue="0deg" data-pt="GRACIAS" data-ptx="960" data-pty="430" data-pts="250" style="align-items:center;text-align:center;justify-content:flex-end;padding-bottom:170px">
+  <p class="rv" style="font-size:44px;color:var(--text)">¿Preguntas?</p>
+  <p class="rv" style="margin-top:36px;font-size:30px">Daniel Trujillo Marin &nbsp;·&nbsp; Heiner Rincon &nbsp;·&nbsp; Universidad Icesi</p>
+</section>
+</div>
+
+<script>
+(function(){
+  var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+  var stage=$('#stage'), slides=$$('.slide'), cur=-1, step=0, timers=[], raf=[], tos=[], swapTo=null, target=-1;
+  var FONT="'Segoe UI',system-ui,-apple-system,Helvetica,Arial,sans-serif";
+  var scale=1;
+  function fit(){scale=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='translate(-50%,-50%) scale('+scale+')';}
+  addEventListener('resize',fit);fit();
+
+  var sh=$('#shut');for(var k=0;k<12;k++){var b=document.createElement('i');b.style.setProperty('--k',k);sh.appendChild(b);}
+
+  function proc(node,g,ctx){
+    [].slice.call(node.childNodes).forEach(function(ch){
+      if(ch.nodeType===3){
+        var frag=document.createDocumentFragment();
+        ch.textContent.split(/(\s+)/).forEach(function(t){
+          if(!t)return;
+          if(/^\s+$/.test(t)){frag.appendChild(document.createTextNode(' '));return;}
+          var w=document.createElement('span');w.className='w';
+          var i=document.createElement('i');i.textContent=t;if(g)i.className='g';
+          i.style.transitionDelay=(0.35+ctx.n*0.08)+'s';ctx.n++;
+          w.appendChild(i);frag.appendChild(w);
+        });
+        node.replaceChild(frag,ch);
+      }else if(ch.nodeType===1&&ch.tagName!=='BR'){proc(ch,g||ch.tagName==='EM',ctx);}
+    });
+  }
+  $$('.split').forEach(function(el){proc(el,false,{n:0});});
+
+  /* pasos y retrasos */
+  function grp(el){var f=el.closest('[data-f]');return f?+f.dataset.f:0;}
+  slides.forEach(function(sl){
+    var cnt={};
+    $$('.rv',sl).forEach(function(el){
+      var gk=grp(el);cnt[gk]=cnt[gk]||0;
+      if(!el.style.getPropertyValue('--dl'))el.style.setProperty('--dl',(gk?0.1+cnt[gk]*0.15:0.55+cnt[gk]*0.14)+'s');
+      cnt[gk]++;
+    });
+    sl._max=0;$$('[data-f]',sl).forEach(function(e){sl._max=Math.max(sl._max,+e.dataset.f);});
+  });
+
+  var GL='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=<>/';
+  $$('.scr').forEach(function(el){el.dataset.txt=el.textContent;});
+  function scramble(el){
+    var t=el.dataset.txt,n=t.length,st=null;
+    function f(ts){
+      if(!st)st=ts;var p=(ts-st)/900,out='';
+      for(var i=0;i<n;i++){var r=i/n;if(t[i]===' '||t[i]==='·'||p>r+0.15)out+=t[i];else if(p>r-0.25)out+=GL[(Math.random()*GL.length)|0];else out+=' ';}
+      el.textContent=out;if(p<1.2)raf.push(requestAnimationFrame(f));else el.textContent=t;
+    }
+    el.textContent='';tos.push(setTimeout(function(){raf.push(requestAnimationFrame(f));},250));
+  }
+
+  function fmt(v,d){var s=Math.abs(v).toFixed(d).split('.');var i=s[0].replace(/\B(?=(\d{3})+(?!\d))/g,' ');return d?i+','+s[1]:i;}
+  function txt(el,v){el.textContent=(el.dataset.pre||'')+fmt(v,+(el.dataset.dec||0))+(el.dataset.suf||'');}
+  $$('.cnt').forEach(function(el){txt(el,0);});
+  function runCount(el){
+    var to=parseFloat(el.dataset.to),t0=null;
+    var rd=el.closest('[style*="--dl"]')||el.closest('.rv');var dd=rd?(parseFloat(rd.style.getPropertyValue('--dl'))||0.4)*1000+200:600;
+    txt(el,0);
+    function stepf(ts){
+      if(!t0)t0=ts;var p=(ts-t0-dd)/2000;
+      if(p<0){raf.push(requestAnimationFrame(stepf));return;}
+      if(p>=1){txt(el,to);return;}
+      txt(el,to*(1-Math.pow(2,-10*p)));raf.push(requestAnimationFrame(stepf));
+    }
+    raf.push(requestAnimationFrame(stepf));
+  }
+
+  $$('.tilt').forEach(function(el){
+    el.addEventListener('mousemove',function(e){
+      var r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      el.style.transform='perspective(1000px) rotateX('+((0.5-y)*16)+'deg) rotateY('+((x-0.5)*16)+'deg) translateZ(20px)';
+      el.style.setProperty('--gx',(x*100)+'%');el.style.setProperty('--gy',(y*100)+'%');
+    });
+    el.addEventListener('mouseleave',function(){el.style.transform='';});
+  });
+
+  $$('.waf').forEach(function(w){
+    var n=+w.dataset.n,h='';
+    for(var i=0;i<100;i++)h+='<span class="'+(i<n?'on':'')+'" style="--dl:'+(i<n?(0.4+i*0.08).toFixed(2):0)+'s"></span>';
+    w.innerHTML=h;
+  });
+
+  /* LLM */
+  var toks=['Los','LLMs','pueden','reducir','brechas'];
+  var W=[[.30,.25,.15,.10,.20],[.10,.35,.20,.15,.20],[.08,.30,.22,.25,.15],[.07,.18,.20,.25,.30],[.05,.25,.12,.28,.30]];
+  var chipsEl=$('#chips'),chipEls=[];
+  toks.forEach(function(t){
+    var c=document.createElement('div');c.className='chipc';
+    c.innerHTML='<div class="chip">'+t+'</div>';
+    chipsEl.appendChild(c);chipEls.push(c);
+  });
+  function attn(q){
+    var svg=$('#attnsvg'),ns='http://www.w3.org/2000/svg';svg.innerHTML='';
+    var cx=chipEls.map(function(c){return c.offsetLeft+c.offsetWidth/2;});
+    chipEls.forEach(function(c,i){$('.chip',c).classList.toggle('q',i===q);});
+    W[q].forEach(function(w,j){
+      if(j===q)return;
+      var x1=cx[q],x2=cx[j],d=Math.abs(x2-x1),h=180-Math.min(150,d*0.4);
+      var p=document.createElementNS(ns,'path');
+      p.setAttribute('d','M'+x1+' 176 C '+x1+' '+h+','+x2+' '+h+','+x2+' 176');
+      p.setAttribute('pathLength','1');p.setAttribute('class','arc');
+      p.setAttribute('stroke',j%2?'#6ee7c8':'#7c9cff');p.setAttribute('stroke-width',3+w*30);p.setAttribute('opacity',.35+w*1.6);
+      svg.appendChild(p);
+      var t=document.createElementNS(ns,'text');t.setAttribute('x',x2);t.setAttribute('y',Math.max(h+12,24));t.setAttribute('class','pct');
+      t.textContent=Math.round(w*100)+'%';svg.appendChild(t);
+    });
+  }
+  function typeIt(el,s,speed,done){
+    el.textContent='';var i=0;
+    var id=setInterval(function(){if(i<s.length){el.textContent+=s[i++];}else{clearInterval(id);done&&done();}},speed);timers.push(id);
+  }
+
+  function dotCol(t,a){var c1=[110,231,200],c2=[124,156,255],c3=[255,122,156],r,g,b,k;
+    if(t<.5){k=t*2;r=c1[0]+(c2[0]-c1[0])*k;g=c1[1]+(c2[1]-c1[1])*k;b=c1[2]+(c2[2]-c1[2])*k;}else{k=(t-.5)*2;r=c2[0]+(c3[0]-c2[0])*k;g=c2[1]+(c3[1]-c2[1])*k;b=c2[2]+(c3[2]-c2[2])*k;}
+    return 'rgba('+(r|0)+','+(g|0)+','+(b|0)+','+a+')';}
+  var DC=[];for(var q=0;q<=20;q++)DC.push(dotCol(q/20,.9));
+  var dcv=$('#dots'),dctx=dcv.getContext('2d'),DOTS=[];
+  (function(){var N=11403,s=6,cols=Math.floor(1640/s);
+    for(var i=0;i<N;i++){var x=(i%cols)*s+3,y=Math.floor(i/cols)*s+3;DOTS.push({x:x,y:y,t:(x/1640)*0.75+Math.random()*0.25,c:x/1640,ph:Math.random()*6.28});}
+  })();
+  function runDots(){
+    var st=null;
+    function f(ts){
+      if(!st)st=ts;var p=(ts-st-1400)/2600,tt=ts/1000;
+      dctx.clearRect(0,0,1640,230);
+      for(var i=0;i<DOTS.length;i++){var d=DOTS[i];var k=(p-d.t)*6;if(k<=0)continue;if(k>1)k=1;
+        var tw=p>1.2?(0.7+0.3*Math.sin(tt*2.2+d.ph)):1;
+        var sz=3*k*(k<1?1.6-0.6*k:1)*tw;dctx.fillStyle=DC[(d.c*20)|0];dctx.fillRect(Math.round(d.x-sz/2),Math.round(d.y-sz/2),sz,sz);}
+      raf.push(requestAnimationFrame(f));
+    }
+    dctx.clearRect(0,0,1640,230);raf.push(requestAnimationFrame(f));
+  }
+
+  var arcQ=0,arcTimer=null;
+  function startArcs(){if(arcTimer)return;arcQ=0;attn(0);arcTimer=setInterval(function(){arcQ=(arcQ+1)%toks.length;attn(arcQ);},2200);timers.push(arcTimer);}
+  var enterHooks={
+    's-attn':function(full){
+      arcTimer=null;$('#attnsvg').innerHTML='';chipEls.forEach(function(c){c.classList.remove('in');$('.chip',c).classList.remove('q');});
+      var t=$('#typed');
+      if(full){t.textContent='> Los LLMs pueden reducir brechas';chipEls.forEach(function(c){c.classList.add('in');});startArcs();return;}
+      t.textContent='';
+      tos.push(setTimeout(function(){
+        typeIt(t,'> Los LLMs pueden reducir brechas',45,function(){
+          chipEls.forEach(function(c,i){tos.push(setTimeout(function(){c.classList.add('in');},i*140));});
+        });
+      },900));
+    },
+    's-dots':function(){runDots();}
+  };
+  var fragHooks={arcs:function(){chipEls.forEach(function(c){c.classList.add('in');});startArcs();}};
+
+  /* fondo */
+  var cv=$('#bg'),ctx=cv.getContext('2d'),P=[],mouse={x:-999,y:-999},acc=[[110,231,200],[124,156,255],[255,184,107],[255,122,156]],colNow=[110,231,200],colTo=[110,231,200];
+  for(var i=0;i<90;i++)P.push({x:Math.random()*1920,y:Math.random()*1080,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,r:1.5+Math.random()*2.5});
+  var idle;
+  addEventListener('mousemove',function(e){
+    var r=stage.getBoundingClientRect();mouse.x=(e.clientX-r.left)/scale;mouse.y=(e.clientY-r.top)/scale;
+    stage.style.setProperty('--mx',(mouse.x/960-1).toFixed(3));stage.style.setProperty('--my',(mouse.y/540-1).toFixed(3));
+    var sp=$('#spot');sp.style.left=mouse.x+'px';sp.style.top=mouse.y+'px';sp.style.opacity=1;
+    stage.classList.remove('nocur');clearTimeout(idle);idle=setTimeout(function(){stage.classList.add('nocur');sp.style.opacity=0;mouse.x=mouse.y=-999;},2500);
+  });
+  function burst(s){P.forEach(function(p){var a=Math.random()*6.283;p.vx+=Math.cos(a)*s;p.vy+=Math.sin(a)*s;});}
+
+  var pcv=$('#pt'),pctx=pcv.getContext('2d'),NT=4600,TP=[],cache={};
+  for(var i=0;i<NT;i++)TP.push({x:Math.random()*1920,y:Math.random()*1080,vx:0,vy:0,tx:null,ty:null,a:0,ta:0,c:'#fff',s:2.4+Math.random()*1.5,ph:Math.random()*6.28});
+  function sample(sl){
+    var key=sl.dataset.pt+sl.dataset.ptx+sl.dataset.pty+sl.dataset.pts;if(cache[key])return cache[key];
+    var oc=document.createElement('canvas');oc.width=1920;oc.height=1080;var o=oc.getContext('2d');
+    o.fillStyle='#fff';o.textAlign='center';o.textBaseline='middle';o.font='900 '+sl.dataset.pts+'px '+FONT;
+    o.fillText(sl.dataset.pt,+sl.dataset.ptx,+sl.dataset.pty);
+    var data=o.getImageData(0,0,1920,1080).data,gap=4,pts;
+    do{pts=[];for(var y=0;y<1080;y+=gap)for(var x=0;x<1920;x+=gap)if(data[(y*1920+x)*4+3]>140)pts.push([x,y]);gap++;}while(pts.length>NT&&gap<30);
+    var minx=1e9,maxx=-1e9;pts.forEach(function(p){if(p[0]<minx)minx=p[0];if(p[0]>maxx)maxx=p[0];});
+    for(var i=pts.length-1;i>0;i--){var j=(Math.random()*(i+1))|0,t=pts[i];pts[i]=pts[j];pts[j]=t;}
+    pts.forEach(function(p){p[2]=dotCol((p[0]-minx)/Math.max(1,maxx-minx),1);});
+    cache[key]=pts;return pts;
+  }
+  function setPT(sl){
+    if(sl&&sl.dataset.pt){
+      var pts=sample(sl);
+      TP.forEach(function(p,i){if(i<pts.length){p.tx=pts[i][0];p.ty=pts[i][1];p.ta=1;p.c=pts[i][2];}else{p.tx=null;p.ta=0;}});
+    }else{
+      TP.forEach(function(p){if(p.tx!==null){var a=Math.random()*6.283,s=4+Math.random()*10;p.vx=Math.cos(a)*s;p.vy=Math.sin(a)*s;}p.tx=null;p.ta=0;});
+    }
+  }
+
+  var lastTs=0;
+  function draw(ts){
+    var tt=ts/1000,dt=lastTs?Math.min(0.12,(ts-lastTs)/1000):0.016;lastTs=ts;var fr=dt*60,dec=Math.pow(0.9,fr),ez=1-Math.pow(0.925,fr);
+    for(var k=0;k<3;k++)colNow[k]+=(colTo[k]-colNow[k])*.04;
+    var c=colNow.map(Math.round).join(',');
+    ctx.clearRect(0,0,1920,1080);
+    for(var i=0;i<P.length;i++){
+      var p=P[i],dx=p.x-mouse.x,dy=p.y-mouse.y,dm=Math.sqrt(dx*dx+dy*dy);
+      if(dm<230){p.vx+=dx/dm*.08;p.vy+=dy/dm*.08;}
+      p.vx*=.985;p.vy*=.985;
+      if(Math.abs(p.vx)+Math.abs(p.vy)<.2){p.vx+=(Math.random()-.5)*.04;p.vy+=(Math.random()-.5)*.04;}
+      p.x+=p.vx*fr;p.y+=p.vy*fr;
+      if(p.x<0)p.x=1920;if(p.x>1920)p.x=0;if(p.y<0)p.y=1080;if(p.y>1080)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.fillStyle='rgba('+c+',.75)';ctx.fill();
+      for(var j=i+1;j<P.length;j++){
+        var q=P[j],ax=p.x-q.x,ay=p.y-q.y,d=ax*ax+ay*ay;
+        if(d<24000){ctx.strokeStyle='rgba('+c+','+(0.22*(1-d/24000))+')';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}
+      }
+      if(dm<260){ctx.strokeStyle='rgba(255,255,255,'+(0.35*(1-dm/260))+')';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();}
+    }
+    pctx.clearRect(0,0,1920,1080);
+    for(var n=0;n<TP.length;n++){
+      var t=TP[n];
+      t.vx*=dec;t.vy*=dec;
+      if(t.tx!==null){t.x+=(t.tx-t.x)*ez;t.y+=(t.ty-t.y)*ez;}
+      var mx=t.x-mouse.x,my=t.y-mouse.y,md=mx*mx+my*my;
+      if(md<16900){var m=Math.sqrt(md)+.01,f=(1-m/130)*5;t.vx+=mx/m*f;t.vy+=my/m*f;}
+      t.x+=t.vx*fr;t.y+=t.vy*fr;t.a+=(t.ta-t.a)*Math.min(1,0.05*fr);
+      if(t.a<0.02)continue;
+      var jx=Math.sin(tt*1.6+t.ph)*0.9,jy=Math.cos(tt*1.3+t.ph)*0.9;
+      pctx.globalAlpha=t.a;pctx.fillStyle=t.c;pctx.fillRect(t.x+jx-t.s/2,t.y+jy-t.s/2,t.s,t.s);
+    }
+    pctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  /* revelado por pasos */
+  function revealStep(sl,k){
+    $$('[data-f="'+k+'"]',sl).forEach(function(el){
+      el.classList.remove('hold');
+      $$('.cnt',el).forEach(runCount);
+      if(el.dataset.hook&&fragHooks[el.dataset.hook])fragHooks[el.dataset.hook]();
+    });
+    burst(0.8);
+  }
+  function hideStep(sl,k){$$('[data-f="'+k+'"]',sl).forEach(function(el){el.classList.add('hold');});}
+
+  function doSwap(n,dir,full){
+    timers.forEach(clearInterval);timers=[];tos.forEach(clearTimeout);tos=[];raf.forEach(cancelAnimationFrame);raf=[];
+    var old=slides[cur];
+    if(old){old.style.setProperty('--z',dir>0?'500px':'-700px');old.style.setProperty('--ry',dir>0?'12deg':'-12deg');old.classList.add('out');old.classList.remove('active');}
+    cur=n;var sl=slides[cur];
+    $$('[data-f]',sl).forEach(function(el){el.classList.add('hold');});
+    sl.classList.add('prep');sl.style.setProperty('--z',dir>0?'-700px':'500px');sl.style.setProperty('--ry',dir>0?'-12deg':'12deg');
+    void sl.offsetWidth;sl.classList.remove('prep','out');sl.classList.add('active');
+    $('#prog').style.width=((cur+1)/slides.length*100)+'%';
+    stage.style.setProperty('--hue',sl.dataset.hue||'0deg');
+    colTo=acc[(+sl.dataset.accent||0)%acc.length];burst(2.4);
+    setPT(sl);
+    $$('.scr',sl).forEach(scramble);
+    $$('.cnt',sl).forEach(function(el){if(!el.closest('[data-f]'))runCount(el);else txt(el,0);});
+    if(sl.id&&enterHooks[sl.id])enterHooks[sl.id](full);
+    step=0;
+    if(full){for(var k=1;k<=sl._max;k++)revealStep(sl,k);step=sl._max;}
+    try{history.replaceState(null,'','#'+(cur+1));}catch(e){}
+  }
+  function base(){return swapTo!==null?target:cur;}
+  function go(n,full){
+    n=Math.max(0,Math.min(slides.length-1,n));
+    if(n===base())return;
+    var dir=cur<0||n>base()?1:-1;target=n;
+    if(cur<0){doSwap(n,1,full);return;}
+    sh.classList.remove('go');void sh.offsetWidth;sh.classList.add('go');
+    if(swapTo!==null)clearTimeout(swapTo);
+    swapTo=setTimeout(function(){swapTo=null;doSwap(target,dir,full);},430);
+  }
+  function next(){
+    if(swapTo!==null){go(target+1);return;}
+    var sl=slides[cur];
+    if(step<sl._max){step++;revealStep(sl,step);}
+    else go(cur+1);
+  }
+  function prev(){
+    if(swapTo!==null){go(target-1,true);return;}
+    var sl=slides[cur];
+    if(step>0){hideStep(sl,step);step--;}
+    else go(cur-1,true);
+  }
+  addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k==='ArrowDown'||k==='PageDown'||k===' '||k==='Enter'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||k==='Backspace'){e.preventDefault();prev();}
+    else if(k==='Home')go(0);else if(k==='End')go(slides.length-1,true);
+    else if(k==='f'||k==='F'){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}else document.exitFullscreen();}
+  });
+  var tx=null;
+  addEventListener('touchstart',function(e){tx=e.touches[0].clientX;});
+  addEventListener('touchend',function(e){if(tx===null)return;var d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?next():prev();}tx=null;});
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  setTimeout(function(){go(h>0?h-1:0);},150);
+})();
+</script>
+</body>
+</html>
