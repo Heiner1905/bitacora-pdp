@@ -137,7 +137,7 @@ ul, ol { padding: 0; margin: 0; list-style: none; }
   font-variation-settings: normal !important;
   line-height: 1.5 !important;
 }
-/* Un pendiente grande se monta como un plano vacío: visor de cámara con marcas de encuadre.
+/* Un pendiente grande se monta como un plano vacío del tamaño del texto que espera.
    Sigue siendo punteado, estático y en la fuente de lectura. */
 .pendiente.plano {
   display: block;
@@ -146,47 +146,17 @@ ul, ol { padding: 0; margin: 0; list-style: none; }
   padding: 20px 24px;
   min-height: var(--alto-plano, 9rem);
 }
-.pendiente.plano::before,
-.pendiente.plano::after {
-  content: "";
-  position: absolute;
-  width: 18px; height: 18px;
-  border: 0 solid var(--proyeccion);
-  opacity: .55;
-}
-.pendiente.plano::before { left: -6px; top: -6px; border-top-width: 1px; border-left-width: 1px; }
-.pendiente.plano::after { right: -6px; bottom: -6px; border-bottom-width: 1px; border-right-width: 1px; }
 
 /* Antes de la entrada (la clase la quita principal.js tras fijar los estados iniciales) */
+html.precarga .nombre__txt { transform: translateY(108%); }
+html.precarga .portada__proposito,
+html.precarga .creditos dd,
+html.precarga .bajar__texto { clip-path: inset(0 100% 0 0); }
 html.precarga .portada__nombre,
 html.precarga .simbolo,
-html.precarga .portada__proposito,
-html.precarga .creditos,
-html.precarga .portada__bajar,
 html.precarga .claqueta { opacity: 0; }
 
 /* ---------- Grano y corte ---------- */
-.grano {
-  position: fixed;
-  inset: -50%;
-  z-index: 60;
-  pointer-events: none;
-  opacity: .065;
-  background-repeat: repeat;
-  background-size: 200px 200px;
-  animation: grano .8s steps(8) infinite;
-}
-@keyframes grano {
-  0% { transform: translate(0, 0); }
-  12.5% { transform: translate(-3%, 2%); }
-  25% { transform: translate(2%, -4%); }
-  37.5% { transform: translate(-5%, -1%); }
-  50% { transform: translate(4%, 3%); }
-  62.5% { transform: translate(-1%, 5%); }
-  75% { transform: translate(3%, -2%); }
-  87.5% { transform: translate(-4%, 4%); }
-  100% { transform: translate(0, 0); }
-}
 .corte {
   position: fixed; inset: 0; z-index: 55;
   background-color: var(--corte);
@@ -427,7 +397,7 @@ main { position: relative; }
   position: absolute;
   z-index: 1;
   left: -.1em;
-  bottom: -.13em;
+  bottom: 40px;
   margin: 0;
   font-family: var(--f-display);
   font-weight: 100;
@@ -452,17 +422,7 @@ main { position: relative; }
   padding-left: 0; padding-right: 0;
 }
 .indice { grid-column: 1 / span 4; align-self: start; position: sticky; top: 96px; }
-.indice__titulo {
-  font-family: var(--f-display);
-  font-weight: 300;
-  font-size: clamp(1.25rem, .9rem + .7vw, 1.625rem);
-  line-height: 1.1;
-  letter-spacing: -.015em;
-  max-width: 18ch;
-  text-wrap: balance;
-  color: var(--plata);
-}
-.indice__lista { margin-top: 28px; border-left: 1px solid var(--hairline); }
+.indice__lista { margin-top: 0; border-left: 1px solid var(--hairline); }
 .indice__lista li { position: relative; padding: 10px 0 10px 18px; }
 .indice__lista a { text-decoration: none; color: var(--niebla); display: inline-block; padding: 4px 0; transition: color .25s; }
 .indice__lista a:hover { color: var(--proyeccion); }
@@ -543,8 +503,6 @@ main { position: relative; }
 .ch { transition: none; }
 .ch.e1 { background: var(--proyeccion); color: var(--corte); }
 .ch.e2 { color: var(--fragmento); }
-.ch.e3 { outline: 1px solid var(--iris); outline-offset: -1px; }
-.ch.e4 { color: transparent; -webkit-text-stroke: 1px var(--proyeccion); }
 .ch.e5 { color: var(--niebla); }
 
 .pie {
@@ -607,7 +565,6 @@ html.cursor-activo .claqueta, html.cursor-activo .claqueta * { cursor: none; }
   .mini { width: 24px; height: 24px; }
   .portada { padding-bottom: 20px; }
   .simbolo { width: min(66vw, 46svh); margin: 48px 8px 0 0; }
-  .simbolo__pista { top: auto; bottom: 8%; right: calc(100% + 4px); width: 26vw; white-space: normal; line-height: 1.35; }
   .nombre__linea--b { margin-left: 12vw; }
   .portada__proposito { grid-column: 1 / -1; font-size: 1.1875rem; line-height: 1.32; margin-top: 18px; }
   .creditos { margin-top: 22px; row-gap: 14px; column-gap: 12px; }
@@ -632,7 +589,6 @@ html.cursor-activo .claqueta, html.cursor-activo .claqueta * { cursor: none; }
 
 /* ---------- Movimiento: estado sin JS / reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .grano { animation: none; }
   .semana { margin-top: 0; }
   html { scroll-behavior: auto; }
 }
@@ -640,9 +596,9 @@ html.cursor-activo .claqueta, html.cursor-activo .claqueta * { cursor: none; }
 /* ---------- Impresión (carta, una semana por página) ---------- */
 @media print {
   @page { size: letter; margin: 18mm 16mm; }
-  :root { --proyeccion: #111; --plata: #333; --niebla: #555; --sala: #fff; --hairline: #bbb; --pendiente-borde: #888; }
+  :root { color-scheme: light; --proyeccion: #111; --plata: #333; --niebla: #555; --sala: #fff; --hairline: #bbb; --pendiente-borde: #888; }
   html, body { background: #fff !important; color: #111; }
-  body::before, .grano, .particulas, .corte, .cursor, .saltar, .portada__bajar, .claqueta__centro { display: none !important; }
+  body::before, .particulas, .corte, .cursor, .saltar, .portada__bajar, .claqueta__centro { display: none !important; }
   .claqueta { position: static; padding: 0 0 12px; color: #555; }
   .claqueta__marca { color: #111; }
   .portada { min-height: auto; display: block; padding: 0; break-after: page; }
@@ -672,7 +628,17 @@ html.cursor-activo .claqueta, html.cursor-activo .claqueta * { cursor: none; }
   .semana__cuerpo { border-top: 1px solid #bbb; margin: 8mm 0 0; padding-bottom: 0 !important; }
   .pin-spacer { display: block !important; }
   .giro { break-before: page; }
-  .giro__rotulo { font-size: 96pt; }
+  .giro__rotulo { font-size: 54pt; }
+  .giro { break-before: auto !important; padding: 6mm 0 0 !important; }
+  .semana__numero { font-size: 44pt !important; margin: 0 0 3mm; }
+  .semana__titulo { font-size: 24pt; margin-top: 5mm; }
+  .semana__plano, .bloques { margin-top: 5mm; }
+  .bloques { row-gap: 0; }
+  .bloque__titulo { font-size: 15pt; margin-bottom: 3mm; }
+  .pendiente.plano { min-height: 0 !important; padding: 8px 10px; }
+  .semana__cuerpo { padding-top: 4mm !important; }
+  .bloque { margin-bottom: 5mm !important; }
+  .giro__cuerpo { margin-top: 4mm; }
   .bloques { display: block; }
   .bloque { break-inside: avoid; }
   :focus, :focus-visible { outline: none !important; }

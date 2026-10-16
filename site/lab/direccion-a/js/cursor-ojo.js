@@ -54,6 +54,19 @@
     var idle = setInterval(function () { if (performance.now() - ultimo > 120) reposo(); }, 120);
     function salir() { gsap.to(el, { opacity: 0, duration: 0.2 }); visible = false; }
 
+    // al hacer scroll el puntero no se mueve pero lo que hay debajo sí: se reevalúa la zona
+    var pedido = false;
+    function alScroll() {
+      if (pedido) return;
+      pedido = true;
+      requestAnimationFrame(function () {
+        pedido = false;
+        if (!visible) return;
+        var t = document.elementFromPoint(px, py);
+        if (!t || !t.closest || !t.closest(".portada, .giro, .claqueta")) { gsap.to(el, { opacity: 0, duration: 0.12 }); visible = false; }
+      });
+    }
+    window.addEventListener("scroll", alScroll, { passive: true });
     window.addEventListener("pointermove", mover, { passive: true });
     document.documentElement.addEventListener("pointerleave", salir);
 
@@ -61,6 +74,7 @@
       destruir: function () {
         clearInterval(idle);
         window.removeEventListener("pointermove", mover);
+        window.removeEventListener("scroll", alScroll);
         document.documentElement.removeEventListener("pointerleave", salir);
         document.documentElement.classList.remove("cursor-activo");
         el.remove();

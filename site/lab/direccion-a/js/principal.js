@@ -85,8 +85,6 @@
     var cuerpo = crear("div", "semana__cuerpo");
     var indice = crear("nav", "indice");
     indice.setAttribute("aria-label", "Planos de la semana " + k);
-    var it = crear("p", "indice__titulo", s.titulo);
-    it.setAttribute("aria-hidden", "true");
     var ol = crear("ol", "indice__lista");
     var bloques = crear("div", "bloques");
     var pasos = (s.bloques || []).map(function (b, i) { return { id: s.id + "-plano-" + (i + 1), paso: "Plano " + pad(i + 1), nombre: b.titulo, b: b }; });
@@ -119,7 +117,7 @@
       }
       bloques.appendChild(art);
     });
-    indice.append(it, ol);
+    indice.appendChild(ol);
     cuerpo.append(indice, bloques);
 
     /* GIRO: escena propia */
@@ -174,7 +172,6 @@
         d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = Math.random() * 40 | 0;
       }
       g.putImageData(img, 0, 0);
-      $(".grano").style.backgroundImage = "url(" + c.toDataURL("image/png") + ")";
       // el corte a negro lleva su propio golpe de grano, mucho más denso
       for (var j = 0; j < d.length; j += 4) {
         var w = Math.random() * 255 | 0;
@@ -191,7 +188,7 @@
     return;
   }
 
-  gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin, CustomEase);
+  gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin, CustomEase);
   CustomEase.create("proyector", "M0,0 C0.62,0 0.12,1 1,1");
   ScrollTrigger.config({ ignoreMobileResize: true });
   if ("scrollRestoration" in history && !location.hash) history.scrollRestoration = "manual";
@@ -228,14 +225,41 @@
     if (el.textContent === txt) return;
     if (inmediato || !window.ScrambleTextPlugin) el.textContent = txt;
     else gsap.to(el, { duration: 0.5, scrambleText: { text: txt, chars: "0123456789", speed: 0.8 } });
-    var r = 1 - k / N;
-    gsap.to("#mini-fragmento", { x: 30 * r, y: -30 * r, duration: inmediato ? 0 : 0.9, ease: "power3.out" });
-    // el fragmento avanzó: un pulso naranja lo celebra (solo hacia adelante y con movimiento)
-    if (!inmediato && k > 0) {
-      gsap.fromTo("#mini-pulso", { scale: 1, opacity: 0.95 }, { scale: 1.9, opacity: 0, duration: 0.9, ease: "expo.out", svgOrigin: "200 200" });
-      gsap.fromTo(".mini", { scale: 1.35 }, { scale: 1, duration: 0.7, ease: "expo.out" });
-    }
+    // cada escena nueva late en la claqueta (solo hacia adelante y con movimiento)
+    if (!inmediato && k > 0) pulso();
   }
+
+  function pulso() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    gsap.fromTo("#mini-pulso", { scale: 1, opacity: 0.95 }, { scale: 1.9, opacity: 0, duration: 0.9, ease: "expo.out", svgOrigin: "200 200" });
+    gsap.fromTo(".mini", { scale: 1.35 }, { scale: 1, duration: 0.7, ease: "expo.out" });
+  }
+
+  /* Crecimiento: el mini-símbolo lee el avance real k/N en toda la página.
+     El arco naranja crece desde el borde del hueco y el fragmento se acerca a su encaje. */
+  (function avance() {
+    var arco = document.getElementById("mini-avance");
+    var frag = document.getElementById("mini-fragmento");
+    var semanas = $$(".semana");
+    var pedido = false;
+    function medir() {
+      pedido = false;
+      var vh = window.innerHeight, k = 0;
+      semanas.forEach(function (sec) {
+        var r = sec.getBoundingClientRect();
+        // 0 cuando la semana llega arriba, 1 cuando terminó de pasar todo su alto
+        var p = Math.min(1, Math.max(0, (-r.top) / Math.max(1, r.height - vh)));
+        k += p;
+      });
+      var f = k / N;
+      arco.setAttribute("stroke-dasharray", (f * 0.875).toFixed(4) + " 1");
+      var r2 = 1 - f;
+      frag.setAttribute("transform", "translate(" + (30 * r2).toFixed(2) + "," + (-30 * r2).toFixed(2) + ")");
+    }
+    window.addEventListener("scroll", function () { if (!pedido) { pedido = true; requestAnimationFrame(medir); } }, { passive: true });
+    window.addEventListener("resize", medir);
+    medir();
+  })();
 
   /* Navegación por anclas: con Lenis cuando existe; el foco va al destino */
   document.addEventListener("click", function (e) {
@@ -329,19 +353,12 @@
       gsap.to(svg, { opacity: 1, duration: 0.4, overwrite: true });
       gsap.to(canvas, { autoAlpha: 0, duration: 0.4, overwrite: true, onComplete: function () { if (!canvasActivo) particulas.detener(); } });
     }
-    function reanudarParticulas() {
-      if (!particulas || !entradaHecha || canvasActivo) return;
-      canvasActivo = true;
-      particulas.rehacer();
-      gsap.to(canvas, { autoAlpha: 1, duration: 0.35, overwrite: true });
-      gsap.to(svg, { opacity: 0, duration: 0.35, overwrite: true });
-      particulas.respirar(true);
-    }
     /* Pista de lectura: dice qué se puede hacer y desaparece en cuanto se hace */
     var pista = $(".simbolo__pista");
     var pistaUsada = false;
     function mostrarPista() {
-      if (!pista || pistaUsada) return;
+      // solo con ratón: en táctil enseña el barrido del iris
+      if (!pista || pistaUsada || !punteroFino) return;
       pista.textContent = punteroFino ? "Acerca el cursor: está hecho de fragmentos" : "Toca el símbolo: está hecho de fragmentos";
       gsap.fromTo(pista, { opacity: 0 }, { opacity: 1, duration: 0.6, delay: 0.4 });
     }
@@ -382,7 +399,19 @@
       var mx = dx / d * f, my = dy / d * f * 0.7;
       mirarX(mx); mirarY(my); pmX(mx); pmY(my);
     }
-    function soltarMirada() { mirarX(0); mirarY(0); pmX(0); pmY(0); }
+    function soltarMirada() { mirarX(0); mirarY(0); pmX(0); pmY(0); imanX(0); imanY(0); }
+    /* Imán: antes de tocar el símbolo, el fragmento y sus bits se inclinan hacia el cursor (vector, sin pixelar) */
+    var imanEl = svg.querySelector(".iman");
+    var imanX = gsap.quickTo(imanEl, "x", { duration: 0.8, ease: "power3" });
+    var imanY = gsap.quickTo(imanEl, "y", { duration: 0.8, ease: "power3" });
+    function inclinar(px, py) {
+      if (!mirando) return;
+      var r = svg.getBoundingClientRect();
+      var cx = r.left + r.width * 0.79, cy = r.top + r.height * 0.2; // el fragmento
+      var dx = px - cx, dy = py - cy, d = Math.hypot(dx, dy) || 1, R = r.width * 1.4;
+      var f = d < R ? (1 - d / R) * 9 : 0;
+      imanX(dx / d * f); imanY(dy / d * f);
+    }
 
     function sobreSimbolo(px, py) {
       if (window.scrollY > 4) return false;
@@ -395,6 +424,7 @@
         sobreSimbolo: sobreSimbolo,
         alMover: function (px, py) {
           mirar(px, py);
+          inclinar(px, py);
           if (!particulas) return;
           var dentro = sobreSimbolo(px, py);
           particulas.puntero(px, py, dentro);
@@ -451,28 +481,24 @@
     var G = geo();
 
     var revelada = false;
-    var tituloSplit = null;
     var clave = $(".semana__clave", semana);
     var titulo = $(".semana__titulo", semana);
     var numero = $(".semana__numero", semana);
     var claveTexto = clave.textContent;
     // estados previos de la cabecera (se resuelven al llegar; la reflexión nunca se anima)
-    tituloSplit = SplitText.create(titulo, { type: "lines", mask: "lines", linesClass: "linea" });
-    gsap.set(tituloSplit.lines, { yPercent: 105 });
-    gsap.set(clave, { autoAlpha: 0 });
+    // el título y la ficha ya se leen por la cerradura: al llegar solo se descifra la clave y se proyecta el «01»
     var numLleno = $(".num__lleno", semana);
     gsap.set(numLleno, { clipPath: "inset(0% 100% 0% 0%)" });
-    limpiezas.push(function () { if (tituloSplit) tituloSplit.revert(); clave.textContent = claveTexto; });
+    limpiezas.push(function () { clave.textContent = claveTexto; });
 
     function revelarSemana() {
       if (revelada) return;
       revelada = true;
       var tl = gsap.timeline();
-      tl.set(clave, { autoAlpha: 1, textContent: "_________" })
-        .to(clave, { duration: 0.8, scrambleText: { text: claveTexto, chars: "01<>/#_", speed: 0.6, revealDelay: 0.15 } }, 0)
-        .to(tituloSplit.lines, { yPercent: 0, duration: 1.1, stagger: 0.09, ease: "expo.out" }, 0.15)
+      tl.to(clave, { duration: 0.8, scrambleText: { text: claveTexto, chars: "01<>/#_", speed: 0.6, revealDelay: 0.15 } }, 0)
         // el «01» se proyecta de izquierda a derecha sobre su propio contorno
-        .to(numLleno, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.9, ease: "expo.inOut" }, 0.05);
+        .to(numLleno, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.9, ease: "expo.inOut" }, 0.05)
+        .set($(".num__contorno", semana), { opacity: 0 });
     }
 
     var corteEl = $(".corte");
@@ -504,7 +530,7 @@
           if (p < 0.8) cortado = false;
           if (p > 0.002) {
             if (mirando) { mirando = false; soltarMirada(); apagarParticulas(); }
-          } else if (!mirando) { mirando = true; reanudarParticulas(); }
+          } else if (!mirando) { mirando = true; }
           // el borde de la cerradura mide 2 px en pantalla a cualquier escala
           var s = G.base * gsap.getProperty(mover, "scale") * gsap.getProperty(zoom, "scale");
           borde.setAttribute("stroke-width", (2 / s).toFixed(4));
@@ -528,7 +554,7 @@
     tl.fromTo(".portada__luz", { opacity: 1 }, { opacity: 0, duration: 2.5, ease: "power2.inOut" }, 1.5)
       .fromTo(".semana__luz", { opacity: 1 }, { opacity: 0, duration: 0.01 }, 8.7);
     tl.fromTo([".portada__proposito", ".creditos", ".claqueta__centro", ".portada__bajar"], { y: 0, autoAlpha: 1 }, { y: 16, autoAlpha: 0, duration: 1.4, stagger: 0.15, ease: "power2.in" }, 0)
-      .fromTo(".grano", { opacity: 0.065 }, { opacity: 0.09, duration: 2 }, 0);
+;
 
     // 1,5 → 4 · El ojo despierta: el símbolo va al centro, los párpados se abren, el fragmento sale de cuadro
     tl.fromTo(mover, { x: 0, y: 0, scale: 1 }, { x: function () { return G.dx; }, y: function () { return G.dy; }, scale: function () { return G.esc; }, duration: 2.5, ease: "power3.inOut" }, 1.5)
@@ -557,7 +583,7 @@
     var marca = $(".claqueta__marca");
     if (!entradaHecha) {
       var tlE = gsap.timeline({ delay: 0.1, onComplete: function () { entradaHecha = true; } });
-      gsap.set([".portada__proposito", ".creditos dd", ".bajar__texto"], { opacity: 0 });
+      gsap.set([".portada__proposito", ".creditos dd", ".bajar__texto"], { clipPath: "inset(0% 100% 0% 0%)" });
       gsap.set(".creditos", { "--linea": 0 });
       gsap.set(".nombre__txt", { yPercent: 108 });
       gsap.set(".bajar__barra", { opacity: 0 });
@@ -569,9 +595,9 @@
         gsap.set(canvas, { autoAlpha: 1 });
         tlE.add(function () {
           particulas.ensamblar(function () {
-            // en reposo el símbolo sigue hecho de fragmentos: respira y espera al visitante
-            canvasActivo = true;
-            particulas.respirar(true);
+            // en reposo manda el vector nítido; las partículas vuelven cuando el cursor se acerca
+            gsap.to(svg, { opacity: 1, duration: 0.45 });
+            gsap.to(canvas, { autoAlpha: 0, duration: 0.45, onComplete: function () { if (!canvasActivo) particulas.detener(); } });
             if (!desk) barrido();
             mostrarPista();
           });
@@ -581,8 +607,9 @@
       }
       tlE.to(".nombre__txt", { yPercent: 0, duration: 1.4, ease: "expo.out", stagger: 0.12 }, 0.7)
         .to(".creditos", { "--linea": 1, duration: 1.1, ease: "proyector" }, 1.5)
-        .to([".portada__proposito", ".creditos dd"], { opacity: 1, duration: 0.8, ease: "none", stagger: 0.06 }, 1.7)
-        .to([".bajar__texto", ".bajar__barra"], { opacity: 1, duration: 0.6, ease: "none" }, 2.3);
+        .to([".portada__proposito", ".creditos dd"], { clipPath: "inset(0% 0% 0% 0%)", duration: 1.1, ease: "expo.inOut", stagger: 0.07 }, 1.6)
+        .to(".bajar__texto", { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "expo.inOut" }, 2.3)
+        .to(".bajar__barra", { opacity: 1, duration: 0.6, ease: "none" }, 2.4);
     }
     // móvil: el iris hace un barrido lento para que se entienda que observa
     function barrido() {
@@ -607,6 +634,7 @@
     function cortarGiro() {
       if (giro.classList.contains("es-corte")) return;
       giro.classList.add("es-corte");
+      pulso();
       if (giroHecho) return;
       giroHecho = true;
       // corte de montaje: negro con golpe de grano y, al volver la luz, el GIRO se descifra
