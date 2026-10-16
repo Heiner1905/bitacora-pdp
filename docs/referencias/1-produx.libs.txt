@@ -1,0 +1,43 @@
+{
+  "title": "PRODUX | Design that Speaks",
+  "globals": [
+    "lenis"
+  ],
+  "canvas": 14,
+  "fonts": [
+    "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+    "\"DM Mono\"",
+    "\"At Aero\""
+  ],
+  "hints": [
+    "three",
+    "lenis",
+    "ogl",
+    "next"
+  ],
+  "scripts": [
+    "https://www.produx.design/_next/static/chunks/02i7dfk78~t~2.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0onu~7uxnbx3b.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0zj~hg8by~l4y.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/turbopack-0cvxxbh.1znfy.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/12ll-ra3iv_pb.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0aef1cgmn~fop.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0d3shmwh5_nmn.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0~2j-5cr994j~.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0swtkow.lgrz~.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0b_9cktf5-6nw.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0m9vh1vcfsnp5.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0i-.3ea0..wgc.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/17d3kdu54n5f..js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0e2dxdfs4-avt.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0k4m.k83bg769.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0vhfpaei3u4.7.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/0jwuwbsy8x5gc.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/_next/static/chunks/03~yq9q893hmn.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc",
+    "https://www.produx.design/f450cc47d54ebd15/script.js",
+    "https://www.produx.design/_next/static/chunks/10yl.ldr8v2a8.js?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc"
+  ],
+  "css": [
+    "https://www.produx.design/_next/static/chunks/0hcp-p.-qpzyg.css?dpl=dpl_DTLVDLs57BHhn9xRkD5j3m4hqpJc"
+  ]
+}
