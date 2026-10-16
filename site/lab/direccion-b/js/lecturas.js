@@ -89,7 +89,14 @@
   function lecturaDial(x, y) {
     var D = window.Dial && Dial.estado;
     if (!D || !D.fig) return null;
+    var avance = D.avance;
     var r = D.fig.getBoundingClientRect();
+    var est = document.querySelector(".sin-movimiento .dial-estatico");
+    if (est) {                                    // copia estática de la semana 01
+      var re = est.getBoundingClientRect();
+      var cxe = re.left + re.width / 2, cye = re.top + re.height / 2;
+      if (Math.hypot(x - cxe, y - cye) < re.width * 0.47) { r = re; avance = 1 / window.BITACORA.semanas.length; }
+    }
     if (r.width < 120) return null;              // acoplado: no se inspecciona
     var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     var dx = x - cx, dy = y - cy;
@@ -98,12 +105,12 @@
     if (dist > 262) return null;
     var ang = (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360;
     // ¿sobre el fragmento? (se descuenta su traslado actual)
-    var t = 30 * (1 - D.avance);
+    var t = 30 * (1 - avance);
     var fx = dx * u - t, fy = dy * u + t;
     var fr = Math.sqrt(fx * fx + fy * fy);
     var fa = (Math.atan2(fx, -fy) * 180 / Math.PI + 360) % 360;
-    var sobreFrag = Math.abs(fr - 140) < 16 && fa > 17 && fa < 68;
-    return { dx: dx * u, dy: dy * u, dist: dist, ang: ang, radio: dist / 140, sobreFrag: sobreFrag, u: u };
+    var sobreFrag = Math.abs(fr - 140) < 20 && fa > 17 && fa < 68;
+    return { dx: dx * u, dy: dy * u, dist: dist, ang: ang, radio: dist / 140, sobreFrag: sobreFrag, u: u, avance: avance };
   }
 
   function pintarMira() {
@@ -132,7 +139,7 @@
     var L = lecturaDial(x, y);
     var txt, frag = false;
     if (L && L.sobreFrag) {
-      txt = "Fragmento <b>·</b> distancia " + fmtDist(Dial.distancia(Dial.estado.avance)) + "&#8201;PX";
+      txt = "Fragmento <b>·</b> distancia " + fmtDist(Dial.distancia(L.avance)) + "&#8201;PX";
       frag = true;
     } else if (L) {
       txt = "Ángulo " + pad(coma(L.ang, 1), 5) + "° <b>·</b> radio " + coma(L.radio, 2);

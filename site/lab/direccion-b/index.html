@@ -87,17 +87,24 @@
         <span class="hilo hilo--fila" data-hilo="mayores" aria-hidden="true"><span class="secuenciador"></span></span>
         <span class="hilo hilo--ficha" data-hilo="ficha" aria-hidden="true"></span>
 
-        <h1 class="nombre">
-          <span class="solo-lector" data-campo="autor.nombreCorto"></span>
-          <span class="nombre__fila" aria-hidden="true">
+        <h1 class="solo-lector" data-campo="autor.nombreCorto"></h1>
+        <div class="nombre" aria-hidden="true">
+          <span class="nombre__fila">
             <span class="celda celda--nombre" data-celda="nombre"><span class="nombre__palabra" data-palabra="0"></span></span>
             <span class="celda celda--nombre celda--b" data-celda="nombre"><span class="nombre__palabra" data-palabra="0"></span></span>
           </span>
-          <span class="nombre__fila" aria-hidden="true">
+          <span class="nombre__fila">
             <span class="celda celda--nombre" data-celda="nombre"><span class="nombre__palabra" data-palabra="1"></span></span>
             <span class="celda celda--nombre celda--b" data-celda="nombre"><span class="nombre__palabra" data-palabra="1"></span></span>
           </span>
-        </h1>
+        </div>
+
+        <!-- Lectura en tránsito: solo existe mientras el bisel gira (escritorio) -->
+        <div class="celda transito" aria-hidden="true">
+          <p class="rotulo">Giro del bisel</p>
+          <p class="transito__valor"><span data-lectura="ang">000,0</span><span class="transito__grado">°</span></p>
+          <p class="rotulo">Encaje en <span class="transito__meta" data-lectura="meta">042,5°</span> <span class="transito__sep">·</span> lectura <span data-lectura="siguiente">01</span></p>
+        </div>
 
         <div class="celda celda--proposito" data-celda="fila">
           <p class="proposito" data-campo="proposito"></p>

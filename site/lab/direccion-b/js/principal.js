@@ -112,6 +112,8 @@
   Lecturas.fijarTotal(N);
   Lecturas.fijarN(0);
   Lecturas.fijarDistancia(Dial.distancia(0));
+  $$('[data-lectura="ang"]').forEach(function (e) { e.textContent = Lecturas.pad(Dial.R(0).toFixed(1).replace(".", ","), 5); });
+  $$('[data-lectura="meta"]').forEach(function (e) { e.textContent = Lecturas.pad(Dial.R(1).toFixed(1).replace(".", ","), 5) + "°"; });
   Lecturas.iniciarReloj();
   prepararBotones();
 
@@ -272,7 +274,10 @@
       }
     }
 
+    var angEls = $$('[data-lectura="ang"]'), ultimoAng = "";
     function aplicarGiro(r, a) {
+      var t = Lecturas.pad((((r % 360) + 360) % 360).toFixed(1).replace(".", ","), 5);
+      if (t !== ultimoAng) { ultimoAng = t; angEls.forEach(function (e) { e.textContent = t; }); }
       Dial.fijarGiro(r);
       Dial.fijarAvance(a);
       Lecturas.fijarDistancia(Dial.distancia(a));
@@ -325,6 +330,9 @@
           var k = clips(c);
           tl.fromTo(c, { clipPath: k.abierta }, { clipPath: k.arriba, duration: 0.6, ease: "power2.inOut" }, i * 0.3);
         });
+        var tr = $(".transito");
+        tl.fromTo(tr, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power2.inOut" }, 2.1);
+        tl.to(tr, { clipPath: "inset(0% 0% 100% 0%)", duration: 0.6, ease: "power2.inOut" }, 6.3);
         tl.fromTo(".hilo--ficha", { scaleX: 1 }, { scaleX: 0, transformOrigin: "100% 50%", duration: 0.6, ease: "power2.inOut" }, 2.4);
         tl.fromTo(p, { r: Dial.R(0), a: 0 }, {
           r: Dial.R(1), a: 1 / N, duration: 4,
@@ -408,10 +416,13 @@
     });
 
     /* Redimensionar: se vuelve a medir la retícula */
-    var t;
+    var t, anchoPrevio = root.clientWidth;
+    ScrollTrigger.config({ ignoreMobileResize: true });
     window.addEventListener("resize", function () {
       clearTimeout(t);
       t = setTimeout(function () {
+        if (root.clientWidth === anchoPrevio && Reticula.G.movil) return; // barra del navegador móvil
+        anchoPrevio = root.clientWidth;
         Reticula.medir();
         Reticula.dibujar();
         Reticula.secuenciador.preparar();
