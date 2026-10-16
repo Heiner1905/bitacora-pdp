@@ -188,8 +188,8 @@
     var celdasFicha = $$(".celda--ficha");
     var celdasLectMovil = $$(".lecturas-movil .celda");
     var celdasNumero = $$(".celda--numero");
-    var celdaEtiqueta = $(".semana__datos .celda");
-    var celdaTitulo = $$(".semana__datos .celda")[1];
+    var celdaEtiqueta = $(".celda--etiqueta");
+    var celdaTitulo = $(".celda--titulo");
     var celdaReflexion = $(".celda--reflexion");
     var tiras = $$("[data-tira]");
     var cifras = $$(".numero__cifra");
@@ -334,7 +334,9 @@
           var k = clips(c);
           tlEnc.fromTo(c, { clipPath: k.abajo }, { clipPath: k.abierta, duration: PASO * 2, ease: "power2.out" }, PASO * 2.5 + i * PASO / 2);
         });
-        tlEnc.fromTo(cifras, { color: "#F28C38" }, { color: "#E6EAE4", duration: PULSO * 2, ease: "power2.in", clearProps: "color" }, PASO * 2.5);
+        // destello seco del número (sin tonos intermedios)
+        tlEnc.set(cifras, { color: "#F28C38" }, PASO * 2.5);
+        tlEnc.set(cifras, { clearProps: "color" }, PASO * 2.5 + PULSO * 1.5);
       } else {
         Dial.marcarActiva(0);
         Lecturas.fijarN(0, false);
@@ -388,7 +390,7 @@
       mm.add("(min-width: 900px)", function () {
         root.classList.add("con-escena");
         conjunto.cerrar = celdasNombre.concat(tiras);
-        conjunto.abrir = celdasNumero.concat([celdaEtiqueta, celdaTitulo, celdaReflexion]);
+        conjunto.abrir = celdasNumero.concat([celdaTitulo, celdaEtiqueta, celdaReflexion]);
         var G = 8.6;                                  // el giro ocupa 8,6 de 10
         var giro = { u: 0 };
         var tl = gsap.timeline({
