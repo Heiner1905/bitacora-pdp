@@ -89,6 +89,9 @@
   opacity: 0;
 }
 
+/* Molde invisible para que las partículas armen la cifra al tamaño en que se ve */
+.transicion__molde { visibility: hidden; opacity: 1; color: transparent; }
+
 /* Ficha: abajo a la izquierda, el título puede ocupar dos líneas */
 .transicion__ficha {
   position: absolute; left: var(--margen); bottom: var(--margen);

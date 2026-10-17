@@ -119,13 +119,24 @@
 
     var marca = { k: false }, st = null, arma = { ida: false, vuelta: false };
     // Las partículas arman el «0k» desde el fragmento de la marca (una vez por entrada en cada sentido)
+    function hayParticulas() { var P = FX.particulas; return !!(P && typeof P.formarTexto === 'function' && P.soporta && P.soporta('marca')); }
     function formarNumero() {
       var P = FX.particulas;
-      if (!P || typeof P.formarTexto !== 'function' || !(P.soporta && P.soporta('marca'))) return;
+      if (!hayParticulas()) { E.f = 1; return; }
       gsap.killTweensOf(E, 'f');
       E.f = 0; pose();
+      // Molde invisible con la cifra al tamaño en que se ve al centro (el número real está escalado
+      // con transform y el muestreo de partículas lee la fuente sin escalar)
+      var m = T.molde || (T.molde = FX.crear('p', 'transicion__numero transicion__molde', T.esc));
+      m.textContent = T.num.textContent;
+      var cs = getComputedStyle(T.num), sc = gsap.getProperty(T.num, 'scaleX') || 1;
+      ['fontSize', 'letterSpacing', 'lineHeight', 'paddingTop', 'paddingBottom'].forEach(function (k) {
+        var v = parseFloat(cs[k]); m.style[k] = isNaN(v) ? cs[k] : (v * sc) + 'px';
+      });
+      m.style.fontWeight = cs.fontWeight;
+      gsap.set(m, { x: gsap.getProperty(T.num, 'x'), y: gsap.getProperty(T.num, 'y') });
       try {
-        P.formarTexto(FX.dos(T.k), T.num, { desde: 'marca', duracion: 0.6, ocultarDestino: false,
+        P.formarTexto(FX.dos(T.k), m, { desde: 'marca', duracion: 0.6, ocultarDestino: false,
           alTerminar: function () { gsap.to(E, { f: 1, duration: 0.3, ease: 'power1.out', onUpdate: pose }); } });
       } catch (e) { E.f = 1; }
       setTimeout(function () { if (E.f === 0) gsap.to(E, { f: 1, duration: 0.3, onUpdate: pose }); }, 1600);
@@ -138,7 +149,7 @@
       if (activo && ahora !== marca.k) { marca.k = ahora; FX.fijarSemana(ahora ? T.k : T.k - 1); }
       // la entrega: en el último cuarto del aterrizaje el número real aparece debajo y el de la transición se funde
       entregar(E.t >= 0.75);
-      if (arma.ida && p >= 0.38 && p < 0.6) { arma.ida = false; formarNumero(); }
+      if (arma.ida && p >= 0.3 && p < 0.6) { arma.ida = false; formarNumero(); }
       if (arma.vuelta && p <= 0.56 && p > 0.3) { arma.vuelta = false; formarNumero(); }
       var centro = pose();
       // Mirilla: la pupila se cierra SOBRE el número mientras aterriza
@@ -185,7 +196,7 @@
       invalidateOnRefresh: true,
       onRefresh: function () { copiarFuente(); },
       onToggle: function (st) { gsap.set(T.esc, { autoAlpha: st.isActive ? 1 : 0 }); },
-      onEnter: function () { arma.ida = true; arma.vuelta = false; },
+      onEnter: function () { arma.ida = true; arma.vuelta = false; if (hayParticulas()) E.f = 0; },
       onEnterBack: function () { arma.vuelta = true; arma.ida = false; },
       onLeave: function () { entregar(true); FX.fijarSemana(null); marca.k = true; },
       onLeaveBack: function () { entregar(false); FX.fijarSemana(null); marca.k = false; }
