@@ -32,7 +32,7 @@
 .transiciones-vivas .transicion__escena {
   display: block;
   position: fixed; inset: 0;
-  z-index: 40;
+  z-index: calc(var(--z-particulas) - 1); /* sobre las semanas (z 1) y bajo las partículas, que arman el número */
   pointer-events: none;
   visibility: hidden;
   overflow: hidden;

@@ -80,7 +80,7 @@
     }
     copiarFuente();
 
-    var E = { z: movil ? -500 : -900, ry: movil ? -8 : -16, a: 0, t: 0 };
+    var E = { z: movil ? -500 : -900, ry: movil ? -8 : -16, a: 0, t: 0, f: 1 };
     var entregado = false;
     function pose() {
       var vw = window.innerWidth, vh = window.innerHeight;
@@ -91,7 +91,7 @@
       var dx = cx, dy = cy;
       if (real) { var r = real.getBoundingClientRect(); dx = r.left; dy = r.top; }
       var t = E.t, sc = s0 + (1 - s0) * t, x = cx + (dx - cx) * t, y = cy + (dy - cy) * t;
-      gsap.set(T.num, { x: x, y: y, scale: sc, transformOrigin: '0% 0%', z: E.z, rotationY: E.ry, opacity: E.a * (1 - Math.min(1, Math.max(0, (t - 0.75) / 0.25))), transformPerspective: 1600 });
+      gsap.set(T.num, { x: x, y: y, scale: sc, transformOrigin: '0% 0%', z: E.z, rotationY: E.ry, opacity: E.f * E.a * (1 - Math.min(1, Math.max(0, (t - 0.75) / 0.25))), transformPerspective: 1600 });
       return { x: (x + w * sc / 2) / vw * 100, y: (y + h * sc / 2) / vh * 100 };
     }
     var cierreMirilla = gsap.parseEase('power3.inOut');
@@ -117,7 +117,19 @@
       gsap.set(T.disco, { clipPath: 'circle(0% at 50% 46%)' });
     }
 
-    var marca = { k: false }, st = null;
+    var marca = { k: false }, st = null, arma = { ida: false, vuelta: false };
+    // Las partículas arman el «0k» desde el fragmento de la marca (una vez por entrada en cada sentido)
+    function formarNumero() {
+      var P = FX.particulas;
+      if (!P || typeof P.formarTexto !== 'function' || !(P.soporta && P.soporta('marca'))) return;
+      gsap.killTweensOf(E, 'f');
+      E.f = 0; pose();
+      try {
+        P.formarTexto(FX.dos(T.k), T.num, { desde: 'marca', duracion: 0.6, ocultarDestino: false,
+          alTerminar: function () { gsap.to(E, { f: 1, duration: 0.3, ease: 'power1.out', onUpdate: pose }); } });
+      } catch (e) { E.f = 1; }
+      setTimeout(function () { if (E.f === 0) gsap.to(E, { f: 1, duration: 0.3, onUpdate: pose }); }, 1600);
+    }
     var tl = gsap.timeline({ defaults: { ease: 'none' }, onUpdate: function () {
       var p = tl.progress();
       // La tira cambia en el cuadro en que el «0k» cubre la pantalla
@@ -126,6 +138,8 @@
       if (activo && ahora !== marca.k) { marca.k = ahora; FX.fijarSemana(ahora ? T.k : T.k - 1); }
       // la entrega: en el último cuarto del aterrizaje el número real aparece debajo y el de la transición se funde
       entregar(E.t >= 0.75);
+      if (arma.ida && p >= 0.38 && p < 0.6) { arma.ida = false; formarNumero(); }
+      if (arma.vuelta && p <= 0.56 && p > 0.3) { arma.vuelta = false; formarNumero(); }
       var centro = pose();
       // Mirilla: la pupila se cierra SOBRE el número mientras aterriza
       if (T.v === 'mirilla' && p >= 0.36) {
@@ -171,6 +185,8 @@
       invalidateOnRefresh: true,
       onRefresh: function () { copiarFuente(); },
       onToggle: function (st) { gsap.set(T.esc, { autoAlpha: st.isActive ? 1 : 0 }); },
+      onEnter: function () { arma.ida = true; arma.vuelta = false; },
+      onEnterBack: function () { arma.vuelta = true; arma.ida = false; },
       onLeave: function () { entregar(true); FX.fijarSemana(null); marca.k = true; },
       onLeaveBack: function () { entregar(false); FX.fijarSemana(null); marca.k = false; }
     });
