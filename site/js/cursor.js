@@ -8,6 +8,7 @@
    - Sobre el emblema se CIERRA (lo mira de frente y se deja mirar);
      sobre enlaces y botones se ABRE y la cerradura gira 90° (como al tocar la pupila).
    - Se reevalúa con el scroll (sin mover el mouse): nunca queda pintado sobre el texto.
+   - [data-cursor="ninguno"] (en el elemento o un ancestro): el ojo se oculta con suavidad.
    - Con teclado se aparta: al pulsar Tab se oculta hasta que el mouse se mueva.
    API: FX.cursor = { modo(), visible() }
    ========================================================================== */
@@ -74,6 +75,7 @@
     function evaluar(t) {
       if (teclado || !conocido) { mostrar(false); return; }
       if (!t || !t.closest || FX.indice && FX.indice.abierto && FX.indice.abierto() || !t.closest(SALA)) { mostrar(false); return; }
+      if (t.closest('[data-cursor="ninguno"]')) { mostrar(false); return; }   // otro módulo dibuja su propio cursor (linterna del cierre)
       if (t.closest(ACCION)) fijarModo('abierto');
       else if (t.closest(EMBLEMA)) fijarModo('cerrado');
       else fijarModo('');
