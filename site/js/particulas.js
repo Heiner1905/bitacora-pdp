@@ -427,7 +427,7 @@
     objetivos(f);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    var celda = atlas.celda, s = movil ? 1.9 : 1.7;
+    var celda = atlas.celda, s = movil ? 2.1 : 2.1;
     if (f.modo === 'vuelo') vuelo(f, ahora, celda, s);
     else if (f.modo === 'dispersa') dispersa(f, ahora, celda);
     else fisica(f, ahora, celda, s);
