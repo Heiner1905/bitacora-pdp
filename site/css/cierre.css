@@ -1,1 +1,114 @@
-/* cierre.css — propiedad del constructor 3 (ver docs/DIRECCION.md §9) */
+/* ==========================================================================
+   cierre.css — cierre de la bitácora y pie (constructor 3 · §8)
+   Espejo de la portada: allí el emblema está a la derecha y el fragmento lejos;
+   aquí el emblema está a la izquierda, completo, y el texto a la derecha.
+   ========================================================================== */
+.cierre { position: relative; z-index: 1; }
+.cierre__escena {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--medianil);
+  align-items: center;
+  padding: clamp(72px, 10vh, 112px) var(--margen) clamp(40px, 6vh, 72px);
+  overflow: clip;
+}
+
+/* El emblema completo, sangrando hacia el borde izquierdo */
+.cierre__emblema {
+  grid-column: 1 / span 6;
+  position: relative;
+  width: min(84svh, 48vw);
+  aspect-ratio: 1;
+  margin-left: calc(-1 * var(--margen) - 3vw);
+  justify-self: start;
+}
+.cierre__svg { width: 100%; height: 100%; overflow: visible; }
+/* Halo del encaje (rubí hondo, solo un instante de color grande y muy tenue) */
+.cierre__emblema::before {
+  content: "";
+  position: absolute; inset: 6%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--rubi-hondo) 22%, transparent) 0, transparent 66%);
+  opacity: 0;
+  transition: opacity 1.6s var(--ease-salida);
+  pointer-events: none;
+}
+.cierre--encajado .cierre__emblema::before { opacity: 1; }
+
+.cierre__texto {
+  grid-column: 7 / -1;
+  display: grid;
+  justify-items: start;
+  gap: clamp(22px, 3.2vh, 36px);
+  padding-left: clamp(0px, 4vw, 72px);
+}
+.cierre__estado {
+  display: grid; gap: 6px;
+  padding-top: .9em;
+  border-top: 1px solid var(--linea-fuerte);
+  min-width: 15rem;
+  font-weight: 400;
+}
+.cierre__estado-a { color: var(--hielo); }
+.cierre__mensaje {
+  font-family: var(--f-texto);
+  font-weight: 300;
+  font-size: clamp(1.75rem, 1rem + 2.1vw, 3.25rem);
+  line-height: 1.16;
+  letter-spacing: -.012em;
+  color: var(--escarcha);
+  max-width: 22ch;
+  text-wrap: pretty;
+}
+.cierre__mensaje.pendiente { font-size: var(--t-subtitulo); color: var(--niebla); font-style: italic; letter-spacing: 0; max-width: 24ch; }
+.cierre__firma {
+  font-family: var(--f-display);
+  font-weight: 200;
+  font-size: clamp(2.75rem, 1rem + 4.4vw, 6.25rem);
+  line-height: .92;
+  letter-spacing: -.025em;
+  color: var(--escarcha);
+  padding-bottom: .06em;
+}
+.cierre__volver {
+  display: inline-flex; align-items: center; min-height: 44px;
+  color: var(--hielo); text-decoration: underline; text-decoration-color: var(--acero);
+}
+.cierre__volver:hover { text-decoration-color: var(--rubi-claro); }
+
+/* ---------- Pie ---------- */
+.pie {
+  position: relative; z-index: 1;
+  display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between;
+  gap: 28px 48px;
+  padding: 40px var(--margen) 48px;
+  border-top: 1px solid var(--linea);
+}
+.pie__creditos { display: flex; flex-wrap: wrap; gap: 18px clamp(24px, 3vw, 48px); margin: 0; }
+.pie__dato { display: grid; gap: 6px; }
+.pie__dato dt { color: var(--niebla); }
+.pie__dato dd { margin: 0; color: var(--hielo); }
+.pie__proyecto { color: var(--niebla); }
+
+/* ---------- Móvil ---------- */
+@media (max-width: 899px) {
+  .cierre__escena { align-content: center; row-gap: 28px; padding-top: 72px; }
+  .cierre__emblema { grid-column: 1 / -1; width: min(86vw, 46svh); margin-left: -6vw; }
+  .cierre__texto { grid-column: 1 / -1; padding-left: 0; gap: 18px; }
+  .cierre__mensaje { font-size: clamp(1.5rem, 1rem + 2.4vw, 2rem); }
+  .cierre__firma { font-size: clamp(2.5rem, 1rem + 7vw, 3.5rem); }
+  .pie__creditos { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+}
+@media (max-width: 380px) {
+  .pie__creditos { grid-template-columns: 1fr; }
+}
+
+@media print {
+  .cierre { break-before: page; }
+  .cierre__escena { min-height: 0; padding: 0; }
+  .cierre__emblema { width: 70mm; margin: 0; }
+  .cierre__emblema::before, .cierre__volver { display: none; }
+  .pie { border-top-color: #bbb; }
+}

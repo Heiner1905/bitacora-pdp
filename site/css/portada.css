@@ -1,1 +1,298 @@
-/* portada.css — propiedad del constructor 1 (ver docs/DIRECCION.md §9) */
+/* ==========================================================================
+   portada.css — portada y entrada por la pupila (constructor 1 · DIRECCION §6)
+   1440: retícula de 12, nombre escalonado a la izquierda, emblema vivo a la
+   derecha sangrando por el borde, propósito bajo el nombre y ficha de créditos
+   tipo afiche abajo. 390: nombre arriba, emblema grande, una columna.
+   ========================================================================== */
+
+/* ---------- El emblema: color desde los tokens (vale para cualquier copia) ---------- */
+.emblema { display: block; width: 100%; height: auto; overflow: visible; }
+.emblema [stroke="#5D6672"] { stroke: var(--acero); }
+.emblema [stroke="#DCE1E6"] { stroke: var(--hielo); }
+.emblema [fill="#DCE1E6"] { fill: var(--hielo); }
+.emblema [fill="#F4F6F8"] { fill: var(--escarcha); }
+.emblema [stroke="#8F96A0"] { stroke: var(--niebla); }
+.emblema [fill="#0A0B0E"] { fill: var(--noche); }
+.emblema [fill="#E23E57"] { fill: var(--rubi); }
+.emblema [stroke="#E23E57"] { stroke: var(--rubi); }
+.emblema [stroke="#FF7A8E"] { stroke: var(--rubi-claro); }
+
+/* ---------- Portada ---------- */
+.portada {
+  --col: calc((100vw - 2 * var(--margen) - (var(--cols) - 1) * var(--medianil)) / var(--cols));
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-template-rows: 1fr auto auto;
+  column-gap: var(--medianil);
+  padding: 0 var(--margen) 28px;
+  background: var(--noche);
+  overflow: clip;
+  isolation: isolate;
+}
+
+/* Nombre: Zodiak 200, dos líneas escalonadas */
+.portada__nombre {
+  grid-column: 1 / span 8;
+  grid-row: 1;
+  align-self: center;
+  position: relative;
+  z-index: 3;
+  padding-top: 64px;
+  font-family: var(--f-display);
+  font-weight: 200;
+  font-size: min(var(--t-nombre), 14.2vw);
+  line-height: .84;
+  letter-spacing: -.045em;
+  color: var(--escarcha);
+  font-kerning: normal;
+  pointer-events: none;
+}
+.portada__linea {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: clip;
+  overflow-clip-margin: .14em;
+  padding: .05em 0 .1em;
+}
+.portada__linea--a { margin-left: -.05em; }
+.portada__linea--b { margin-left: calc(var(--col) + var(--medianil)); }
+.portada__txt { display: block; }
+
+/* Emblema vivo a la derecha, sangrando hacia el borde */
+.portada__escena {
+  position: absolute;
+  z-index: 2;
+  right: -3.4vw;
+  top: 50%;
+  width: min(47vw, calc(100svh - 96px));
+  aspect-ratio: 1;
+  translate: 0 -53%;
+}
+.portada__camara, .portada__emblema { position: relative; width: 100%; height: 100%; }
+.portada__camara { transform-origin: 50% 48.75%; }
+
+/* La pupila-cerradura: botón sobre la pupila (r < 30 del centro → 15 % del ancho) */
+.portada__cerradura {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 15%; min-width: 44px;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.portada__cerradura:focus-visible { outline: 2px solid var(--rubi-claro); outline-offset: 2px; border-radius: 50%; }
+
+.portada__pista {
+  position: absolute;
+  left: 9%; bottom: 3%;
+  max-width: 24ch;
+  font-family: var(--f-dato);
+  font-variation-settings: "wdth" 75;
+  font-size: var(--t-dato);
+  line-height: 1.5;
+  letter-spacing: .02em;
+  color: var(--niebla);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Propósito bajo el nombre */
+.portada__proposito {
+  grid-column: 1 / span 5;
+  grid-row: 2;
+  position: relative;
+  z-index: 3;
+  max-width: 30ch;
+  margin: 0 0 clamp(28px, 5vh, 56px);
+  font-family: var(--f-texto);
+  font-weight: 300;
+  font-variation-settings: "opsz" 36;
+  font-size: var(--t-proposito);
+  line-height: 1.26;
+  letter-spacing: -.01em;
+  color: var(--hielo);
+  text-wrap: pretty;
+}
+
+/* Ficha de créditos tipo afiche */
+.portada__creditos {
+  --linea: 1;
+  grid-column: 1 / span 8;
+  grid-row: 3;
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1.25fr .8fr 1fr 1.25fr;
+  column-gap: var(--medianil);
+  margin: 0;
+  padding-top: 14px;
+}
+.portada__creditos::before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0;
+  border-top: 1px solid var(--linea-fuerte);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--linea));
+}
+.credito dt {
+  margin-bottom: 8px;
+  font-family: var(--f-dato);
+  font-variation-settings: "wdth" 75;
+  font-size: var(--t-dato);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--niebla);
+}
+.credito dd {
+  margin: 0;
+  font-family: var(--f-dato);
+  font-variation-settings: "wdth" 75;
+  font-weight: 400;
+  font-size: .875rem;
+  line-height: 1.45;
+  letter-spacing: .01em;
+  color: var(--hielo);
+}
+.credito__cifra { font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+.credito__extra { display: block; color: var(--niebla); }
+.credito dd.pendiente, .credito .pendiente { font-family: var(--f-texto); }
+
+/* Entrar */
+.portada__bajar {
+  grid-column: -4 / -1;
+  grid-row: 3;
+  justify-self: end;
+  align-self: end;
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 44px;
+  font-family: var(--f-dato);
+  font-variation-settings: "wdth" 75;
+  font-size: var(--t-dato);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--hielo);
+}
+.portada__bajar-barra { width: 96px; height: 1px; background: var(--linea-fuerte); overflow: hidden; }
+.portada__bajar-lleno { display: block; height: 100%; background: var(--rubi); transform: scaleX(0); transform-origin: 0 50%; }
+.portada__bajar:hover .portada__bajar-txt { color: var(--escarcha); }
+
+.sinjs { grid-column: 1 / -1; color: var(--niebla); }
+
+/* Recorrido del pin (alto en JS) */
+.portada__recorrido { height: 0; pointer-events: none; }
+
+/* ---------- La mirilla: lo que se ve por la cerradura ---------- */
+.portada__mirilla {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  visibility: hidden;
+  overflow: hidden;
+  background: var(--noche);
+  pointer-events: none;
+  contain: strict;
+}
+.portada__mirilla-lienzo { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.portada__mirilla-semana { pointer-events: none; }
+.portada__mirilla-propia {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+}
+.portada__mirilla-num {
+  font-family: var(--f-display);
+  font-weight: 160;
+  font-size: var(--t-gigante);
+  line-height: .8;
+  letter-spacing: -.055em;
+  color: var(--escarcha);
+}
+.portada__mirilla-etiqueta {
+  font-family: var(--f-dato);
+  font-variation-settings: "wdth" 75;
+  font-size: var(--t-dato);
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--escarcha);
+}
+.portada__borde {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  width: 100%; height: 100%;
+  visibility: hidden;
+  overflow: visible;
+  pointer-events: none;
+}
+.portada__borde path { fill: none; stroke: var(--rubi); stroke-width: 1.5; stroke-linejoin: round; }
+
+/* ---------- Antes de la entrada (solo con movimiento; la quita arranque.js) ---------- */
+html.precarga .portada__txt { transform: translateY(108%); }
+html.precarga .portada__proposito,
+html.precarga .portada__creditos dd { clip-path: inset(0 100% 0 0); }
+html.precarga .portada__emblema .emblema,
+html.precarga .portada__bajar { opacity: 0; }
+
+/* ---------- Tablet / móvil ---------- */
+@media (max-width: 899px) {
+  .portada {
+    grid-template-rows: auto auto auto auto auto;
+    padding-bottom: 24px;
+    min-height: 0;
+  }
+  .portada__nombre {
+    grid-column: 1 / -1;
+    padding-top: 72px;
+    font-size: min(24.5vw, 13rem);
+  }
+  .portada__escena {
+    position: relative;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    right: auto; top: auto; translate: none;
+    width: min(calc(100% + 2 * var(--margen)), 74svh);
+    justify-self: end;
+    margin: -2vw calc(-1 * var(--margen)) 8px auto;
+  }
+  .portada__pista { left: var(--margen); bottom: -4px; max-width: none; }
+  .portada__proposito { grid-column: 1 / -1; grid-row: 3; margin: 12px 0 28px; }
+  .portada__creditos { grid-column: 1 / -1; grid-row: 4; grid-template-columns: 1fr 1fr; row-gap: 18px; }
+  .portada__bajar { grid-column: 1 / -1; grid-row: 5; justify-self: start; margin-top: 20px; }
+}
+@media (max-width: 599px) {
+  .portada__escena { width: calc(100% + 2 * var(--margen)); margin-top: 0; }
+  .portada__pista { bottom: 0; }
+}
+
+/* ---------- reduced-motion: estado final estático ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .portada__mirilla, .portada__borde { display: none; }
+}
+
+/* ---------- Impresión ---------- */
+@media print {
+  .portada {
+    min-height: 0; display: block; padding: 0; overflow: visible;
+    break-after: page; background: #fff;
+  }
+  .portada__nombre { padding-top: 0; font-size: 72pt; }
+  .portada__linea--b { margin-left: 1.2em; }
+  .portada__escena { position: static; translate: none; width: 9cm; margin: 8mm 0 8mm auto; }
+  .portada__proposito { margin: 0 0 8mm; font-size: 16pt; max-width: 32ch; }
+  .portada__creditos { grid-template-columns: repeat(4, 1fr); }
+  .portada__creditos::before { transform: none; }
+  .portada__mirilla, .portada__borde, .portada__recorrido, .portada__pista, .portada__bajar, .portada__cerradura { display: none !important; }
+}

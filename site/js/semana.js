@@ -131,10 +131,8 @@
         if (k === 1) return; // la semana 01 la forma la entrada por la pupila: se ve completa de inmediato
 
         var split = null;
-        if (window.SplitText && !h2.classList.contains('pendiente')) {
-          split = window.SplitText.create(h2, { type: 'words', mask: 'words' });
-          gsap.set(split.words, { yPercent: 110 });
-        }
+        var tituloAnimado = !!window.SplitText && !h2.classList.contains('pendiente');
+        if (tituloAnimado) gsap.set(h2, { autoAlpha: 0 });
         gsap.set(num, { autoAlpha: 0 });
         gsap.set(fichaOtros, { clipPath: 'inset(0% 100% 0% 0%)' });
 
@@ -164,6 +162,11 @@
             tl.to(fichaSem, { duration: 0.9, ease: 'none', scrambleText: { text: 'Semana ' + FX.dos(k), chars: '0123456789ABCDEFHKMRSTX', revealDelay: 0.2, speed: 0.7 } }, 0);
           }
           tl.to(fichaOtros, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.9, ease: 'expo.out', stagger: 0.12 }, 0.15);
+          if (tituloAnimado) {
+            split = window.SplitText.create(h2, { type: 'words', mask: 'words' });
+            gsap.set(split.words, { yPercent: 110 });
+            gsap.set(h2, { autoAlpha: 1 });
+          }
           if (split) tl.to(split.words, { yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: 0.06,
             onComplete: function () { split.revert(); split = null; } }, 0.25);
         }

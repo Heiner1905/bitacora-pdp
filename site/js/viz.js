@@ -61,6 +61,8 @@
     g.set(nodos, { clearProps: 'transform,opacity,visibility,clipPath,backgroundSize,strokeDasharray,strokeDashoffset,scale' });
   }
   function arr(x) { return Array.isArray(x) ? x : []; }
+  // gsap.set sin avisos cuando la lista está vacía
+  function poner(n, v) { if (n && (!('length' in n) || n.length)) gsap.set(n, v); }
 
   /* ======================================================================
      Fábricas: cada una construye el DOM final y devuelve
@@ -74,14 +76,15 @@
     var real = !vacio(d.texto);
     var split = null;
     return {
-      animables: [],
-      preparar: function () {
-        if (!real || !window.SplitText) return;
+      animables: real ? [p] : [],
+      // se oculta y se divide en líneas al ENTRAR (las fuentes ya cargaron y el ancho es el real)
+      preparar: function () { if (real) gsap.set(p, { autoAlpha: 0 }); },
+      entrar: function () {
+        if (!real) return;
+        if (!window.SplitText) { gsap.to(p, { autoAlpha: 1, duration: 0.6 }); return; }
         split = window.SplitText.create(p, { type: 'lines', mask: 'lines', linesClass: 'viz-linea' });
         gsap.set(split.lines, { yPercent: 105 });
-      },
-      entrar: function () {
-        if (!split) return;
+        gsap.set(p, { autoAlpha: 1 });
         gsap.to(split.lines, { yPercent: 0, duration: 1.05, ease: 'expo.out', stagger: 0.075,
           onComplete: function () { if (split) { split.revert(); split = null; } } });
       },
@@ -112,8 +115,8 @@
     return {
       animables: animables,
       preparar: function () {
-        gsap.set(lineas, { backgroundSize: '0% var(--grosor-tachado)' });
-        gsap.set(despues, { clipPath: 'inset(-10% 100% -20% 0%)' });
+        poner(lineas, { backgroundSize: '0% var(--grosor-tachado)' });
+        poner(despues, { clipPath: 'inset(-10% 100% -20% 0%)' });
       },
       entrar: function () {
         tl = gsap.timeline();
@@ -232,7 +235,7 @@
     return {
       animables: barras,
       preparar: function () {
-        gsap.set(barras, { clipPath: vertical() ? 'inset(0% 100% 0% 0%)' : 'inset(100% 0% 0% 0%)' });
+        poner(barras, { clipPath: vertical() ? 'inset(0% 100% 0% 0%)' : 'inset(100% 0% 0% 0%)' });
       },
       entrar: function () {
         tl = gsap.timeline();
@@ -295,7 +298,7 @@
     return {
       animables: tarjetas,
       preparar: function () {
-        gsap.set(tarjetas, { transformPerspective: 900, transformOrigin: '50% 0%', rotationX: -62, autoAlpha: 0, y: 40 });
+        poner(tarjetas, { transformPerspective: 900, transformOrigin: '50% 0%', rotationX: -62, autoAlpha: 0, y: 40 });
         tarjetas.forEach(function (t) { t.dataset.entrando = '1'; });
       },
       entrar: function () {
@@ -329,7 +332,7 @@
         arcos.push({ el: a, p: p });
       }
       // letra sobre el inicio de cada anillo
-      var t = svg('text', { x: 126, y: 120 - r + 4, 'class': 'anillo__letra' }, s);
+      var t = svg('text', { x: 113, y: 120 - r + 3.5, 'text-anchor': 'end', 'class': 'anillo__letra' }, s);
       t.textContent = dim.letra || '';
     });
     var dl = el('dl', 'anillos__leyenda', wrap);
@@ -397,7 +400,7 @@
     var tl;
     return {
       animables: on,
-      preparar: function () { if (real) gsap.set(on, { scale: 0 }); },
+      preparar: function () { if (real) poner(on, { scale: 0 }); },
       entrar: function () {
         if (!real) return;
         var o = { v: 0 }, dec = decimales(valor);
@@ -459,12 +462,12 @@
     return {
       animables: nodos.concat(conectores),
       preparar: function () {
-        gsap.set(nodos, { scale: 0.4, autoAlpha: 0 });
-        gsap.set(conectores, { scaleX: 0, scaleY: 0 });
+        poner(nodos, { scale: 0.4, autoAlpha: 0 });
+        poner(conectores, { scaleX: 0, scaleY: 0 });
       },
       entrar: function () {
         var vert = window.matchMedia('(max-width: 599px)').matches;
-        gsap.set(conectores, vert ? { scaleX: 1 } : { scaleY: 1 });
+        poner(conectores, vert ? { scaleX: 1 } : { scaleY: 1 });
         tl = gsap.timeline({ onComplete: iniciarBucle });
         nodos.forEach(function (n, i) {
           tl.to(n, { scale: 1, autoAlpha: 1, duration: 0.7, ease: 'back.out(1.8)' }, i * 0.42);
@@ -475,7 +478,7 @@
         if (tl) tl.kill();
         if (bucle) { bucle.kill(); bucle = null; }
         if (st) { st.kill(); st = null; }
-        gsap.set(viajeros.map(function (v) { return v.el; }), { clearProps: 'all' });
+        poner(viajeros.map(function (v) { return v.el; }), { clearProps: 'all' });
         if (!FX.estado.reducido && !window.matchMedia('print').matches && c.dataset.vizListo) iniciarBucle();
       }
     };
@@ -494,22 +497,22 @@
     var cursor = el('span', 'maquina__cursor', linea);
     var fantasma = el('span', 'maquina__fantasma', linea, '');
     var tw;
-    function poner(n) { escrito.textContent = texto.slice(0, n); fantasma.textContent = texto.slice(n); }
+    function escribir(n) { escrito.textContent = texto.slice(0, n); fantasma.textContent = texto.slice(n); }
     return {
       animables: [cursor],
-      preparar: function () { poner(0); wrap.classList.add('maquina--espera'); },
+      preparar: function () { escribir(0); wrap.classList.add('maquina--espera'); },
       entrar: function () {
         wrap.classList.remove('maquina--espera');
         wrap.classList.add('maquina--escribiendo');
         var o = { n: 0 }, ultimo = -1;
         var dur = Math.max(0.8, Math.min(5, texto.length * 0.032));
         tw = gsap.to(o, { n: texto.length, duration: dur, ease: 'none',
-          onUpdate: function () { var n = Math.round(o.n); if (n !== ultimo) { ultimo = n; poner(n); } },
+          onUpdate: function () { var n = Math.round(o.n); if (n !== ultimo) { ultimo = n; escribir(n); } },
           onComplete: function () { wrap.classList.remove('maquina--escribiendo'); wrap.classList.add('maquina--hecha'); } });
       },
       final: function () {
         if (tw) tw.kill();
-        poner(texto.length);
+        escribir(texto.length);
         wrap.classList.remove('maquina--espera', 'maquina--escribiendo');
         wrap.classList.add('maquina--hecha');
       }
