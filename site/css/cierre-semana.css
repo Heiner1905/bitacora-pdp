@@ -36,6 +36,55 @@
 .cs--pendiente { min-height: 0; padding-block: 6svh; }
 .cs--pendiente .cs__texto { font-size: var(--t-subtitulo); color: var(--niebla); font-style: italic; letter-spacing: 0; justify-self: start; }
 
+
+/* ---------- La linterna (alternativa 1) ---------- */
+.cs__escena { position: relative; display: grid; }
+.cs__escena > * { grid-area: 1 / 1; }
+
+/* Capa tachada: el mismo texto en la misma caja; las barras son fondo (no cambian el ajuste de línea) */
+.cs__tachado { color: transparent; user-select: none; pointer-events: none; }
+.cs__tachado span {
+  background: linear-gradient(transparent 30%, var(--pizarra) 30% 80%, transparent 80%);
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.cs-linterna[data-modo="linterna"] .cs__escena { --lx: 0px; --ly: 0px; --lr: 0px; }
+.cs-linterna[data-modo="linterna"]:not([data-luz]) .cs__texto:not(.cs__tachado) {
+  position: relative; z-index: 1;
+  -webkit-mask-image: radial-gradient(circle at var(--lx) var(--ly), #000 calc(var(--lr) * .5), transparent var(--lr));
+          mask-image: radial-gradient(circle at var(--lx) var(--ly), #000 calc(var(--lr) * .5), transparent var(--lr));
+}
+.cs-linterna[data-modo="linterna"]:not([data-luz]) .cs__tachado {
+  -webkit-mask-image: radial-gradient(circle at var(--lx) var(--ly), transparent calc(var(--lr) * .5), #000 var(--lr));
+          mask-image: radial-gradient(circle at var(--lx) var(--ly), transparent calc(var(--lr) * .5), #000 var(--lr));
+}
+.cs-linterna[data-luz] .cs__tachado { visibility: hidden; }
+
+/* Halo: luz fría (hielo), nunca rubí */
+.cs__halo {
+  position: absolute; left: 0; top: 0; z-index: -1;
+  width: 640px; height: 640px; margin: -320px 0 0 -320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--hielo) 7%, transparent) 0, transparent 62%);
+  opacity: 0; visibility: hidden; pointer-events: none; will-change: transform;
+}
+
+.cs__pie { display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap; }
+.cs__cerradura { width: 26px; height: 28px; flex: none; overflow: visible; }
+.cs__cerradura g { fill: var(--rubi); }
+.cs__estado { color: var(--niebla); }
+.cs__luz {
+  min-height: 44px; padding: 0 18px; border: 1px solid var(--linea-fuerte); border-radius: 999px;
+  font-family: var(--f-dato); font-size: var(--t-dato); font-variation-settings: "wdth" 75;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--hielo);
+  transition: border-color var(--dur-corta), background-color var(--dur-corta), color var(--dur-corta);
+}
+.cs__luz:hover { border-color: var(--hielo); background: var(--pizarra); }
+.cs__luz[aria-disabled="true"] { color: var(--niebla); border-color: var(--linea); background: none; cursor: default; }
+
+@media (hover: hover) and (pointer: fine) {
+  .cs-linterna[data-modo="linterna"]:not([data-revelada]) .cs__escena { cursor: none; }
+}
+
 @media (max-width: 899px) {
   .cs { min-height: 0; padding-block: 8svh; }
   .cs__ficha { grid-column: 1 / -1; grid-template-columns: auto auto; justify-content: space-between; }
@@ -44,4 +93,6 @@
 @media print {
   .cs { min-height: 0; padding: 8mm 0 0; break-inside: avoid; }
   .cs__texto { font-size: 18pt; color: #000; }
+  .cs__tachado, .cs__halo, .cs__luz { display: none !important; }
+  .cs-linterna .cs__texto { -webkit-mask-image: none !important; mask-image: none !important; }
 }
