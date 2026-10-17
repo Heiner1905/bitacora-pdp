@@ -93,8 +93,12 @@
 
 .portada__pista {
   position: absolute;
-  left: 9%; bottom: 3%;
-  max-width: 24ch;
+  z-index: 1;
+  /* en la esquina libre fuera del radio del dial y sobre un fondo noche: ninguna marca la cruza */
+  left: -2%; bottom: -1%;
+  max-width: 26ch;
+  padding: 6px 10px 6px 0;
+  background: var(--noche);
   font-family: var(--f-dato);
   font-variation-settings: "wdth" 75;
   font-size: var(--t-dato);
@@ -271,7 +275,7 @@ html.precarga .portada__bajar { opacity: 0; }
     justify-self: start;
     margin: 0 0 8px calc(-1 * var(--margen));
   }
-  .portada__pista { left: var(--margen); bottom: -4px; max-width: none; }
+  .portada__pista { left: var(--margen); bottom: -6px; max-width: none; padding: 4px 10px 4px 0; }
   .portada__proposito { grid-column: 1 / -1; grid-row: 3; margin: 12px 0 28px; }
   .portada__creditos { grid-column: 1 / -1; grid-row: 4; grid-template-columns: 1fr 1fr; row-gap: 18px; }
   .portada__bajar { grid-column: 1 / -1; grid-row: 5; justify-self: start; margin-top: 20px; }

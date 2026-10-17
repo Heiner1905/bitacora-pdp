@@ -58,10 +58,10 @@
   gap: 6px 0;
   margin: 0 0 clamp(16px, 2.2vw, 28px);
   font-family: var(--f-dato);
-  font-size: var(--t-dato);
+  font-size: var(--t-dato-m);
   font-variation-settings: "wdth" 75;
-  font-weight: 400;
-  letter-spacing: .14em;
+  font-weight: 300;
+  letter-spacing: .12em;
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
   color: var(--niebla);
@@ -211,23 +211,36 @@
   hanging-punctuation: first;
 }
 .semana__reflexion .pendiente { display: inline-block; font-size: var(--t-lectura); }
+/* Reflexión pendiente: un plano reservado del tamaño del texto que espera (66ch × ~7 líneas) */
+.semana__reflexion--vacia .pendiente {
+  display: block;
+  width: min(100%, var(--medida-lectura));
+  min-height: 10.5em;
+  padding: 16px 20px;
+  outline-offset: 0;
+  background-image: linear-gradient(var(--linea), var(--linea));
+  background-size: calc(100% - 40px) 1px;
+  background-position: 20px calc(100% - 3.2em);
+  background-repeat: no-repeat;
+}
 .semana[data-plano="centro"] .semana__cabecera { padding-bottom: 0; }
 
-/* ---------- Bloques ---------- */
+/* ---------- Bloques: tres retículas que rotan por semana (data-reticula) ----------
+   pareja  · los bloques angostos van de a dos, lado a lado; los anchos ocupan todo el cuadro
+   sangre  · cada bloque es una banda a sangre (grafito / noche alternos), título al margen
+   ancha   · título al margen, fijo mientras se recorre; la viz ocupa la columna ancha (9 de 12) */
 .semana__bloques {
+  --ritmo: clamp(48px, 5vw, 80px);
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: subgrid;
-  row-gap: clamp(72px, 10vw, 140px);
-  margin-top: clamp(72px, 10vw, 140px);
+  row-gap: var(--ritmo);
+  margin-top: clamp(56px, 7vw, 104px);
+  align-items: start;
 }
-
-.bloque {
-  position: relative;
-  grid-column: 2 / span 7;
-  min-width: 0;
-}
-.bloque__cabecera { margin-bottom: clamp(24px, 3vw, 40px); }
+.bloque { position: relative; grid-column: 1 / -1; min-width: 0; }
+.bloque__viz { min-width: 0; }
+.bloque__cabecera { margin-bottom: clamp(20px, 2.4vw, 32px); }
 .bloque__titulo {
   font-family: var(--f-display);
   font-weight: 300;
@@ -246,67 +259,79 @@
   border: 1px solid var(--hielo);
   color: var(--hielo);
   font-family: var(--f-dato);
-  font-size: var(--t-dato);
+  font-size: var(--t-dato-m);
   font-variation-settings: "wdth" 75;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
   text-transform: uppercase;
   font-weight: 500;
 }
 
-/* Bloques anchos (visualizaciones con estructura) */
-.bloque[data-viz="tarjetas"],
-.bloque[data-viz="flujo"],
-.bloque[data-viz="escalera"] { grid-column: 1 / -1; }
-.bloque[data-viz="anillos"],
-.bloque[data-viz="waffle"],
-.bloque[data-viz="contador"] { grid-column: 2 / span 10; }
-.bloque[data-viz="imagen"] { grid-column: 4 / span 8; }
-.bloque[data-viz="maquina"] { grid-column: 3 / span 9; }
+/* -- pareja -- */
+.semana[data-reticula="pareja"] .bloque:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"]) { grid-column: 1 / span 6; }
+.semana[data-reticula="pareja"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"]),
+.semana[data-reticula="pareja"] .bloque[data-orden="4"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"]) { grid-column: 7 / span 6; }
+.semana[data-reticula="pareja"] .bloque {
+  padding-top: 18px;
+  border-top: 1px solid var(--linea-fuerte);
+}
 
-/* Ritmo: los bloques angostos se alternan de lado según la escena */
-.semana[data-plano="izquierda"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
-.semana[data-plano="centro"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
-.semana[data-plano="completo"] .bloque[data-orden="1"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
-.semana[data-plano="derecha"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]) { grid-column: 6 / span 7; }
-.semana[data-plano="derecha"] .bloque[data-orden="1"][data-viz="maquina"],
-.semana[data-plano="completo"] .bloque[data-orden="1"][data-viz="maquina"] { grid-column: 1 / span 9; }
+/* -- sangre -- */
+.semana[data-reticula="sangre"] .semana__bloques { row-gap: 0; }
+.semana[data-reticula="sangre"] .bloque {
+  margin-inline: calc(-1 * var(--margen));
+  padding: clamp(40px, 5vw, 80px) var(--margen);
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--medianil);
+  align-items: start;
+  background: var(--grafito);
+}
+.semana[data-reticula="sangre"] .bloque:nth-child(even) { background: var(--noche); box-shadow: inset 0 1px 0 var(--linea), inset 0 -1px 0 var(--linea); }
+.semana[data-reticula="sangre"] .bloque__cabecera { grid-column: 1 / span 4; margin-bottom: 0; }
+.semana[data-reticula="sangre"] .bloque__viz { grid-column: 5 / -1; }
+.semana[data-reticula="sangre"] .bloque:is([data-viz="tarjetas"], [data-viz="flujo"], [data-viz="escalera"], [data-viz="imagen"]) .bloque__cabecera { grid-column: 1 / -1; margin-bottom: clamp(24px, 3vw, 40px); }
+.semana[data-reticula="sangre"] .bloque:is([data-viz="tarjetas"], [data-viz="flujo"], [data-viz="escalera"], [data-viz="imagen"]) .bloque__viz { grid-column: 1 / -1; }
+.semana[data-reticula="sangre"] .bloque:nth-child(odd) .tarjeta { background: var(--noche); }
+.semana[data-reticula="sangre"] .bloque:nth-child(odd) .paso__nodo { background: var(--grafito); }
+.semana[data-reticula="sangre"] .bloque:nth-child(odd) .anillo__pista { stroke: var(--noche); }
 
-/* En las escenas «detrás» y «cortado» los bloques llevan el título al margen,
-   fijo mientras se recorre su contenido (créditos al margen, como en un guion) */
-.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque {
-  grid-column: 1 / -1;
+/* -- ancha -- */
+.semana[data-reticula="ancha"] .bloque {
   display: grid;
   grid-template-columns: subgrid;
   align-items: start;
 }
-.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque__cabecera {
+.semana[data-reticula="ancha"] .bloque__cabecera {
   grid-column: 1 / span 3;
   position: sticky; top: 96px;
   margin-bottom: 0;
   padding-top: 14px;
   border-top: 1px solid var(--linea-fuerte);
 }
-.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque__titulo { font-size: clamp(1.25rem, 1rem + .7vw, 1.625rem); max-width: 16ch; }
-.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque__viz { grid-column: 4 / -1; min-width: 0; }
-.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"]) .bloque__viz { grid-column: 5 / span 7; }
+.semana[data-reticula="ancha"] .bloque__titulo { font-size: clamp(1.25rem, 1rem + .7vw, 1.625rem); max-width: 16ch; }
+.semana[data-reticula="ancha"] .bloque__viz { grid-column: 4 / -1; padding-top: 14px; border-top: 1px solid var(--linea); }
 
 /* Contenedor del cierre (lo pinta cierre-semana.js) */
-.semana__cierre { grid-column: 1 / -1; position: relative; margin-top: clamp(72px, 10vw, 140px); }
+.semana__cierre { grid-column: 1 / -1; position: relative; margin-top: clamp(56px, 7vw, 104px); }
 .semana__cierre:empty { margin-top: 0; }
 
 /* ---------- Tableta ---------- */
 @media (max-width: 899px) {
   .semana__reflexion,
   .semana[data-plano] .semana__reflexion { grid-column: 1 / -1; border-left: 0; padding-left: 0; }
-  .bloque, .semana[data-plano] .bloque[data-orden] { grid-column: 1 / -1 !important; }
+  .bloque, .semana[data-reticula] .bloque[data-orden] { grid-column: 1 / -1 !important; }
+  .semana:is([data-reticula="ancha"], [data-reticula="pareja"]) .bloque { display: block; }
+  .semana[data-reticula="ancha"] .bloque__cabecera { position: static; margin-bottom: 20px; }
+  .semana[data-reticula="ancha"] .bloque__viz { border-top: 0; padding-top: 0; }
+  .semana[data-reticula="sangre"] .bloque__cabecera,
+  .semana[data-reticula="sangre"] .bloque__viz { grid-column: 1 / -1 !important; }
+  .semana[data-reticula="sangre"] .bloque__cabecera { margin-bottom: 24px; }
   .semana[data-plano="izquierda"] .semana__rotulo,
   .semana[data-plano="completo"] .semana__rotulo { grid-column: 3 / -1; }
   .semana[data-plano="derecha"] .semana__rotulo { grid-column: 1 / span 6; }
   .semana[data-plano="detras"] .semana__rotulo { grid-column: 1 / -1; }
   .semana[data-plano="completo"] .semana__numero { grid-column: 1 / -1; grid-row: 1 / 3; align-self: start; font-size: var(--t-gigante); }
   .semana[data-plano="completo"] .semana__rotulo { grid-row: 3; }
-  .semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque { display: block; }
-  .semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque__cabecera { position: static; margin-bottom: 24px; }
 }
 
 /* ---------- Móvil ---------- */
@@ -325,7 +350,7 @@
   .semana[data-plano="cortado"] .semana__numero { font-size: 96vw; }
   .semana[data-plano="cortado"] .semana__rotulo { margin-top: 12px; }
   .semana[data-plano="centro"] .semana__titulo { grid-column: 1 / -1; }
-  .semana__ficha { font-size: 11.5px; }
+  .semana__ficha { font-size: var(--t-dato-m); }
   .ficha__dato + .ficha__dato::before { width: 10px; margin: 0 8px; }
   .semana__reflexion .viz-texto { font-size: var(--t-lectura); }
 }

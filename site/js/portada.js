@@ -318,7 +318,8 @@
       var telon = gsap.timeline({ paused: true, defaults: { ease: 'power2.in' } });
       if (lineas[0]) telon.fromTo(lineas[0], { x: 0, autoAlpha: 1 }, { x: function () { return -window.innerWidth * (desk ? 0.2 : 0.35); }, autoAlpha: 0, duration: 1 }, 0);
       if (lineas[1]) telon.fromTo(lineas[1], { x: 0, autoAlpha: 1 }, { x: function () { return window.innerWidth * (desk ? 0.2 : 0.35); }, autoAlpha: 0, duration: 1 }, 0);
-      telon.fromTo([proposito, creditos, bajar, pista].filter(Boolean), { y: 0, opacity: 1 }, { y: 18, opacity: 0, duration: 0.7, stagger: 0.08 }, 0);
+      if (pista) telon.fromTo(pista, { opacity: 1 }, { opacity: 0, duration: 0.18, ease: 'none' }, 0);
+      telon.fromTo([proposito, creditos, bajar].filter(Boolean), { y: 0, opacity: 1 }, { y: 18, opacity: 0, duration: 0.7, stagger: 0.08 }, 0);
       limpiezas.push(function () { telon.progress(0).kill(); });
 
       var forzado = 'libre';

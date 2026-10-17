@@ -36,6 +36,8 @@
                  (dial, anillo, fragmento) cerca del punto y orbitan ~1 s; el vector no se toca y sigue vivo
      FX.particulas.despertar(svgEl, …)  (antiguo) el vector entero se vuelve partículas; la portada ya no lo usa
      FX.particulas.soporta('marca'|'ceder'|'halo')  true si la opción existe (FX.particulas.desdes = orígenes)
+     FX.particulas.cancelar()     suelta la formación en curso (texto: se dispersa en 0,3 s y el real aparece ya).
+                 Se hace sola si el destino sale de pantalla, deja de existir, otro lo muestra o el scroll va muy rápido
      FX.particulas.detener()      corta todo ya (el destino queda visible)
      FX.particulas.activa()       true si hay una formación en curso
      FX.particulas.disponible()   false con reduced-motion o sin canvas: entonces formarX muestran el destino y llaman alTerminar
@@ -473,12 +475,44 @@
     var celda = atlas.celda, s = 2.1;
     if (f) {
       objetivos(f);
+      if (f.m.texto && f.modo !== 'dispersa' && f.modo !== 'cede' && debeSoltar(f)) {
+        // nunca un número varado: se suelta y el real queda visible ya
+        soltar(f);
+      }
+    }
+    f = F;
+    if (f) {
       if (f.modo === 'vuelo') vuelo(f, ahora, celda, s);
       else if (f.modo === 'dispersa') dispersa(f, ahora, celda);
       else fisica(f, ahora, celda, s);
     }
     if (conHalo) dibujarHalo(fr, celda);
     ctx.globalAlpha = 1;
+  }
+
+  /* Soltar una formación de texto: su destino salió de pantalla, desapareció, alguien más ya lo
+     mostró o el scroll va muy rápido (Lenis o delta por cuadro). */
+  var yPrev = null;
+  function debeSoltar(f) {
+    var y = window.scrollY || 0, dy = yPrev == null ? 0 : Math.abs(y - yPrev);
+    yPrev = y;
+    var vel = FX.lenis && typeof FX.lenis.velocity === 'number' ? Math.abs(FX.lenis.velocity) : dy;
+    if (Math.max(vel, dy) > (movil ? 38 : 48)) return true;
+    if (!f.bw || !f.bh) return true;
+    if (f.by + f.bh < 0 || f.by > H || f.bx + f.bw < 0 || f.bx > W) return true;
+    if (f.oculto && window.gsap && window.gsap.getProperty(f.destino, 'opacity') > 0.5) return true;
+    if (!f.destino.isConnected) return true;
+    return false;
+  }
+  function soltar(f) {
+    mostrarDestino(f, 0);
+    if (f.modo === 'vuelo') { /* x,y ya están en su sitio de vuelo */ }
+    var cx = f.bx + f.bw / 2, cy = f.by + f.bh / 2;
+    for (var i = 0; i < f.n; i++) {
+      var dx = f.x[i] - cx, dy = f.y[i] - cy, d = Math.hypot(dx, dy) || 1, v = 2 + Math.random() * 6;
+      f.vx[i] = dx / d * v; f.vy[i] = dy / d * v;
+    }
+    f.modo = 'dispersa'; f.tDisp = performance.now(); f.durDisp = 0.3;
   }
 
   /* ---------------- Halo: fragmentos que se desprenden del borde y orbitan ----------------
@@ -671,6 +705,7 @@
 
   function lanzar(m, destino, op, modo) {
     if (F) terminar(F, true);
+    yPrev = null;
     var f = crearFormacion(m, destino, op);
     if (!f.n) { sinCanvas(destino, op); return null; }
     F = f;
@@ -751,6 +786,9 @@
       else if (op.dejarOculto) f.oculto = false;
       arrancar();
     },
+
+    // Suelta la formación de texto en curso (el destino real queda visible ya)
+    cancelar: function () { if (F) { if (F.m.texto) soltar(F); else terminar(F, true); arrancar(); } },
 
     detener: function () { if (F) terminar(F, true); if (hal) hal.n = 0; parar(); limpiar(); },
 
