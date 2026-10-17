@@ -19,24 +19,12 @@
 .cierre__emblema {
   grid-column: 1 / span 6;
   position: relative;
-  width: min(84svh, 48vw);
+  width: min(calc(100svh - clamp(72px, 10vh, 112px) - clamp(40px, 6vh, 72px) - 24px), 48vw);
   aspect-ratio: 1;
   margin-left: calc(-1 * var(--margen) - 3vw);
   justify-self: start;
 }
 .cierre__svg { width: 100%; height: 100%; overflow: visible; }
-/* Halo del encaje (rubí hondo, solo un instante de color grande y muy tenue) */
-.cierre__emblema::before {
-  content: "";
-  position: absolute; inset: 6%;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--rubi-hondo) 22%, transparent) 0, transparent 66%);
-  opacity: 0;
-  transition: opacity 1.6s var(--ease-salida);
-  pointer-events: none;
-}
-.cierre--encajado .cierre__emblema::before { opacity: 1; }
-
 .cierre__texto {
   grid-column: 7 / -1;
   display: grid;
@@ -109,6 +97,6 @@
   .cierre { break-before: page; }
   .cierre__escena { min-height: 0; padding: 0; }
   .cierre__emblema { width: 70mm; margin: 0; }
-  .cierre__emblema::before, .cierre__volver { display: none; }
+  .cierre__volver { display: none; }
   .pie { border-top-color: #bbb; }
 }

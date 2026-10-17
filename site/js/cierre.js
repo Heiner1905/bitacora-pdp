@@ -145,28 +145,24 @@
      y se abren hacia fuera (la segunda sale 0,5 s después) */
   function prepararPulso(svg) {
     var base = svg.querySelector('#' + PRE + 'pulso');
-    if (!base) return null;
-    var otra = base.cloneNode(false);
-    otra.removeAttribute('id');
-    base.parentNode.appendChild(otra);
-    return [base, otra];
+    return base ? [base] : null;
   }
   function pulsar(ondas) {
+    // como .sv-pulse del prototipo: el TRAZO del anillo se ensancha y se apaga (14→46, .95→0), 2 veces de 1,4 s
     var gsap = window.gsap;
     if (!ondas || !gsap) return;
-    ondas.forEach(function (o, i) {
-      gsap.killTweensOf(o);
-      gsap.fromTo(o, { attr: { r: 140, 'stroke-width': 14, opacity: 0.95 } },
-        { attr: { r: 158, 'stroke-width': 54, opacity: 0 }, duration: 1.4, ease: 'expo.out', delay: i * 0.5 });
-    });
+    var o = ondas[0];
+    gsap.killTweensOf(o);
+    gsap.fromTo(o, { attr: { 'stroke-width': 14, opacity: 0.95 } },
+      { attr: { 'stroke-width': 46, opacity: 0 }, duration: 1.4, ease: 'expo.out', repeat: 1 });
   }
 
   function estadoFinal(C, ctl) {
     ctl.setDial(dialDe(1) + 360);
     ctl.setFragmento(1);
     ctl.abrirOjo(1);
-    escalar(C.envOjo, 1.06, 1.16);
-    escalar(C.envIris, 1.1, 1.1);
+    escalar(C.envOjo, 1.08, 1.26);
+    escalar(C.envIris, 1.18, 1.18);
   }
 
   function animar(C, ctl, c) {
@@ -187,8 +183,8 @@
       ctl.setFragmento(p0 + (1 - p0) * est.f);
       ctl.abrirOjo(est.o);
       // «abierto del todo»: los párpados se separan más y el iris crece por encima de abrirOjo
-      escalar(C.envOjo, 1 + 0.06 * est.o, 1 + 0.16 * est.o);
-      escalar(C.envIris, 1 + 0.1 * est.o, 1 + 0.1 * est.o);
+      escalar(C.envOjo, 1 + 0.08 * est.o, 1 + 0.26 * est.o);
+      escalar(C.envIris, 1 + 0.18 * est.o, 1 + 0.18 * est.o);
     }
     function medir() { p0 = Math.min(0.9, FX.estado.progreso || 0.85); dial0 = dialDe(p0); dial1 = dialDe(1) + 360; }
     medir();
