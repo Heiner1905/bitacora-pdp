@@ -10,6 +10,19 @@
 .viz-texto { max-width: var(--medida-lectura); }
 .viz-linea { padding-bottom: .06em; }
 
+/* Pendientes de lectura: un plano reservado, no una etiqueta suelta */
+.viz--texto > .viz-texto.pendiente,
+.viz--maquina .maquina__linea.pendiente {
+  display: block;
+  width: min(100%, var(--medida-lectura));
+  min-height: 7.5em;
+  padding: 14px 18px;
+  outline-offset: 0;
+}
+/* Filas del checklist con su línea base: la lista se lee como un formulario por llenar */
+.check { padding-bottom: 16px; border-bottom: 1px solid var(--linea); }
+.check--vacio { border-bottom-style: dashed; border-bottom-color: var(--acero); }
+
 /* ---------- tachado ---------- */
 .tachado { list-style: none; display: grid; gap: clamp(28px, 4vw, 48px); }
 .tachado__par { display: grid; gap: 14px; }
@@ -43,7 +56,7 @@
 .tachado__guia { display: none; }
 .tachado__par--vacio .tachado__guia {
   display: block;
-  width: min(220px, 40%);
+  width: 100%;
   border-top: 1px dashed var(--acero);
   margin: 2px 0;
 }
@@ -266,7 +279,7 @@
   background: var(--escarcha);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--hielo) 18%, transparent);
 }
-.paso__nombre { color: var(--niebla); }
+.paso__nombre { color: var(--niebla); font-size: var(--t-dato-m); font-weight: 500; }
 .paso__texto { font-size: 1.0625rem; line-height: 1.5; color: var(--hielo); }
 .paso__cuerpo { display: grid; gap: 8px; }
 .paso__cuerpo .pendiente { justify-self: start; font-size: 1rem; outline-offset: 3px; }
@@ -386,3 +399,4 @@
   .celda--on { background: #111; }
   .paso__nodo { background: #fff; }
 }
+.waffle__de { font-size: var(--t-dato-m); }

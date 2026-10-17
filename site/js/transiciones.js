@@ -1,30 +1,52 @@
 /* ==========================================================================
    transiciones.js — paso de una semana a la siguiente (constructor 3 · §8)
-   En cada .transicion[data-desde][data-hacia] (los pinta semana.js), guiado por scrub:
-   1. CUBRIR: la sala se tapa. Tres maneras que se turnan cada tres semanas:
-        · obturador  (semanas 02–04): láminas alternas, como las hojas de un diafragma;
-        · plano 3D   (semanas 05–07): un plano gira desde el borde y cierra la escena;
-        · mirilla    (semanas 08–10): un círculo (la pupila) se dilata hasta taparlo todo.
-   2. El número de la semana siguiente llega desde el fondo en 3D y queda al centro.
-      En ese cuadro la tira y el contador pasan a la semana k (FX.fijarSemana(k)).
-   3. DESCUBRIR: la sala se abre y el MISMO número viaja y aterriza píxel a píxel
-      sobre .semana__numero de la cabecera real (se mide cada cuadro), donde se
-      entrega: no hay dos «0k» distintos.
+   En cada .transicion[data-desde][data-hacia] (los pinta semana.js), guiado por scrub.
+   La sala se tapa con PIEZAS DEL EMBLEMA, que se turnan cada tres semanas:
+     · dial      (semanas 02–04): los sectores del dial de la caja fuerte entran uno a uno
+                  con retén y la corona de marcas gira: la combinación avanza;
+     · párpado   (semanas 05–07): el observador parpadea entre escenas; los párpados se
+                  cierran sobre el horizonte y se vuelven a abrir;
+     · cerradura (semanas 08–10): se entra por la cerradura (crece hasta tapar la sala)
+                  y al salir gira 90° y se cierra sobre el número de la semana.
+   Con la sala tapada, las partículas arman el «0k» desde el fragmento de la marca
+   (FX.particulas.formarTexto, desde 'marca') y la tira pasa a k (FX.fijarSemana(k)).
+   Al descubrir, ese MISMO número viaja y aterriza píxel a píxel sobre .semana__numero
+   de la cabecera real y se le entrega: un solo número visible en cada cuadro.
+   Fuera de su tramo la escena queda en autoAlpha 0, sin puntero y bajo la sección;
+   si se sale a mitad de una formación de partículas, se dispersan.
    reduced-motion / sin GSAP: separador estático (marcas del dial + «03 / 04»).
 
-   Contrato con semana.js: FX.transiciones.maneja(k) → true si la transición entrega
-   el número de la semana k (semana.js no debería formarlo con partículas). Mientras la
-   transición está activa, el número real de la cabecera se oculta (data-tr-oculta).
+   Contrato: FX.transiciones.maneja(k) → true si la transición entrega el número de la
+   semana k; evento FX 'transicion:entrega' {k}. Mientras la transición no lo ha entregado,
+   el número real queda oculto (atributo data-tr-oculta en la sección).
    ========================================================================== */
 (function () {
   'use strict';
   var FX = window.FX;
   if (!FX) return;
+  var NS = 'http://www.w3.org/2000/svg';
 
-  var VARIANTES = ['obturador', 'plano', 'mirilla'];
+  var VARIANTES = ['dial', 'parpado', 'cerradura'];
   function variante(k) { return VARIANTES[Math.floor((k - 2) / 3) % VARIANTES.length]; }
   var manejadas = {};
   FX.transiciones = { maneja: function (k) { return !!manejadas[k]; }, variante: variante };
+
+  var SECTORES = 12;
+
+  function svgPantalla(clase, padre) {
+    var s = document.createElementNS(NS, 'svg');
+    s.setAttribute('class', clase);
+    s.setAttribute('aria-hidden', 'true');
+    s.setAttribute('preserveAspectRatio', 'none');
+    padre.appendChild(s);
+    return s;
+  }
+  function nodo(tag, attrs, padre) {
+    var n = document.createElementNS(NS, tag);
+    for (var a in attrs) n.setAttribute(a, attrs[a]);
+    if (padre) padre.appendChild(n);
+    return n;
+  }
 
   function construir(tr, semanas) {
     var desde = parseInt(tr.getAttribute('data-desde'), 10);
@@ -40,29 +62,59 @@
     FX.crear('span', 'transicion__paso t-dato', sep).textContent = FX.dos(desde) + ' / ' + FX.dos(hacia);
     FX.crear('span', 'transicion__marcas', sep);
 
-    // Escena fija (solo con movimiento)
     var esc = FX.crear('div', 'transicion__escena', tr);
-    var cubierta = FX.crear('div', 'transicion__cubierta transicion__cubierta--' + v, esc);
-    var laminas = [];
-    if (v === 'obturador') {
-      var n = FX.estado.movil ? 6 : 12;
-      for (var i = 0; i < n; i++) laminas.push(FX.crear('i', 'transicion__lamina' + (i % 2 ? ' es-par' : ''), cubierta));
-    } else if (v === 'plano') {
-      FX.crear('i', 'transicion__hoja', cubierta);
-    } else {
-      FX.crear('i', 'transicion__disco', cubierta);
-    }
+    var svg = svgPantalla('transicion__piezas transicion__piezas--' + v, esc);
     var num = FX.crear('p', 'transicion__numero', esc);
     num.textContent = FX.dos(hacia);
     var ficha = FX.crear('p', 'transicion__ficha t-dato', esc);
     FX.crear('span', 'transicion__semana', ficha).textContent = 'Semana ' + FX.dos(hacia);
     FX.pintar(FX.crear('span', 'transicion__titulo', ficha), s.titulo);
-    var indice = FX.crear('span', 'transicion__indice', esc);
-    FX.crear('span', 'transicion__corona', indice);
-    FX.crear('span', 'transicion__punto', indice);
-    return { tr: tr, k: hacia, v: v, esc: esc, cubierta: cubierta, laminas: laminas,
-      hoja: FX.$('.transicion__hoja', cubierta), disco: FX.$('.transicion__disco', cubierta),
-      num: num, ficha: ficha, indice: indice };
+    return { tr: tr, k: hacia, v: v, esc: esc, svg: svg, num: num, ficha: ficha };
+  }
+
+  /* ---------- Las piezas del emblema (se dibujan al tamaño de la pantalla) ---------- */
+  function dibujar(T) {
+    var vw = window.innerWidth, vh = window.innerHeight, cx = vw / 2, cy = vh / 2;
+    var svg = T.svg;
+    svg.setAttribute('viewBox', '0 0 ' + vw + ' ' + vh);
+    svg.textContent = '';
+    T.geo = { vw: vw, vh: vh, cx: cx, cy: cy };
+    if (T.v === 'dial') {
+      var R = Math.hypot(vw, vh) / 2 + 4, paso = 360 / SECTORES;
+      var g = nodo('g', { 'class': 'dial' }, svg);
+      T.sectores = [];
+      for (var i = 0; i < SECTORES; i++) {
+        var a0 = (i * paso - 90) * Math.PI / 180, a1 = ((i + 1) * paso - 90) * Math.PI / 180;
+        var d = 'M' + cx + ' ' + cy + 'L' + (cx + R * Math.cos(a0)).toFixed(1) + ' ' + (cy + R * Math.sin(a0)).toFixed(1) +
+          'A' + R + ' ' + R + ' 0 0 1 ' + (cx + R * Math.cos(a1)).toFixed(1) + ' ' + (cy + R * Math.sin(a1)).toFixed(1) + 'Z';
+        T.sectores.push(nodo('path', { d: d, 'class': 'sector' + (i % 2 ? ' es-par' : '') }, g));
+      }
+      // La corona de marcas del dial (dos coronas, como el emblema) y su índice escarcha
+      var rc = Math.min(vw, vh) * 0.44;
+      T.corona = nodo('g', { 'class': 'corona' }, svg);
+      nodo('circle', { cx: cx, cy: cy, r: rc, 'class': 'marcas-finas', 'stroke-dasharray': (2 * Math.PI * rc / 120 * 0.06).toFixed(2) + ' ' + (2 * Math.PI * rc / 120 * 0.94).toFixed(2) }, T.corona);
+      nodo('circle', { cx: cx, cy: cy, r: rc, 'class': 'marcas-gruesas', 'stroke-dasharray': (2 * Math.PI * rc / SECTORES * 0.02).toFixed(2) + ' ' + (2 * Math.PI * rc / SECTORES * 0.98).toFixed(2) }, T.corona);
+      nodo('circle', { cx: cx, cy: cy - rc - 18, r: 4, 'class': 'indice' }, T.corona);
+    } else if (T.v === 'parpado') {
+      T.sup = nodo('path', { 'class': 'parpado' }, svg);
+      T.inf = nodo('path', { 'class': 'parpado' }, svg);
+      T.horizonte = nodo('line', { x1: 0, y1: cy, x2: vw, y2: cy, 'class': 'horizonte' }, svg);
+    } else {
+      // La cerradura del emblema (círculo + trapecio), en unidades: alto ≈ 1
+      T.llave = nodo('g', { 'class': 'llave' }, svg);
+      nodo('path', { d: 'M-0.151 -0.11 A0.289 0.289 0 1 1 0.151 -0.11 L0.267 0.356 L-0.267 0.356 Z', 'class': 'cerradura' }, T.llave);
+    }
+  }
+  function parpados(T, a) {
+    // a = 0 abierto (fuera de pantalla) → 1 cerrado sobre el horizonte
+    var G = T.geo, vw = G.vw, vh = G.vh, cy = G.cy;
+    var ys = -80 + (cy + 80) * a, yi = vh + 80 - (vh - cy + 80) * a;
+    var c = (1 - a) * vh * 0.32;                       // la curvatura se aplana al cerrar
+    T.sup.setAttribute('d', 'M-4 -4H' + (vw + 4) + 'V' + ys.toFixed(1) + 'Q' + (vw / 2) + ' ' + (ys - 2 * c).toFixed(1) + ' -4 ' + ys.toFixed(1) + 'Z');
+    T.inf.setAttribute('d', 'M-4 ' + (vh + 4) + 'H' + (vw + 4) + 'V' + yi.toFixed(1) + 'Q' + (vw / 2) + ' ' + (yi + 2 * c).toFixed(1) + ' -4 ' + yi.toFixed(1) + 'Z');
+  }
+  function cerradura(T, s, rot, x, y) {
+    T.llave.setAttribute('transform', 'translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') rotate(' + rot.toFixed(2) + ') scale(' + Math.max(0.0001, s).toFixed(2) + ')');
   }
 
   function animar(T, c) {
@@ -71,8 +123,8 @@
     var sec = document.getElementById('semana-' + FX.dos(T.k));
     var real = sec ? FX.$('.semana__numero', sec) : null;
     manejadas[T.k] = !!real;
+    dibujar(T);
 
-    // El número de la transición copia la tipografía exacta del número real
     function copiarFuente() {
       if (!real) return;
       var cs = getComputedStyle(real);
@@ -80,21 +132,23 @@
     }
     copiarFuente();
 
-    var E = { z: movil ? -500 : -900, ry: movil ? -8 : -16, a: 0, t: 0, f: 1 };
-    var entregado = false;
+    var E = { z: movil ? -500 : -900, ry: movil ? -8 : -16, a: 0, t: 0, f: 1, cub: 0, des: 0 };
+    var POSE = { x: 0, y: 0, s: 1, cx: 50, cy: 50 };   // última pose (sin leer de GSAP)
+    var entregado = null;
+
     function pose() {
       var vw = window.innerWidth, vh = window.innerHeight;
       var w = T.num.offsetWidth, h = T.num.offsetHeight;
-      // al centro cabe entero (los números que sangran en la cabecera se ven completos aquí)
-      var s0 = Math.min(1, (vw * 0.78) / w, (vh * 0.62) / h);
-      var cx = (vw - w * s0) / 2, cy = (vh - h * s0) / 2 - vh * 0.05;
+      var s0 = Math.min(1, (vw * 0.78) / w, (vh * 0.56) / h);
+      var cx = (vw - w * s0) / 2, cy = (vh - h * s0) / 2 - vh * 0.04;
       var dx = cx, dy = cy;
       if (real) { var r = real.getBoundingClientRect(); dx = r.left; dy = r.top; }
       var t = E.t, sc = s0 + (1 - s0) * t, x = cx + (dx - cx) * t, y = cy + (dy - cy) * t;
-      gsap.set(T.num, { x: x, y: y, scale: sc, transformOrigin: '0% 0%', z: E.z, rotationY: E.ry, opacity: E.f * E.a * (1 - Math.min(1, Math.max(0, (t - 0.75) / 0.25))), transformPerspective: 1600 });
-      return { x: (x + w * sc / 2) / vw * 100, y: (y + h * sc / 2) / vh * 100 };
+      var op = E.f * E.a * (1 - Math.min(1, Math.max(0, (t - 0.75) / 0.25)));
+      T.num.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) perspective(1600px) translateZ(' + E.z.toFixed(1) + 'px) rotateY(' + E.ry.toFixed(2) + 'deg) scale(' + sc.toFixed(4) + ')';
+      T.num.style.opacity = op.toFixed(3);
+      POSE.x = x; POSE.y = y; POSE.s = sc; POSE.cx = x + w * sc / 2; POSE.cy = y + h * sc / 2;
     }
-    var cierreMirilla = gsap.parseEase('power3.inOut');
     function entregar(si) {
       if (si === entregado) return;
       entregado = si;
@@ -102,104 +156,119 @@
       if (si) FX.emitir('transicion:entrega', { k: T.k });
     }
 
-    // Estados iniciales por variante
-    gsap.set(T.esc, { autoAlpha: 0 });
-    gsap.set(T.ficha, { clipPath: 'inset(0% 100% 0% 0%)' });
-    gsap.set(T.indice, { rotation: -90, autoAlpha: 0 });
-    var L = T.laminas, pares = L.filter(function (_, i) { return i % 2; }), impares = L.filter(function (_, i) { return !(i % 2); });
-    if (T.v === 'obturador') {
-      gsap.set(L, { scaleY: 0 });
-      gsap.set(impares, { transformOrigin: '50% 0%' });
-      gsap.set(pares, { transformOrigin: '50% 100%' });
-    } else if (T.v === 'plano') {
-      gsap.set(T.hoja, { transformPerspective: 1400, transformOrigin: '100% 50%', rotationY: -88 });
-    } else {
-      gsap.set(T.disco, { clipPath: 'circle(0% at 50% 46%)' });
-    }
-
-    var marca = { k: false }, st = null, arma = { ida: false, vuelta: false };
-    // Las partículas arman el «0k» desde el fragmento de la marca (una vez por entrada en cada sentido)
+    /* ---- Partículas: el «0k» se arma desde la marca (una vez por entrada en cada sentido) ---- */
+    var formando = false;
     function hayParticulas() { var P = FX.particulas; return !!(P && typeof P.formarTexto === 'function' && P.soporta && P.soporta('marca')); }
     function formarNumero() {
       var P = FX.particulas;
       if (!hayParticulas()) { E.f = 1; return; }
       gsap.killTweensOf(E, 'f');
       E.f = 0; pose();
-      // Molde invisible con la cifra al tamaño en que se ve al centro (el número real está escalado
-      // con transform y el muestreo de partículas lee la fuente sin escalar)
+      // Molde invisible con la cifra al tamaño en que se ve (el número va escalado con transform)
       var m = T.molde || (T.molde = FX.crear('p', 'transicion__numero transicion__molde', T.esc));
       m.textContent = T.num.textContent;
-      var cs = getComputedStyle(T.num), sc = gsap.getProperty(T.num, 'scaleX') || 1;
+      var cs = getComputedStyle(T.num);
       ['fontSize', 'letterSpacing', 'lineHeight', 'paddingTop', 'paddingBottom'].forEach(function (k) {
-        var v = parseFloat(cs[k]); m.style[k] = isNaN(v) ? cs[k] : (v * sc) + 'px';
+        var v = parseFloat(cs[k]); m.style[k] = isNaN(v) ? cs[k] : (v * POSE.s) + 'px';
       });
       m.style.fontWeight = cs.fontWeight;
-      gsap.set(m, { x: gsap.getProperty(T.num, 'x'), y: gsap.getProperty(T.num, 'y') });
+      m.style.transform = 'translate3d(' + POSE.x.toFixed(1) + 'px,' + POSE.y.toFixed(1) + 'px,0)';
+      formando = true;
       try {
         P.formarTexto(FX.dos(T.k), m, { desde: 'marca', duracion: 0.6, ocultarDestino: false,
-          alTerminar: function () { gsap.to(E, { f: 1, duration: 0.3, ease: 'power1.out', onUpdate: pose }); } });
-      } catch (e) { E.f = 1; }
-      setTimeout(function () { if (E.f === 0) gsap.to(E, { f: 1, duration: 0.3, onUpdate: pose }); }, 1600);
+          alTerminar: function () { formando = false; gsap.to(E, { f: 1, duration: 0.3, ease: 'power1.out', onUpdate: pose }); } });
+      } catch (e) { formando = false; E.f = 1; }
+      setTimeout(function () { if (E.f === 0) { formando = false; gsap.to(E, { f: 1, duration: 0.3, onUpdate: pose }); } }, 1600);
     }
+    function soltar() {
+      // al salir del tramo a mitad de la formación: nada queda varado
+      if (formando && FX.particulas && FX.particulas.dispersar) { try { FX.particulas.dispersar({ duracion: 0.4 }); } catch (e) {} }
+      formando = false;
+      gsap.killTweensOf(E, 'f');
+      E.f = 1;
+    }
+
+    /* ---- Las piezas: cubrir (E.cub 0→1) y descubrir (E.des 0→1) ---- */
+    var reten = window.CustomEase ? window.CustomEase.create('reten-transicion', 'M0,0 C0.2,0 0.3,0.9 0.55,1.04 0.7,1.1 0.8,0.98 1,1') : gsap.parseEase('back.inOut(2)');
+    var suave = gsap.parseEase('power3.inOut');
+    function piezas() {
+      var G = T.geo;
+      if (T.v === 'dial') {
+        // cubrir: los sectores entran uno a uno (barrido horario con retén por sector)
+        // descubrir: salen en el mismo sentido; la corona gira un paso de la combinación por sector
+        var n = SECTORES;
+        for (var i = 0; i < n; i++) {
+          var e = Math.min(1, Math.max(0, E.cub * n - i));
+          var sOut = Math.min(1, Math.max(0, E.des * n - i));
+          var sc = reten(e) * (1 - suave(sOut));
+          T.sectores[i].setAttribute('transform', sc >= 0.999 ? '' : 'translate(' + G.cx + ' ' + G.cy + ') scale(' + Math.max(0.0001, sc).toFixed(3) + ') translate(' + (-G.cx) + ' ' + (-G.cy) + ')');
+        }
+        var pasos = (E.cub + E.des) * n, k = Math.floor(pasos), r = pasos - k;
+        var ang = (k + reten(r)) * (360 / n) * 0.5;
+        T.corona.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ' ' + G.cx + ' ' + G.cy + ')');
+        T.corona.style.opacity = Math.min(E.cub * 3, 1 - E.des).toFixed(3);
+      } else if (T.v === 'parpado') {
+        var a = suave(E.cub) * (1 - suave(E.des));
+        parpados(T, a);
+        T.horizonte.style.opacity = (a > 0.97 ? 1 : 0).toString();
+      } else {
+        // la cerradura crece desde el centro hasta tapar la sala; al salir gira 90° y se cierra sobre el número
+        var cubre = Math.hypot(G.vw, G.vh) * 2.6;
+        var sIn = 0.0001 + cubre * Math.pow(E.cub, 3);
+        if (E.des <= 0) { cerradura(T, sIn, 0, G.cx, G.cy); return; }
+        var q = suave(E.des);
+        var s = cubre * Math.pow(1 - q, 3);
+        cerradura(T, s, 90 * Math.min(1, E.des * 1.6), G.cx + (POSE.cx - G.cx) * q, G.cy + (POSE.cy - G.cy) * q);
+      }
+    }
+
+    gsap.set(T.esc, { autoAlpha: 0 }); T.esc.style.zIndex = '-1';
+    gsap.set(T.ficha, { clipPath: 'inset(-20% 0% 120% 0%)' });
+    var marca = { k: false }, st = null, arma = { ida: false, vuelta: false };
     var tl = gsap.timeline({ defaults: { ease: 'none' }, onUpdate: function () {
       var p = tl.progress();
-      // La tira cambia en el cuadro en que el «0k» cubre la pantalla
       var activo = st && st.isActive;
+      // la tira cambia en el cuadro en que el «0k» cubre la pantalla
       var ahora = p >= 0.45;
       if (activo && ahora !== marca.k) { marca.k = ahora; FX.fijarSemana(ahora ? T.k : T.k - 1); }
-      // la entrega: en el último cuarto del aterrizaje el número real aparece debajo y el de la transición se funde
+      if (activo && arma.ida && p >= 0.3 && p < 0.6) { arma.ida = false; formarNumero(); }
+      if (activo && arma.vuelta && p <= 0.56 && p > 0.3) { arma.vuelta = false; formarNumero(); }
+      // la entrega: en el último cuarto del aterrizaje aparece el número real y el de la transición se funde
       entregar(E.t >= 0.75);
-      if (arma.ida && p >= 0.3 && p < 0.6) { arma.ida = false; formarNumero(); }
-      if (arma.vuelta && p <= 0.56 && p > 0.3) { arma.vuelta = false; formarNumero(); }
-      var centro = pose();
-      // Mirilla: la pupila se cierra SOBRE el número mientras aterriza
-      if (T.v === 'mirilla' && p >= 0.36) {
-        var q = p < 0.6 ? 0 : cierreMirilla(Math.min(1, (p - 0.6) / 0.32));
-        T.disco.style.clipPath = 'circle(' + (130 * (1 - q)).toFixed(2) + '% at ' + centro.x.toFixed(2) + '% ' + centro.y.toFixed(2) + '%)';
-      }
+      pose();
+      piezas();
     } });
 
-    // 1 · CUBRIR (0 → 0.36)
-    if (T.v === 'obturador') {
-      tl.to(L, { scaleY: 1, duration: 0.36, ease: 'power3.in', stagger: { each: 0.012, from: 'center' } }, 0);
-    } else if (T.v === 'plano') {
-      tl.to(T.hoja, { rotationY: 0, duration: 0.36, ease: 'power2.in' }, 0);
-    } else {
-      tl.to(T.disco, { clipPath: 'circle(130% at 50% 46%)', duration: 0.36, ease: 'power3.in' }, 0);
-    }
-    tl.to(T.indice, { autoAlpha: 1, rotation: 0, duration: 0.3, ease: 'power2.out' }, 0.08)
-      // 2 · el número llega desde el fondo (0.24 → 0.5)
+    tl.to(E, { cub: 1, duration: 0.36 }, 0)
       .to(E, { z: 0, ry: 0, a: 1, duration: 0.26, ease: 'power3.out' }, 0.24)
       .to(T.ficha, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.14, ease: 'power2.out' }, 0.4)
       // retén (0.5 → 0.6): la sala tapada, el número quieto
-      // 3 · DESCUBRIR (0.6 → 0.94) y el número aterriza en la cabecera
-      .to(T.ficha, { clipPath: 'inset(-20% 0% -20% 100%)', duration: 0.1, ease: 'power2.in' }, 0.6)
-      .to(E, { t: 1, duration: 0.32, ease: 'power3.inOut' }, 0.6)
-      .to(T.indice, { rotation: 90, autoAlpha: 0, duration: 0.24, ease: 'power2.in' }, 0.62);
-    if (T.v === 'obturador') {
-      tl.set(impares, { transformOrigin: '50% 100%' }, 0.59)
-        .set(pares, { transformOrigin: '50% 0%' }, 0.59)
-        .to(L, { scaleY: 0, duration: 0.32, ease: 'power3.inOut', stagger: { each: 0.012, from: 'edges' } }, 0.6);
-    } else if (T.v === 'plano') {
-      tl.set(T.hoja, { transformOrigin: '0% 50%' }, 0.59)
-        .to(T.hoja, { rotationY: 88, duration: 0.32, ease: 'power2.inOut' }, 0.6);
+      .to(T.ficha, { clipPath: 'inset(-20% 0% 120% 0%)', duration: 0.08, ease: 'power2.in' }, 0.6)
+      .to(E, { des: 1, duration: 0.3 }, 0.6)
+      .to(E, { t: 1, duration: 0.3, ease: 'power3.inOut' }, 0.6)
+      .to({}, { duration: 0.1 }, 0.9);
+
+    function limpiar(fin) {
+      // la escena queda invisible, sin puntero y bajo la sección; el scrub termina ya
+      var tw = st && st.getTween && st.getTween();
+      if (tw) tw.progress(1);
+      tl.progress(fin ? 1 : 0);
+      gsap.set(T.esc, { autoAlpha: 0 }); T.esc.style.zIndex = '-1';
     }
-    tl.to({}, { duration: 0.06 }, 0.94);
 
     if (sec) sec.setAttribute('data-tr-oculta', '');
     st = window.ScrollTrigger.create({
       trigger: T.tr,
       start: 'top bottom',
       end: 'bottom top',
-      scrub: movil ? 0.3 : 0.5,
+      scrub: movil ? 0.25 : 0.4,
       animation: tl,
       invalidateOnRefresh: true,
-      onRefresh: function () { copiarFuente(); },
-      onToggle: function (st) { gsap.set(T.esc, { autoAlpha: st.isActive ? 1 : 0 }); },
-      onEnter: function () { arma.ida = true; arma.vuelta = false; if (hayParticulas()) E.f = 0; },
-      onEnterBack: function () { arma.vuelta = true; arma.ida = false; },
-      onLeave: function () { entregar(true); FX.fijarSemana(null); marca.k = true; },
-      onLeaveBack: function () { entregar(false); FX.fijarSemana(null); marca.k = false; }
+      onRefresh: function () { copiarFuente(); dibujar(T); },
+      onEnter: function () { arma.ida = true; arma.vuelta = false; if (hayParticulas()) E.f = 0; T.esc.style.zIndex = ''; gsap.set(T.esc, { autoAlpha: 1 }); },
+      onEnterBack: function () { arma.vuelta = true; arma.ida = false; T.esc.style.zIndex = ''; gsap.set(T.esc, { autoAlpha: 1 }); },
+      onLeave: function () { soltar(); limpiar(true); entregar(true); FX.fijarSemana(null); marca.k = true; },
+      onLeaveBack: function () { soltar(); limpiar(false); entregar(false); FX.fijarSemana(null); marca.k = false; }
     });
     if (st.progress >= 1) entregar(true);
     return function () {

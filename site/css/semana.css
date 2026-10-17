@@ -358,6 +358,13 @@
 /* ---------- Impresión: una semana por página, número como cabezote ---------- */
 @media print {
   .semana { display: block; padding: 0; }
+  /* El número se imprime siempre (aunque la transición lo tenga oculto) y del mismo tamaño en todas */
+  .semanas .semana[data-semana][data-plano] .semana__numero {
+    visibility: visible !important; opacity: 1 !important; transform: none !important; clip-path: none !important;
+    font-size: 64pt !important; font-weight: 200 !important; margin: 0 0 4mm !important;
+    display: block; justify-self: auto; color: #000 !important; -webkit-text-stroke: 0 !important;
+  }
+  .semana[data-reticula] .bloque { margin: 0 0 7mm !important; padding: 0 !important; background: none !important; box-shadow: none !important; display: block !important; border: 0 !important; }
   .semana__cabecera { min-height: 0 !important; display: block; padding: 0 0 6mm; border-bottom: 1px solid #bbb; }
   .semana__numero { font-size: 64pt !important; margin: 0 0 4mm !important; letter-spacing: -.03em; }
   .semana__rotulo, .semana__reflexion { border: 0 !important; padding: 0 !important; }

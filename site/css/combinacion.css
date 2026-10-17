@@ -1,12 +1,15 @@
 /* ==========================================================================
    combinacion.css — la tira de la combinación (constructor 2)
    recorrida = hielo · actual = rubí (aguja con texto noche) · futura = acero punteado
+   Cada casilla es un enlace de 44 × 44 px (área táctil real); la caja que se ve
+   (40 × 28) se dibuja con ::after. La tira ocupa una fila de 40 px.
    ========================================================================== */
 
 .combinacion {
-  --casilla: 40px;
-  --alto-casilla: 28px;
-  --hueco: 4px;
+  --paso: 44px;          /* ancho del enlace (área táctil) */
+  --caja-w: 40px;        /* caja visible */
+  --caja-h: 28px;
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -16,24 +19,26 @@
   max-height: 40px;
   overflow: visible;
 }
-.combinacion__tira { position: relative; }
+.combinacion__tira { position: relative; height: 40px; }
 .combinacion__casillas {
   list-style: none;
   display: flex;
-  gap: var(--hueco);
+  gap: 0;
   flex-wrap: nowrap;
   margin: 0; padding: 0;
   position: relative;
   z-index: 1;
+  height: 40px;
 }
-.combinacion__item { display: block; }
+.combinacion__item { display: block; height: 40px; }
 
 .casilla {
   position: relative;
   display: grid;
   place-items: center;
-  width: var(--casilla);
-  height: var(--alto-casilla);
+  width: var(--paso);
+  height: 44px;
+  margin: -2px 0;
   text-decoration: none;
   font-family: var(--f-dato);
   font-size: var(--t-dato);
@@ -41,29 +46,47 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: .04em;
   color: var(--niebla);
-  border: 1px dashed var(--acero);
-  transition: color var(--dur-corta) var(--ease-salida), border-color var(--dur-corta) var(--ease-salida);
+  transition: color var(--dur-corta) var(--ease-salida);
 }
-/* área táctil ≥ 44px sin ensanchar la tira */
-.casilla::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(44px, 100%); height: 44px; transform: translate(-50%, -50%); }
-
-.casilla[data-estado="recorrida"] { color: var(--hielo); border: 1px solid var(--hielo); }
-.casilla[data-estado="actual"] { color: var(--noche); border: 1px solid transparent; font-weight: 500; }
-.casilla:hover { color: var(--escarcha); border-color: var(--hielo); }
+.casilla__num { position: relative; z-index: 1; }
+.casilla::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: var(--caja-w); height: var(--caja-h);
+  transform: translate(-50%, -50%);
+  border: 1px dashed var(--acero);
+  transition: border-color var(--dur-corta) var(--ease-salida);
+}
+.casilla[data-estado="recorrida"] { color: var(--hielo); }
+.casilla[data-estado="recorrida"]::after { border: 1px solid var(--hielo); }
+.casilla[data-estado="actual"] { color: var(--noche); font-weight: 500; }
+.casilla[data-estado="actual"]::after { border-color: transparent; }
+.casilla:hover { color: var(--escarcha); }
+.casilla:hover::after { border-color: var(--hielo); }
 .casilla[data-estado="actual"]:hover { color: var(--noche); }
-.casilla:focus-visible { outline: 2px solid var(--rubi-claro); outline-offset: 3px; }
+.casilla[data-estado="actual"]:hover::after { border-color: transparent; }
+.casilla:focus-visible { outline: none; }
+.casilla:focus-visible::after { outline: 2px solid var(--rubi-claro); outline-offset: 3px; }
 
 /* La aguja rubí: una sola pieza que salta de casilla en casilla */
 .combinacion__aguja {
   position: absolute;
-  left: 0; top: 0;
-  width: var(--casilla);
-  height: var(--alto-casilla);
+  left: calc((var(--paso) - var(--caja-w)) / 2);
+  top: calc((40px - var(--caja-h)) / 2);
+  width: var(--caja-w);
+  height: var(--caja-h);
   background: var(--rubi);
   z-index: 0;
   opacity: 0;
   pointer-events: none;
 }
+
+/* Marcas compactas (solo móvil, decorativas: el botón de la tira abre el índice) */
+.combinacion__marcas { display: none; list-style: none; margin: 0; padding: 0; gap: 3px; align-items: center; }
+.combinacion__marca { width: 9px; height: 20px; border: 1px dashed var(--acero); }
+.combinacion__marca[data-estado="recorrida"] { border: 1px solid var(--hielo); }
+.combinacion__marca[data-estado="actual"] { border: 1px solid var(--rubi); background: var(--rubi); }
 
 .combinacion__lectura {
   display: none;
@@ -76,25 +99,9 @@
   color: var(--niebla);
   white-space: nowrap;
 }
-.combinacion__k { color: var(--escarcha); }
+.combinacion__k { color: var(--escarcha); font-weight: 500; }
 
-/* Compacta (móvil): marcas finas sin número + lectura «03 / 10» */
-@media (max-width: 599px) {
-  .combinacion { --casilla: 9px; --alto-casilla: 20px; --hueco: 3px; gap: 10px; }
-  .casilla { font-size: 0; border-width: 1px; }
-  .casilla__num { display: none; }
-  .casilla { pointer-events: none; }
-  .casilla::before { display: none; }
-  .combinacion__lectura { display: block; }
-}
-
-/* Muchas semanas en pantallas medianas: se adelgaza sin perder los números */
-@media (min-width: 600px) and (max-width: 1100px) {
-  .combinacion { --casilla: 34px; --hueco: 4px; }
-}
-
-/* Botón de la tira compacta: cubre toda la tira con un área ≥ 44 px */
-.combinacion { position: relative; }
+/* Botón de la tira compacta: cubre toda la tira con un área de 44 px de alto */
 .combinacion__abrir {
   position: absolute;
   left: -8px; right: -8px; top: 50%;
@@ -104,6 +111,16 @@
   border-radius: 4px;
 }
 .combinacion__abrir[hidden] { display: none; }
+
+@media (max-width: 599px) {
+  .combinacion { gap: 10px; }
+  .combinacion__tira { display: none; }
+  .combinacion__marcas { display: flex; }
+  .combinacion__lectura { display: block; }
+}
+@media (min-width: 600px) and (max-width: 1100px) {
+  .combinacion { --caja-w: 36px; }
+}
 @media (max-width: 380px) { .combinacion__de { display: none; } }
 
 @media print { .combinacion { display: none !important; } }

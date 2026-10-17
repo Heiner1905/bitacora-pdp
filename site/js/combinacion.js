@@ -59,12 +59,14 @@
     var mqCompacta = window.matchMedia('(max-width: 599px)');
     function modoCompacto() {
       var comp = mqCompacta.matches;
-      casillas.forEach(function (a) { if (comp) a.setAttribute('tabindex', '-1'); else a.removeAttribute('tabindex'); });
-      ol.toggleAttribute('aria-hidden', comp);
       abrir.hidden = !comp;
     }
     if (mqCompacta.addEventListener) mqCompacta.addEventListener('change', modoCompacto); else mqCompacta.addListener(modoCompacto);
     modoCompacto();
+
+    var marcasEl = FX.crear('ol', 'combinacion__marcas', raiz);
+    marcasEl.setAttribute('aria-hidden', 'true');
+    var marcas = semanas.map(function () { return FX.crear('li', 'combinacion__marca', marcasEl); });
 
     var lectura = FX.crear('p', 'combinacion__lectura', raiz);
     lectura.setAttribute('aria-hidden', 'true');
@@ -84,6 +86,7 @@
         var n = i + 1;
         var est = n < k ? 'recorrida' : n === k ? 'actual' : 'futura';
         a.setAttribute('data-estado', est);
+        if (marcas[i]) marcas[i].setAttribute('data-estado', est);
         if (est === 'actual') a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current');
         var sr = a.querySelector('.sr-only');
         var base = sr.textContent.replace(/ \((recorrida|actual|por recorrer)\)$/, '');

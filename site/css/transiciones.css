@@ -40,37 +40,19 @@
 /* Mientras la transición está viva, el número real de la semana lo entrega ella */
 .transiciones-vivas .semana[data-tr-oculta] .semana__numero { visibility: hidden !important; }
 
-.transicion__cubierta { position: absolute; inset: 0; }
-
-/* Obturador: láminas alternas */
-.transicion__cubierta--obturador { display: flex; }
-.transicion__lamina {
-  flex: 1 1 0;
-  height: 100%;
-  background: var(--grafito);
-  border-right: 1px solid var(--pizarra);
-  transform: scaleY(0);
-}
-.transicion__lamina.es-par { background: var(--noche); }
-.transicion__lamina:last-child { border-right: 0; }
-
-/* Plano 3D: una hoja que gira desde el borde y cierra la escena */
-.transicion__hoja {
-  position: absolute; inset: 0;
-  background: var(--grafito);
-  border-left: 1px solid var(--linea-fuerte);
-  border-right: 1px solid var(--linea-fuerte);
-  backface-visibility: hidden;
-}
-
-/* Mirilla: la pupila que se dilata y luego se cierra sobre el número */
-.transicion__disco {
-  position: absolute; inset: 0;
-  background:
-    repeating-radial-gradient(circle at 50% 46%, transparent 0 46px, var(--linea) 46px 47px),
-    var(--noche);
-  clip-path: circle(0% at 50% 46%);
-}
+/* Las piezas del emblema, al tamaño de la pantalla */
+.transicion__piezas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+/* Dial: sectores de la caja fuerte (grafito y noche alternos, filo pizarra) y su corona de marcas */
+.transicion__piezas .sector { fill: var(--grafito); stroke: var(--pizarra); stroke-width: 1; }
+.transicion__piezas .sector.es-par { fill: var(--noche); }
+.transicion__piezas .marcas-finas { fill: none; stroke: var(--acero); stroke-width: 8; opacity: .7; }
+.transicion__piezas .marcas-gruesas { fill: none; stroke: var(--acero); stroke-width: 16; }
+.transicion__piezas .indice { fill: var(--escarcha); }
+/* Párpado: noche con el filo hielo del párpado del emblema; al cerrar queda el horizonte */
+.transicion__piezas .parpado { fill: var(--noche); stroke: var(--hielo); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.transicion__piezas .horizonte { stroke: var(--hielo); stroke-width: 1.5; opacity: 0; }
+/* Cerradura: la del emblema, noche con filo rubí */
+.transicion__piezas .cerradura { fill: var(--noche); stroke: var(--rubi); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 
 /* El número: el mismo que aterriza en la cabecera (su tipografía se copia del real) */
 .transicion__numero {
@@ -96,7 +78,8 @@
 .transicion__ficha {
   position: absolute; left: var(--margen); bottom: var(--margen);
   display: grid; gap: 6px;
-  width: min(34rem, calc(100vw - 2 * var(--margen) - 96px));
+  width: min(34rem, calc(100vw - 2 * var(--margen)));
+  box-sizing: border-box;
   padding-top: 12px;
   border-top: 1px solid var(--linea-fuerte);
 }
@@ -104,24 +87,8 @@
 .transicion__titulo { text-transform: none; letter-spacing: .04em; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
 .transicion__titulo.pendiente { font-family: var(--f-dato); font-style: normal; outline-offset: 3px; justify-self: start; }
 
-/* El índice del dial: una corona de marcas con su punto escarcha, que gira con el paso */
-.transicion__indice {
-  position: absolute; right: var(--margen); bottom: var(--margen);
-  width: 76px; height: 76px;
-}
-.transicion__corona {
-  position: absolute; inset: 0; border-radius: 50%;
-  background: repeating-conic-gradient(var(--acero) 0 1.2deg, transparent 1.2deg 15deg);
-  -webkit-mask-image: radial-gradient(circle, transparent 62%, #000 63%);
-          mask-image: radial-gradient(circle, transparent 62%, #000 63%);
-}
-.transicion__punto {
-  position: absolute; left: 50%; top: 0; width: 6px; height: 6px; margin: -9px 0 0 -3px;
-  border-radius: 50%; background: var(--escarcha);
-}
-
 @media (max-width: 899px) {
   .transiciones-vivas .transicion { height: 60svh; }
-  .transicion__indice { width: 52px; height: 52px; }
+  .transicion__ficha { width: calc(100vw - 2 * var(--margen)); }
 }
 @media print { .transicion { display: none !important; } }

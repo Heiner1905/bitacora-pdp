@@ -22,6 +22,7 @@
   // sangra a la derecha, lo corta el borde superior del cuadro, o entra completo junto a los créditos.
   var PLANOS = ['izquierda', 'detras', 'derecha', 'cortado', 'completo'];
 
+  var RETICULAS = ['pareja', 'sangre', 'ancha'];
   function plano(k) { return k === 1 ? 'centro' : PLANOS[(k - 2) % PLANOS.length]; }
 
   function pintarSemana(s, i, contenedor, demo) {
@@ -42,6 +43,7 @@
     sec.setAttribute('data-semana', k);
     sec.setAttribute('data-estado', estado);
     sec.setAttribute('data-plano', plano(k));
+    sec.setAttribute('data-reticula', RETICULAS[(k - 1) % RETICULAS.length]);
     sec.setAttribute('aria-labelledby', id + '-titulo');
 
     /* ---- Cabecera: el plano ---- */
@@ -70,6 +72,7 @@
 
     /* ---- Reflexión (texto de lectura) ---- */
     var refl = FX.crear('div', 'semana__reflexion', sec);
+    if (FX.esPendiente(s.reflexion) || !s.reflexion) refl.classList.add('semana__reflexion--vacia');
     var reflViz = FX.viz ? FX.viz.pintar('texto', refl, { texto: s.reflexion }) : FX.pintar(FX.crear('p', 't-lectura', refl), s.reflexion);
     void reflViz;
 
