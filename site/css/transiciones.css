@@ -2,6 +2,7 @@
    transiciones.css — paso entre semanas (constructor 3 · §8)
    Sin movimiento: separador estático. Con movimiento (html.transiciones-vivas):
    la .transicion es un tramo de scroll de ~70 svh y su escena es una capa fija.
+   Variantes de la cubierta: obturador · plano (3D) · mirilla.
    ========================================================================== */
 .transicion {
   position: relative;
@@ -36,47 +37,69 @@
   visibility: hidden;
   overflow: hidden;
 }
-.transicion__laminas { position: absolute; inset: 0; display: flex; }
+/* Mientras la transición está viva, el número real de la semana lo entrega ella */
+.transiciones-vivas .semana[data-tr-oculta] .semana__numero { visibility: hidden !important; }
+
+.transicion__cubierta { position: absolute; inset: 0; }
+
+/* Obturador: láminas alternas */
+.transicion__cubierta--obturador { display: flex; }
 .transicion__lamina {
   flex: 1 1 0;
   height: 100%;
   background: var(--grafito);
   border-right: 1px solid var(--pizarra);
   transform: scaleY(0);
-  will-change: transform;
 }
 .transicion__lamina.es-par { background: var(--noche); }
 .transicion__lamina:last-child { border-right: 0; }
 
-.transicion__plano {
+/* Plano 3D: una hoja que gira desde el borde y cierra la escena */
+.transicion__hoja {
   position: absolute; inset: 0;
-  display: grid;
-  place-content: center;
-  justify-items: start;
-  padding: 0 var(--margen);
-  will-change: transform, opacity;
+  background: var(--grafito);
+  border-left: 1px solid var(--linea-fuerte);
+  border-right: 1px solid var(--linea-fuerte);
+  backface-visibility: hidden;
 }
+
+/* Mirilla: la pupila que se dilata y luego se cierra sobre el número */
+.transicion__disco {
+  position: absolute; inset: 0;
+  background:
+    repeating-radial-gradient(circle at 50% 46%, transparent 0 46px, var(--linea) 46px 47px),
+    var(--noche);
+  clip-path: circle(0% at 50% 46%);
+}
+
+/* El número: el mismo que aterriza en la cabecera (su tipografía se copia del real) */
 .transicion__numero {
+  position: absolute; left: 0; top: 0;
+  margin: 0;
   font-family: var(--f-display);
   font-weight: 160;
   font-size: var(--t-gigante);
   line-height: .8;
   letter-spacing: -.055em;
   color: var(--escarcha);
+  font-variant-numeric: lining-nums;
   font-feature-settings: "lnum" 1;
   white-space: nowrap;
   padding-block: .04em .02em;
+  opacity: 0;
 }
+
+/* Ficha: abajo a la izquierda, el título puede ocupar dos líneas */
 .transicion__ficha {
-  display: flex; flex-wrap: wrap; gap: 4px 18px;
-  margin-top: 18px;
+  position: absolute; left: var(--margen); bottom: var(--margen);
+  display: grid; gap: 6px;
+  width: min(34rem, calc(100vw - 2 * var(--margen) - 96px));
   padding-top: 12px;
   border-top: 1px solid var(--linea-fuerte);
-  max-width: min(34rem, 100%);
 }
-.transicion__ficha > span:first-child { color: var(--hielo); }
-.transicion__titulo { text-transform: none; letter-spacing: .04em; }
-.transicion__titulo.pendiente { font-family: var(--f-dato); font-style: normal; outline-offset: 3px; }
+.transicion__semana { color: var(--hielo); }
+.transicion__titulo { text-transform: none; letter-spacing: .04em; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
+.transicion__titulo.pendiente { font-family: var(--f-dato); font-style: normal; outline-offset: 3px; justify-self: start; }
 
 /* El índice del dial: una corona de marcas con su punto escarcha, que gira con el paso */
 .transicion__indice {
