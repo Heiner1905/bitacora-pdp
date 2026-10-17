@@ -56,7 +56,8 @@
   --t-subtitulo: clamp(1.5rem, 1rem + 1.4vw, 2.25rem);
   --t-proposito: clamp(1.375rem, 1rem + .9vw, 1.875rem);
   --t-lectura: clamp(1.125rem, 1rem + .3vw, 1.3125rem);  /* reflexión: 60–75 caracteres */
-  --t-dato: .75rem;                                      /* mono: 12px mínimo */
+  --t-dato: .75rem;                                      /* mono 12px: solo tira, pie y microetiquetas */
+  --t-dato-m: clamp(.75rem, .7rem + .2vw, .875rem);      /* mono 12→14px: fichas de semana, etiquetas de bloque */
   --medida-lectura: 66ch;
 
   /* Retícula */

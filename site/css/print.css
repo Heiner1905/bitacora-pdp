@@ -22,6 +22,7 @@
   .semana { break-before: page; break-inside: auto; min-height: 0 !important; }
   .semana__cierre, .bloque { break-inside: avoid; }
   .semana__cabecera { break-after: avoid; }
+  .semana__numero { visibility: visible !important; opacity: 1 !important; transform: none !important; clip-path: none !important; }
   .pendiente { outline-color: #888; }
   a { text-decoration: none; }
 }
