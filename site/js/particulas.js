@@ -35,6 +35,8 @@
      FX.particulas.halo(svgEl, { x, y, cantidad, toque })  fragmentos que se desprenden del borde del emblema
                  (dial, anillo, fragmento) cerca del punto y orbitan ~1 s; el vector no se toca y sigue vivo
      FX.particulas.despertar(svgEl, …)  (antiguo) el vector entero se vuelve partículas; la portada ya no lo usa
+     FX.particulas.presupuesto()  factor adaptativo actual (1 · 0,5 · 0,25 · 0 = el número aparece sin partículas);
+                 arranca en 0,5 si hardwareConcurrency ≤ 4 o deviceMemory ≤ 4 y baja si una formación va < 55 o < 45 fps
      FX.particulas.soporta('marca'|'ceder'|'halo')  true si la opción existe (FX.particulas.desdes = orígenes)
      FX.particulas.cancelar()     suelta la formación en curso (texto: se dispersa en 0,3 s y el real aparece ya).
                  Se hace sola si el destino sale de pantalla, deja de existir, otro lo muestra o el scroll va muy rápido
@@ -68,6 +70,19 @@
   var F = null;              // formación activa
   var corriendo = false;
   var puntero = { x: -9999, y: -9999, sx: -9999, sy: -9999, t: 0 };
+
+  /* Presupuesto adaptativo: 1 = completo · 0,5 · 0,25 · 0 = sin partículas (el número aparece directo).
+     Arranca reducido en equipos modestos y se ajusta con los fps reales de cada formación. */
+  var factor = 1;
+  (function () {
+    var nucleos = navigator.hardwareConcurrency || 8, memoria = navigator.deviceMemory || 8;
+    if (nucleos <= 4 || memoria <= 4) factor = 0.5;
+  })();
+  function ajustarFactor(fps) {
+    if (!(fps > 0)) return;
+    if (fps < 45) factor = factor <= 0.25 ? 0 : 0.25;
+    else if (fps < 55) factor = factor <= 0.25 ? 0 : (factor <= 0.5 ? 0.25 : 0.5);
+  }
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
@@ -259,7 +274,7 @@
     var r = el.getBoundingClientRect();
     var w = Math.max(1, Math.ceil(r.width)), h = Math.max(1, Math.ceil(r.height));
     var cs = getComputedStyle(el);
-    var clave = texto + '|' + w + 'x' + h + '|' + cs.font;
+    var clave = texto + '|' + w + 'x' + h + '|' + cs.font + '|' + factor;
     if (cacheTexto[clave]) return cacheTexto[clave];
     // se muestrea a resolución reducida (la cifra es grande): menos getImageData en el cuadro de llegada
     var q = movil ? 0.4 : 0.6;
@@ -298,7 +313,7 @@
     if (!color || alfaDe(cs.color) < 0.05) color = normal(getComputedStyle(document.documentElement).getPropertyValue('--escarcha').trim()) || 'rgb(244,246,248)';
     var ow = off.width, oh = off.height;
     var datos = g.getImageData(0, 0, ow, oh).data;
-    var max = movil ? 440 : tope, pts, paso = 1.2;
+    var max = Math.max(60, Math.round((movil ? 440 : tope) * factor)), pts, paso = 1.2;
     do {
       pts = [];
       for (var y = paso / 2; y < oh; y += paso) for (var x = paso / 2; x < ow; x += paso) {
@@ -315,7 +330,7 @@
 
   /* ---------------- Formación ---------------- */
   function crearFormacion(m, destino, op) {
-    var pts = recortar(m.puntos, tope);
+    var pts = recortar(m.puntos, Math.max(60, Math.round(tope * (m.texto ? 1 : Math.max(factor, 0.5)))));
     // ordenar por color para cambiar fillStyle lo mínimo
     pts.forEach(function (p) { p[5] = indiceColor(p[2]); });
     pts.sort(function (a, b) { return a[5] - b[5] || a[3] - b[3]; });
@@ -587,6 +602,7 @@
 
   function vuelo(f, ahora, celda, s) {
     var T = (ahora - f.t0) / 1000, listos = 0, PF = 700, fuga = f.fuga, colAct = -1;
+    f.cuadros = (f.cuadros || 0) + 1;
     for (var i = 0; i < f.n; i++) {
       var t = (T - f.delay[i]) / f.durP;
       if (t <= 0) continue;
@@ -628,6 +644,8 @@
     if (listos >= f.n * 0.985 || T > durT + (f.rapido ? 0.2 : 0.8)) {
       for (var j = 0; j < f.n; j++) { f.x[j] = f.tx[j]; f.y[j] = f.ty[j]; f.vx[j] = 0; f.vy[j] = 0; }
       f.modo = 'asentada'; f.tAsentada = ahora;
+      // fps reales de este vuelo → presupuesto de las siguientes formaciones
+      if (T > 0.2 && f.cuadros > 6) { f.fps = (f.cuadros - 1) / T; ajustarFactor(f.fps); }
     }
   }
 
@@ -725,6 +743,7 @@
     disponible: disponible,
     desdes: DESDES,
     // capacidades: soporta('marca') · soporta('ceder') · soporta('halo')
+    presupuesto: function () { return factor; },
     soporta: function (q) { return DESDES.indexOf(q) > -1 || q === 'ceder' || q === 'halo'; },
     activa: function () { return !!F; },
 
@@ -738,7 +757,7 @@
 
     formarTexto: function (texto, el, op) {
       op = op || {};
-      if (!el || !disponible()) { sinCanvas(el, op); return; }
+      if (!el || !disponible() || factor <= 0) { sinCanvas(el, op); return; }
       try {
         var m = muestrearTexto(texto == null ? el.textContent : String(texto), el);
         var f = lanzar(m, el, op, 'vuelo');
@@ -830,5 +849,11 @@
     if (FX.estado.reducido) return;
     iniciarCanvas();
     FX.on('redimension', function () { dimensionar(); cacheTexto = {}; });
+    // muestreo corto de fps al iniciar (tras la entrada de la portada)
+    setTimeout(function () {
+      var n = 0, t0 = 0;
+      function f(t) { if (!t0) t0 = t; n++; if (t - t0 < 700) requestAnimationFrame(f); else ajustarFactor((n - 1) / ((t - t0) / 1000)); }
+      requestAnimationFrame(f);
+    }, 3200);
   }, 80);
 })();
