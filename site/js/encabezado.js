@@ -61,7 +61,12 @@
     var etiqueta = FX.crear('span', 'encabezado__nombre t-dato', enlace);
     FX.pintar(etiqueta, nombre || '[PENDIENTE: nombre]');
     enlace.setAttribute('aria-label', (nombre ? nombre + '. ' : '') + 'Volver a la portada');
-    enlace.addEventListener('click', function (e) { e.preventDefault(); FX.irA('#portada'); });
+    // la portada está pineada (su rect no sirve de destino): se vuelve al inicio real de la página
+    enlace.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (FX.lenis && !FX.estado.reducido) FX.lenis.scrollTo(0, { duration: 1.6 });
+      else window.scrollTo(0, 0);
+    });
 
     var frag = enlace.querySelector('#marca-fragmento');
     var dial = enlace.querySelector('#marca-dial');
@@ -107,11 +112,13 @@
       visible = si;
       cab.classList.toggle('is-visible', si);
     }
-    FX.on('semana', function (e) { mostrar(e.k >= 1 || cab.contains(document.activeElement)); });
+    // solo el foco de TECLADO (:focus-visible) mantiene el encabezado en la portada; el foco que deja un clic no
+    function focoTeclado() { var f = document.activeElement; return !!(f && cab.contains(f) && f.matches && f.matches(':focus-visible')); }
+    FX.on('semana', function (e) { mostrar(e.k >= 1 || focoTeclado()); });
     // teclado: si el foco entra en el encabezado aún oculto, se muestra (nunca hay foco invisible)
-    cab.addEventListener('focusin', function () { mostrar(true); });
+    cab.addEventListener('focusin', function () { if (focoTeclado()) mostrar(true); });
     cab.addEventListener('focusout', function () {
-      setTimeout(function () { if (!cab.contains(document.activeElement) && FX.estado.semana < 1) mostrar(false); }, 0);
+      setTimeout(function () { if (!focoTeclado() && FX.estado.semana < 1) mostrar(false); }, 0);
     });
     mostrar(FX.estado.semana >= 1);
 
