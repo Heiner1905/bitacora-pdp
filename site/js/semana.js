@@ -184,6 +184,12 @@
           if (split) tl.to(split.words, { yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: 0.06,
             onComplete: function () { split.revert(); split = null; } }, 0.25);
         }
+        // Entrega de la transición: el número de la transición todavía se desvanece durante el
+        // scrub (≈0,5 s); el real aparece cuando aquel ya se fue, para que nunca haya dos.
+        FX.on('transicion:entrega', function (e) {
+          if (!e || e.k !== k) return;
+          gsap.fromTo(num, { opacity: 0 }, { opacity: 1, duration: 0.3, delay: c.movil ? 0.3 : 0.5, ease: 'power1.out', overwrite: 'auto', clearProps: 'opacity' });
+        });
         var st = ST.create({ trigger: cab, start: 'top 62%', once: true, onEnter: entrar });
         if (st.progress > 0) entrar();
       });

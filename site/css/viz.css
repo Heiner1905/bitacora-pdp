@@ -400,3 +400,6 @@
   .paso__nodo { background: #fff; }
 }
 .waffle__de { font-size: var(--t-dato-m); }
+.col.col--vacia:nth-child(n) .col__barra { background: transparent; border: 1px dashed var(--acero); border-bottom: 0; }
+.imagen { max-width: 960px; }
+@media (max-width: 599px) { .col.col--vacia:nth-child(n) .col__barra { border: 1px dashed var(--acero); border-left: 0; } }
