@@ -20,6 +20,8 @@
   [style*="clip-path"] { clip-path: none !important; }
   [style*="visibility"] { visibility: visible !important; }
   .semana { break-before: page; break-inside: auto; min-height: 0 !important; }
+  .semana__cierre, .bloque { break-inside: avoid; }
+  .semana__cabecera { break-after: avoid; }
   .pendiente { outline-color: #888; }
   a { text-decoration: none; }
 }
