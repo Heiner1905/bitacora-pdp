@@ -73,9 +73,15 @@
     var pulso = enlace.querySelector('#marca-pulso');
     var encajado = false;
 
+    // el final de la página ya se ve: última semana y el cierre terminado dentro del viewport
+    var cierre = FX.$('#cierre');
+    function alFinal() {
+      if (FX.estado.semana < FX.estado.total || !cierre) return false;
+      return cierre.getBoundingClientRect().bottom <= window.innerHeight + 2;
+    }
     function pintarHilo(p) {
       var q = Math.min(1, Math.max(0, p));
-      if (q > 0.995) q = 1;                         // encaja limpio al final
+      if (q > 0.995 || (q > 0.9 && alFinal())) q = 1;   // encaja limpio al final (redondeo, pin final o pie corto)
       frag.setAttribute('transform', 'translate(' + (23 * (1 - q)).toFixed(2) + ' ' + (-7 * (1 - q)).toFixed(2) + ')');
       dial.setAttribute('transform', 'rotate(' + (q * 360).toFixed(1) + ' 200 200)');
       if (q === 1 && !encajado) {
