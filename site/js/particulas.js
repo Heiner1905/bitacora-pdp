@@ -296,7 +296,7 @@
     if (!color || alfaDe(cs.color) < 0.05) color = normal(getComputedStyle(document.documentElement).getPropertyValue('--escarcha').trim()) || 'rgb(244,246,248)';
     var ow = off.width, oh = off.height;
     var datos = g.getImageData(0, 0, ow, oh).data;
-    var max = movil ? 560 : tope, pts, paso = 1.2;
+    var max = movil ? 440 : tope, pts, paso = 1.2;
     do {
       pts = [];
       for (var y = paso / 2; y < oh; y += paso) for (var x = paso / 2; x < ow; x += paso) {
