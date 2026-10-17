@@ -95,7 +95,7 @@
   position: absolute;
   z-index: 1;
   /* en la esquina libre fuera del radio del dial y sobre un fondo noche: ninguna marca la cruza */
-  left: -2%; bottom: -1%;
+  left: -2%; bottom: 3%;
   max-width: 26ch;
   padding: 6px 10px 6px 0;
   background: var(--noche);
