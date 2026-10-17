@@ -200,7 +200,7 @@
           .to(marco, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'expo.inOut' })
           .to(img, { scale: 1, duration: 1.6, ease: 'expo.out' }, 0.2);
       },
-      final: function () { if (tl) tl.kill(); }
+      final: function () { if (tl) tl.kill(); if (img) img.loading = 'eager'; }
     };
   };
 
