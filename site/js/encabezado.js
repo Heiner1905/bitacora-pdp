@@ -99,7 +99,7 @@
     boton.setAttribute('aria-haspopup', 'dialog');
     boton.setAttribute('aria-expanded', 'false');
     boton.setAttribute('aria-controls', 'indice');
-    boton.innerHTML = glifoAnillo(Math.max(1, FX.estado.total || 1)) + '<span>Índice</span>';
+    boton.innerHTML = glifoAnillo(Math.max(1, FX.estado.total || 1)) + '<span class="encabezado__boton-texto">Índice</span>';
     boton.addEventListener('click', function () {
       if (FX.indice && FX.indice.abrir) FX.indice.abrir(boton);
     });

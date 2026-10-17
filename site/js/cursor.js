@@ -59,6 +59,7 @@
       if (si === visible) return;
       visible = si;
       html.classList.toggle('cursor-ojo-activo', si);
+      el.style.willChange = si ? 'transform' : 'auto';   // la capa solo existe mientras el ojo se mueve
       gsap.to(el, { autoAlpha: si ? 1 : 0, scale: si ? 1 : 0.6, duration: si ? 0.28 : 0.16, ease: 'power3.out', overwrite: 'auto' });
     }
 

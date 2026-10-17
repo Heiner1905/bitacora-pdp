@@ -56,6 +56,8 @@
     raiz.setAttribute('aria-labelledby', 'indice-titulo');
     raiz.setAttribute('data-solo-js', '');
     raiz.innerHTML = '';
+    // el diálogo va después de main y del pie en el orden del documento (su h2 no precede al h1)
+    document.body.appendChild(raiz);
 
     var velo = FX.crear('div', 'indice__velo', raiz);
     velo.setAttribute('aria-hidden', 'true');
