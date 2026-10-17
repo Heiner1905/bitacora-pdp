@@ -5,33 +5,44 @@
 
    USO (lo usan la portada, el constructor 2 y el constructor 3):
 
-     // Forma un texto sobre la caja de un elemento (con su fuente real) y cede al texto:
-     FX.particulas.formarTexto('03', elNumero, { desde: 'disperso', alTerminar: fn });
+     // Forma un texto sobre la caja de un elemento (con su fuente real) y cede al texto.
+     // Por defecto dura 0,6 s y la cifra se lee desde el primer tercio del vuelo.
+     FX.particulas.formarTexto('03', elNumero, { desde: 'marca', alTerminar: fn });
 
      // Forma un SVG (muestrea cada parte con su color computado) y cede al vector:
      FX.particulas.formarSVG(svgEl, { desde: 'pupila', duracion: 1.8, alTerminar: fn });
+     // …o lo forma ANTES de que aparezca el vector y el llamador decide cuándo mostrarlo:
+     FX.particulas.formarSVG(svgEl, { ceder: false, alTerminar: function () { … luego: FX.particulas.ceder(fn) } });
 
      // Suelta lo que haya en pantalla (explota hacia fuera y se apaga):
      FX.particulas.dispersar({ duracion: 0.9 });
 
    opciones comunes:
      desde       'pupila' (punto de fuga en el centro del destino; en un emblema, su pupila 200,200)
-                 | 'disperso' (nacen repartidas por la pantalla) | { x, y } (punto de fuga en px de pantalla)
-     duracion    s del vuelo (1,6 por defecto)
-     sostener    s que las partículas quedan en su sitio (con repulsión al cursor) antes de ceder (0,25)
-     alTerminar  fn() cuando el destino real ya es visible y el canvas se apagó
+                 | 'disperso' (nacen alrededor del destino; en un texto, cerca para que se lea pronto)
+                 | 'marca' (nacen en el fragmento de la marca del encabezado, #encabezado-marca, y llegan
+                   en curva: el fragmento deja un rastro; si la marca no está en pantalla, como 'disperso')
+                 | { x, y } (punto de fuga en px de pantalla)
+     duracion    s del vuelo (texto 0,6 · SVG 1,6 por defecto)
+     sostener    s que quedan en su sitio (con repulsión al cursor) antes de ceder (texto 0,12 · SVG 0,25)
+     ceder       false = al formarse quedan quietas y el destino sigue oculto hasta FX.particulas.ceder(fn);
+                 alTerminar se llama en cuanto quedan formadas
+     alTerminar  fn() cuando el destino real ya es visible y el canvas se apagó (o, con ceder:false, al formarse)
      ocultarDestino  false = no ocultar el destino durante el vuelo (por defecto se oculta con opacity 0)
 
    Extras:
-     FX.particulas.despertar(svgEl, { x, y, toque })  el vector se vuelve partículas en su sitio, con
-                 repulsión al cursor; cede solo al quedar quieto sin cursor encima (la portada lo usa al acercar el cursor)
+     FX.particulas.ceder(fn)      muestra el destino de la formación activa y apaga las partículas
+     FX.particulas.halo(svgEl, { x, y, cantidad, toque })  fragmentos que se desprenden del borde del emblema
+                 (dial, anillo, fragmento) cerca del punto y orbitan ~1 s; el vector no se toca y sigue vivo
+     FX.particulas.despertar(svgEl, …)  (antiguo) el vector entero se vuelve partículas; la portada ya no lo usa
+     FX.particulas.soporta('marca'|'ceder'|'halo')  true si la opción existe (FX.particulas.desdes = orígenes)
      FX.particulas.detener()      corta todo ya (el destino queda visible)
      FX.particulas.activa()       true si hay una formación en curso
      FX.particulas.disponible()   false con reduced-motion o sin canvas: entonces formarX muestran el destino y llaman alTerminar
 
    Detalles:
-   - Partículas-glifo durante el vuelo (atlas pre-renderizado por color, nunca fillText por partícula),
-     puntos cuadrados al llegar. Repulsión suave al cursor (radio ~80 px).
+   - Durante el vuelo, fragmentos geométricos del propio emblema (hexágono, píxel, triángulo, como
+     sus bits; atlas pre-renderizado por color), puntos cuadrados al llegar. Repulsión suave al cursor (radio ~80 px).
    - Presupuesto: ≤ 2 500 partículas en escritorio, ≤ 900 en móvil; DPR ≤ 2 (≤ 1,5 en móvil).
    - Un SVG se muestrea una sola vez (en caché, en unidades de cada grupo animable) y cada cuadro
      las partículas siguen la transformación viva de su grupo (dial, iris, pupila, ojo, fragmento):
@@ -42,7 +53,8 @@
   var FX = window.FX;
   if (!FX) return;
 
-  var GLIFOS = ['0', '1', '/', '<', '>', '#', '·', 'hex', 'cua', 'tri'];
+  // Fragmentos geométricos del propio emblema (como sus bits): hexágono, píxel, triángulo y punto. Nada de 0/1 ni signos.
+  var GLIFOS = ['hex', 'cua', 'tri', 'pix'];
   var NG = GLIFOS.length;
   var DINAMICOS = ['dial', 'fragmento', 'iris', 'pupila', 'ojo'];
 
@@ -112,7 +124,7 @@
           g.closePath(); g.stroke();
         } else if (gl === 'cua') g.fillRect(cx - r * 0.7, cy - r * 0.7, r * 1.4, r * 1.4);
         else if (gl === 'tri') { g.beginPath(); g.moveTo(cx - r, cy - r * 0.6); g.lineTo(cx + r, cy - r * 0.2); g.lineTo(cx - r * 0.1, cy + r); g.closePath(); g.fill(); }
-        else g.fillText(gl, cx, cy + dpr * 0.5);
+        else g.fillRect(cx - r * 0.38, cy - r * 0.38, r * 0.76, r * 0.76);
       });
       // sprite difuso (desenfoque falso para las partículas "lejanas", sin filter: blur)
       var sx = NG * celda + celda / 2, sy = fila * celda + celda / 2;
@@ -247,8 +259,11 @@
     var cs = getComputedStyle(el);
     var clave = texto + '|' + w + 'x' + h + '|' + cs.font;
     if (cacheTexto[clave]) return cacheTexto[clave];
-    var off = document.createElement('canvas'); off.width = w; off.height = h;
+    // se muestrea a resolución reducida (la cifra es grande): menos getImageData en el cuadro de llegada
+    var q = movil ? 0.4 : 0.6;
+    var off = document.createElement('canvas'); off.width = Math.max(1, Math.ceil(w * q)); off.height = Math.max(1, Math.ceil(h * q));
     var g = off.getContext('2d', { willReadFrequently: true });
+    g.scale(q, q);
     g.fillStyle = '#000'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
     var color = null;
     var propio = (el.textContent || '').replace(/\s+/g, '') === String(texto).replace(/\s+/g, '');
@@ -279,17 +294,18 @@
       g.fillText(texto, w / 2, h / 2);
     }
     if (!color || alfaDe(cs.color) < 0.05) color = normal(getComputedStyle(document.documentElement).getPropertyValue('--escarcha').trim()) || 'rgb(244,246,248)';
-    var datos = g.getImageData(0, 0, w, h).data;
-    var pts, paso = 2;
+    var ow = off.width, oh = off.height;
+    var datos = g.getImageData(0, 0, ow, oh).data;
+    var max = movil ? 560 : tope, pts, paso = 1.2;
     do {
       pts = [];
-      for (var y = paso / 2; y < h; y += paso) for (var x = paso / 2; x < w; x += paso) {
+      for (var y = paso / 2; y < oh; y += paso) for (var x = paso / 2; x < ow; x += paso) {
         var jx = x + (Math.random() - 0.5) * paso * 0.5, jy = y + (Math.random() - 0.5) * paso * 0.5;
-        var ix = clamp(Math.round(jx), 0, w - 1), iy = clamp(Math.round(jy), 0, h - 1);
-        if (datos[(iy * w + ix) * 4 + 3] > 120) pts.push([jx, jy, color, 1, 0]);
+        var ix = clamp(Math.round(jx), 0, ow - 1), iy = clamp(Math.round(jy), 0, oh - 1);
+        if (datos[(iy * ow + ix) * 4 + 3] > 120) pts.push([jx / q, jy / q, color, 1, 0]);
       }
-      paso += 0.5;
-    } while (pts.length > tope && paso < 40);
+      paso *= 1.18;
+    } while (pts.length > max && paso < 40);
     var m = { grupos: [null], puntos: [{ pts: pts }], texto: true };
     cacheTexto[clave] = m;
     return m;
@@ -345,10 +361,23 @@
     }
   }
 
+  // Fragmento de la marca del encabezado (de ahí sale el rastro con desde: 'marca')
+  function origenMarca() {
+    var cont = document.getElementById('encabezado-marca');
+    if (!cont) return null;
+    var el = cont.querySelector('[id$="fragmento"], .marca__fragmento, [class*="fragmento"]') || cont.querySelector('svg');
+    if (!el) return null;
+    var r = el.getBoundingClientRect();
+    if (!r.width || r.bottom < 0 || r.top > H) return null;
+    var cs = getComputedStyle(cont.closest('#encabezado') || cont);
+    if (cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.05) { /* aun oculto, el origen sigue siendo su sitio */ }
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
   function puntoFuga(f) {
     var d = f.op.desde, r = f.destino.getBoundingClientRect();
     if (d && typeof d === 'object') return { x: d.x, y: d.y };
-    if (d === 'disperso') return null;
+    if (d === 'disperso' || d === 'marca') return null;
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 
@@ -356,8 +385,11 @@
     objetivos(f);
     var fuga = puntoFuga(f), maxD = 1, i;
     f.fuga = fuga;
-    var dur = f.op.duracion || 1.6;
-    f.durP = dur * 0.62; f.esparcir = dur * 0.38;
+    f.marca = f.op.desde === 'marca' ? origenMarca() : null;
+    // un texto se lee pronto: por defecto 0,6 s en total (casi todo el vuelo es forma reconocible)
+    var dur = f.op.duracion || (f.m.texto ? 0.6 : 1.6);
+    f.rapido = !!f.m.texto;
+    f.durP = dur * (f.rapido ? 0.78 : 0.62); f.esparcir = dur - f.durP;
     for (i = 0; i < f.n; i++) {
       if (fuga) {
         var dd = Math.hypot(f.tx[i] - fuga.x, f.ty[i] - fuga.y); if (dd > maxD) maxD = dd;
@@ -370,9 +402,18 @@
         var ang = Math.random() * Math.PI * 2, rad = (0.4 + Math.random() * 1.1) * Math.max(f.bw, 120) * 0.8;
         f.sx0[i] = Math.cos(ang) * rad; f.sy0[i] = Math.sin(ang) * rad;
         f.z0[i] = 900 + Math.random() * 2200;
+      } else if (f.marca) {
+        // rastro: todas nacen en el fragmento de la marca y llegan en una curva suave
+        f.delay[i] = Math.random() * f.esparcir;
+        f.sx0[i] = f.marca.x + (Math.random() - 0.5) * 10; f.sy0[i] = f.marca.y + (Math.random() - 0.5) * 6;
+        f.z0[i] = (Math.random() - 0.5) * 0.5;   // desvío perpendicular de la curva (fracción de la distancia)
       } else {
         f.delay[i] = Math.random() * f.esparcir;
-        f.sx0[i] = Math.random() * W; f.sy0[i] = Math.random() * H;
+        if (f.rapido) {
+          // cerca de su destino: la forma se reconoce desde el primer tercio del vuelo
+          var a2 = Math.random() * Math.PI * 2, r2 = (0.15 + Math.random() * 0.6) * Math.max(f.bw, f.bh, 120);
+          f.sx0[i] = f.tx[i] + Math.cos(a2) * r2; f.sy0[i] = f.ty[i] + Math.sin(a2) * r2;
+        } else { f.sx0[i] = Math.random() * W; f.sy0[i] = Math.random() * H; }
         f.z0[i] = 0;
       }
       f.x[i] = f.tx[i]; f.y[i] = f.ty[i]; f.vx[i] = 0; f.vy[i] = 0;
@@ -420,28 +461,110 @@
     window.gsap.ticker.remove(cuadro);
   }
 
+  var tAnterior = 0;
   function cuadro() {
-    var f = F;
-    if (!f || document.hidden) { parar(); if (!f) limpiar(); return; }
+    var f = F, conHalo = hal && hal.n > 0;
+    if ((!f && !conHalo) || document.hidden) { parar(); if (!f && !conHalo) limpiar(); return; }
     var ahora = performance.now();
-    objetivos(f);
+    var fr = tAnterior ? clamp((ahora - tAnterior) / 16.667, 0.25, 3) : 1;
+    tAnterior = ahora;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    var celda = atlas.celda, s = movil ? 2.1 : 2.1;
-    if (f.modo === 'vuelo') vuelo(f, ahora, celda, s);
-    else if (f.modo === 'dispersa') dispersa(f, ahora, celda);
-    else fisica(f, ahora, celda, s);
+    var celda = atlas.celda, s = 2.1;
+    if (f) {
+      objetivos(f);
+      if (f.modo === 'vuelo') vuelo(f, ahora, celda, s);
+      else if (f.modo === 'dispersa') dispersa(f, ahora, celda);
+      else fisica(f, ahora, celda, s);
+    }
+    if (conHalo) dibujarHalo(fr, celda);
     ctx.globalAlpha = 1;
   }
 
+  /* ---------------- Halo: fragmentos que se desprenden del borde y orbitan ----------------
+     El emblema sigue siendo vector y sigue vivo; esto solo ocurre alrededor de su borde. */
+  var hal = null;
+  function asegurarHalo() {
+    if (hal) return hal;
+    var n = movil ? 160 : 380;
+    hal = { max: n, n: 0, el: null, ang: new Float32Array(n), rad: new Float32Array(n), dang: new Float32Array(n), drad: new Float32Array(n),
+      vida: new Float32Array(n), dura: new Float32Array(n), tam: new Float32Array(n), a0: new Float32Array(n), col: new Uint8Array(n), gl: new Uint8Array(n) };
+    return hal;
+  }
+  function bordeDe(svg) {
+    var m = muestrearSVG(svg);
+    if (m.borde) return m.borde;
+    var A = [], R = [], C = [], AL = [];
+    m.puntos.forEach(function (parte) {
+      parte.pts.forEach(function (p) {
+        var du = p[0] - 200, dv = p[1] - 200, r = Math.hypot(du, dv);
+        var gi = p[4], nombre = gi ? DINAMICOS[gi - 1] : '';
+        if (nombre === 'dial' || nombre === 'fragmento' || (!gi && r > 128 && r < 166)) {
+          A.push(Math.atan2(dv, du)); R.push(r); C.push(indiceColor(p[2])); AL.push(Math.max(0.55, p[3]));
+        }
+      });
+    });
+    m.borde = { a: A, r: R, c: C, al: AL };
+    return m.borde;
+  }
+  function emitirHalo(svg, angulo, cantidad, ventana, giro) {
+    var h = asegurarHalo(), b = bordeDe(svg);
+    if (!b.a.length) return;
+    h.el = svg;
+    for (var k = 0; k < cantidad; k++) {
+      var idx = -1;
+      for (var t = 0; t < 14; t++) {
+        var c = Math.random() * b.a.length | 0, d = Math.atan2(Math.sin(b.a[c] - angulo), Math.cos(b.a[c] - angulo));
+        if (Math.abs(d) < ventana) { idx = c; break; }
+      }
+      if (idx < 0) continue;
+      var i = h.n < h.max ? h.n++ : (Math.random() * h.max | 0);
+      var sg = giro || (Math.random() < 0.5 ? -1 : 1);
+      h.ang[i] = b.a[idx]; h.rad[i] = b.r[idx];
+      h.dang[i] = sg * (0.003 + Math.random() * 0.009);
+      h.drad[i] = 0.12 + Math.random() * 0.5;
+      h.vida[i] = 0; h.dura[i] = 0.6 + Math.random() * 0.6;
+      h.tam[i] = 5 + Math.random() * 5; h.a0[i] = b.al[idx];
+      h.col[i] = b.c[idx]; h.gl[i] = Math.random() * NG | 0;
+    }
+    arrancar();
+  }
+  function dibujarHalo(fr, celda) {
+    var h = hal, r = h.el && h.el.getBoundingClientRect();
+    if (!r || !r.width) { h.n = 0; return; }
+    var esc = r.width / 400, cx = r.left + r.width / 2, cy = r.top + r.height / 2, dt = fr / 60;
+    for (var i = 0; i < h.n; i++) {
+      h.vida[i] += dt;
+      var t = h.vida[i] / h.dura[i];
+      if (t >= 1) {
+        // compactar: la última viva ocupa este lugar
+        var j = --h.n;
+        h.ang[i] = h.ang[j]; h.rad[i] = h.rad[j]; h.dang[i] = h.dang[j]; h.drad[i] = h.drad[j]; h.vida[i] = h.vida[j];
+        h.dura[i] = h.dura[j]; h.tam[i] = h.tam[j]; h.a0[i] = h.a0[j]; h.col[i] = h.col[j]; h.gl[i] = h.gl[j];
+        i--; continue;
+      }
+      h.ang[i] += h.dang[i] * fr; h.rad[i] += h.drad[i] * fr; h.drad[i] *= Math.pow(0.985, fr);
+      var x = cx + Math.cos(h.ang[i]) * h.rad[i] * esc, y = cy + Math.sin(h.ang[i]) * h.rad[i] * esc;
+      var tam = h.tam[i] * (1 - t * 0.5);
+      ctx.globalAlpha = h.a0[i] * Math.pow(1 - t, 1.4);
+      ctx.drawImage(atlas.canvas, h.gl[i] * celda, h.col[i] * celda, celda, celda, x - tam / 2, y - tam / 2, tam, tam);
+    }
+  }
+
   function vuelo(f, ahora, celda, s) {
-    var T = (ahora - f.t0) / 1000, listos = 0, PF = 700, fuga = f.fuga;
+    var T = (ahora - f.t0) / 1000, listos = 0, PF = 700, fuga = f.fuga, colAct = -1;
     for (var i = 0; i < f.n; i++) {
       var t = (T - f.delay[i]) / f.durP;
       if (t <= 0) continue;
       if (t >= 1) { t = 1; listos++; }
-      var e = easeOut(t), sx, sy, k = 1;
-      if (fuga) {
+      var e = f.rapido ? 1 - Math.pow(1 - t, 4) : easeOut(t), sx, sy, k = 1;
+      if (f.marca) {
+        var mxp = (f.sx0[i] + f.tx[i]) / 2, myp = (f.sy0[i] + f.ty[i]) / 2;
+        var ddx = f.tx[i] - f.sx0[i], ddy = f.ty[i] - f.sy0[i];
+        var cxp = mxp - ddy * f.z0[i], cyp = myp + ddx * f.z0[i], u1 = 1 - e;
+        sx = u1 * u1 * f.sx0[i] + 2 * u1 * e * cxp + e * e * f.tx[i];
+        sy = u1 * u1 * f.sy0[i] + 2 * u1 * e * cyp + e * e * f.ty[i];
+      } else if (fuga) {
         var wx = f.tx[i] + f.sx0[i] * (1 - e) * (1 - e), wy = f.ty[i] + f.sy0[i] * (1 - e) * (1 - e);
         k = PF / (PF + f.z0[i] * (1 - e));
         sx = fuga.x + (wx - fuga.x) * k; sy = fuga.y + (wy - fuga.y) * k;
@@ -450,19 +573,25 @@
       }
       f.x[i] = sx; f.y[i] = sy;
       var alfa = (0.35 + f.z[i] * 0.65) * clamp(t * 4, 0, 1) * f.a0[i];
-      if (e > 0.9) {
+      if (f.rapido && e > 0.55) {
+        // el texto se asienta en puntos muy pronto: se lee como cifra, no como estática
+        ctx.globalAlpha = Math.min(1, alfa + (f.a0[i] - alfa) * (e - 0.55) * 2.2);
+        if (f.col[i] !== colAct) { colAct = f.col[i]; ctx.fillStyle = atlas.colores[colAct]; }
+        ctx.fillRect(sx - s / 2, sy - s / 2, s, s);
+      } else if (e > 0.9) {
         ctx.globalAlpha = alfa + (f.a0[i] - alfa) * (e - 0.9) * 10;
-        ctx.fillStyle = atlas.colores[f.col[i]];
+        if (f.col[i] !== colAct) { colAct = f.col[i]; ctx.fillStyle = atlas.colores[colAct]; }
         ctx.fillRect(sx - s / 2, sy - s / 2, s, s);
       } else {
         ctx.globalAlpha = alfa;
         var tam = (5 + f.z[i] * 6) * (0.35 + 0.65 * k), cg = f.glifo[i];
         if (fuga && f.z[i] < 0.3) { cg = NG; tam *= 1.8; }
+        if (f.rapido) tam *= 0.7;
         ctx.drawImage(atlas.canvas, cg * celda, f.col[i] * celda, celda, celda, sx - tam / 2, sy - tam / 2, tam, tam);
       }
     }
     var durT = f.durP + f.esparcir;
-    if (listos >= f.n * 0.985 || T > durT + 0.8) {
+    if (listos >= f.n * 0.985 || T > durT + (f.rapido ? 0.2 : 0.8)) {
       for (var j = 0; j < f.n; j++) { f.x[j] = f.tx[j]; f.y[j] = f.ty[j]; f.vx[j] = 0; f.vy[j] = 0; }
       f.modo = 'asentada'; f.tAsentada = ahora;
     }
@@ -504,7 +633,12 @@
     // ¿ceder?
     var cerca = mx > f.bx - 30 && mx < f.bx + f.bw + 30 && my > f.by - 30 && my < f.by + f.bh + 30;
     if (f.modo === 'asentada') {
-      if (ahora - f.tAsentada > (f.op.sostener == null ? 250 : f.op.sostener * 1000) && maxV < 0.5) ceder(f);
+      if (f.op.ceder === false) {
+        // formada y quieta: el llamador decide cuándo aparece el vector (FX.particulas.ceder())
+        if (!f.avisada) { f.avisada = true; var cb = f.op.alTerminar; f.op.alTerminar = null; if (cb) { try { cb(); } catch (e) { console.error('[particulas] alTerminar', e); } } }
+        return;
+      }
+      if (ahora - f.tAsentada > (f.op.sostener == null ? (f.rapido ? 120 : 250) : f.op.sostener * 1000) && maxV < 0.5) ceder(f);
       return;
     }
     // viva (despertar): cede al quedar quieta y sin cursor encima
@@ -551,8 +685,12 @@
     return f;
   }
 
+  var DESDES = ['pupila', 'disperso', 'marca', 'punto'];
   var API = {
     disponible: disponible,
+    desdes: DESDES,
+    // capacidades: soporta('marca') · soporta('ceder') · soporta('halo')
+    soporta: function (q) { return DESDES.indexOf(q) > -1 || q === 'ceder' || q === 'halo'; },
     activa: function () { return !!F; },
 
     formarSVG: function (svg, op) {
@@ -614,7 +752,25 @@
       arrancar();
     },
 
-    detener: function () { if (F) terminar(F, true); parar(); limpiar(); },
+    detener: function () { if (F) terminar(F, true); if (hal) hal.n = 0; parar(); limpiar(); },
+
+    // Con formarSVG/formarTexto({ ceder: false }): muestra el destino real y apaga las partículas (fundido 0,45 s)
+    ceder: function (alTerminar) {
+      if (!F) { if (alTerminar) setTimeout(alTerminar, 0); return; }
+      F.op.alTerminar = alTerminar || null;
+      if (F.modo === 'vuelo') { for (var j = 0; j < F.n; j++) { F.x[j] = F.tx[j]; F.y[j] = F.ty[j]; } }
+      ceder(F); arrancar();
+    },
+
+    // Fragmentos que se desprenden del borde del emblema cerca del puntero y orbitan (el vector sigue vivo)
+    halo: function (svg, op) {
+      op = op || {};
+      if (!svg || !disponible() || (F && F.destino === svg)) return false;
+      var r = svg.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      var ang = op.x == null ? Math.random() * Math.PI * 2 : Math.atan2(op.y - cy, op.x - cx);
+      try { emitirHalo(svg, ang, op.cantidad || 3, op.ventana || (op.toque ? 0.9 : 0.42), op.giro || 0); } catch (e) { console.error('[particulas] halo', e); return false; }
+      return true;
+    },
 
     // Para precalentar el muestreo (p. ej. tras cargar las fuentes): no dibuja nada
     precalentar: function (svg) { try { if (svg && disponible()) muestrearSVG(svg); } catch (e) { /* nada */ } }

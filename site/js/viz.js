@@ -265,7 +265,6 @@
       li.classList.toggle('tarjeta--vacia', vacio(it.nombre) && vacio(it.texto));
       el('span', 'tarjeta__brillo', li).setAttribute('aria-hidden', 'true');
       var cara = el('div', 'tarjeta__cara', li);
-      el('span', 'tarjeta__orden t-dato', cara, FX.dos(i + 1) + ' / ' + FX.dos(items.length));
       pintar('h4', 'tarjeta__nombre', cara, it.nombre);
       pintar('p', 'tarjeta__texto', cara, it.texto);
       tarjetas.push(li);

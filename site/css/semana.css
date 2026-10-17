@@ -124,40 +124,84 @@
   font-size: var(--t-subtitulo); max-width: 22ch;
 }
 
-/* --- Plano «izquierda»: el número sangra por el borde izquierdo, créditos abajo a la derecha --- */
-.semana[data-plano="izquierda"] .semana__cabecera { grid-template-rows: auto 1fr auto; }
+/* --- Escena «izquierda»: el número sangra por el borde izquierdo; créditos y reflexión
+       forman una sola columna a la derecha, pegados uno al otro --- */
+.semana[data-plano="izquierda"] .semana__cabecera { grid-template-rows: auto 1fr auto; padding-bottom: 0; }
 .semana[data-plano="izquierda"] .semana__numero {
-  grid-column: 1 / -1; grid-row: 1 / 3; align-self: start; justify-self: start;
+  grid-column: 1 / -1; grid-row: 1 / 4; align-self: start; justify-self: start;
   margin-left: calc(-1 * var(--margen) - .14em);
 }
 .semana[data-plano="izquierda"] .semana__rotulo { grid-column: 7 / -1; grid-row: 3; align-self: end; }
+.semana[data-plano="izquierda"] .semana__reflexion { grid-column: 7 / -1; }
 
-/* --- Plano «derecha»: el número sangra por el borde derecho, créditos arriba a la izquierda --- */
-.semana[data-plano="derecha"] .semana__cabecera { grid-template-rows: auto 1fr auto; }
+/* --- Escena «detrás»: el número, en trazo, ocupa todo el cuadro DETRÁS del título,
+       que se monta encima a gran tamaño (afiche); la reflexión sigue justo debajo --- */
+.semana[data-plano="detras"] .semana__cabecera { grid-template-rows: 1fr auto 1fr; min-height: 96svh; padding-bottom: 0; }
+.semana[data-plano="detras"] .semana__numero {
+  grid-column: 1 / -1; grid-row: 1 / 4; align-self: center; justify-self: center;
+  font-size: min(62vw, 100svh);
+  font-weight: 120;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--niebla);
+  margin-inline-start: -.05em;
+}
+.semana[data-plano="detras"] .semana__rotulo {
+  grid-column: 3 / span 9; grid-row: 2; align-self: center;
+  padding: 18px 0 18px 0;
+}
+.semana[data-plano="detras"] .semana__titulo { font-size: calc(var(--t-titulo) * 1.28); max-width: 15ch; font-weight: 250; }
+.semana[data-plano="detras"] .semana__reflexion { grid-column: 3 / span 7; }
+
+/* --- Escena «derecha»: el número sangra por el borde derecho, arriba; créditos abajo a la izquierda --- */
+.semana[data-plano="derecha"] .semana__cabecera { grid-template-rows: auto 1fr auto; padding-bottom: 0; }
 .semana[data-plano="derecha"] .semana__numero {
-  grid-column: 1 / -1; grid-row: 2 / 4; align-self: end; justify-self: end;
+  grid-column: 1 / -1; grid-row: 1 / 3; align-self: start; justify-self: end;
   margin-right: calc(-1 * var(--margen) - .16em);
 }
-.semana[data-plano="derecha"] .semana__rotulo { grid-column: 1 / span 6; grid-row: 1; align-self: start; }
+.semana[data-plano="derecha"] .semana__rotulo { grid-column: 1 / span 6; grid-row: 3; align-self: end; }
+.semana[data-plano="derecha"] .semana__reflexion { grid-column: 1 / span 7; }
 
-/* --- Plano «completo»: el número entra entero, partido por el eje; créditos al costado, a la altura de su base --- */
-.semana[data-plano="completo"] .semana__cabecera { grid-template-rows: 1fr auto 1fr; }
+/* --- Escena «cortado»: el número es tan grande que el borde superior del cuadro lo corta;
+       los créditos quedan a la izquierda y la reflexión baja en escalón a la derecha --- */
+.semana[data-plano="cortado"] .semana__cabecera {
+  min-height: 0; grid-template-rows: auto auto;
+  padding-top: 0; padding-bottom: 0;
+  overflow: clip;
+}
+.semana[data-plano="cortado"] .semana__numero {
+  grid-column: 1 / -1; grid-row: 1; justify-self: end;
+  font-size: min(62vw, 112svh);
+  margin-top: -.3em;
+  margin-right: calc(-1 * var(--margen) - .05em);
+  padding-block: 0;
+}
+.semana[data-plano="cortado"] .semana__rotulo { grid-column: 1 / span 6; grid-row: 2; margin-top: clamp(16px, 2vw, 32px); }
+.semana[data-plano="cortado"] .semana__reflexion { grid-column: 6 / -1; }
+
+/* --- Escena «completo»: el número entra entero a la izquierda; a su derecha, una columna
+       editorial con los créditos y la reflexión --- */
+.semana[data-plano="completo"] .semana__cabecera { grid-template-rows: 1fr auto 1fr; padding-bottom: 0; }
 .semana[data-plano="completo"] .semana__numero {
-  grid-column: 1 / span 7; grid-row: 2; align-self: center; justify-self: start;
+  grid-column: 1 / span 7; grid-row: 1 / 4; align-self: end; justify-self: start;
   font-size: min(40vw, 72svh);
 }
 .semana[data-plano="completo"] .semana__rotulo {
-  grid-column: 8 / -1; grid-row: 2; align-self: end;
-  padding-bottom: .4em;
+  grid-column: 8 / -1; grid-row: 3; align-self: end;
   border-left: 1px solid var(--linea);
   padding-left: clamp(16px, 2vw, 28px);
 }
+.semana[data-plano="completo"] .semana__reflexion {
+  grid-column: 8 / -1;
+  border-left: 1px solid var(--linea);
+  padding-left: clamp(16px, 2vw, 28px);
+  margin-top: 0; padding-top: clamp(20px, 2.5vw, 36px);
+}
 
-/* ---------- Reflexión ---------- */
+/* ---------- Reflexión: pegada al título (ritmo de encabezado) ---------- */
 .semana__reflexion {
   grid-column: 2 / span 7;
   position: relative;
-  margin-top: clamp(24px, 6vw, 72px);
+  margin-top: clamp(20px, 2.6vw, 40px);
 }
 .semana__reflexion .viz-texto {
   font-size: calc(var(--t-lectura) * 1.1);
@@ -167,9 +211,7 @@
   hanging-punctuation: first;
 }
 .semana__reflexion .pendiente { display: inline-block; font-size: var(--t-lectura); }
-.semana[data-plano="izquierda"] .semana__reflexion { grid-column: 6 / span 7; }
-.semana[data-plano="derecha"] .semana__reflexion { grid-column: 2 / span 7; }
-.semana[data-plano="completo"] .semana__reflexion { grid-column: 4 / span 7; }
+.semana[data-plano="centro"] .semana__cabecera { padding-bottom: 0; }
 
 /* ---------- Bloques ---------- */
 .semana__bloques {
@@ -200,9 +242,9 @@
 .bloque__muestra {
   display: inline-block;
   margin-top: 12px;
-  padding: 4px 8px;
-  background: var(--rubi);
-  color: var(--noche);
+  padding: 3px 7px;
+  border: 1px solid var(--hielo);
+  color: var(--hielo);
   font-family: var(--f-dato);
   font-size: var(--t-dato);
   font-variation-settings: "wdth" 75;
@@ -221,13 +263,32 @@
 .bloque[data-viz="imagen"] { grid-column: 4 / span 8; }
 .bloque[data-viz="maquina"] { grid-column: 3 / span 9; }
 
-/* Ritmo: los bloques angostos se alternan de lado según el plano de la semana */
+/* Ritmo: los bloques angostos se alternan de lado según la escena */
 .semana[data-plano="izquierda"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
 .semana[data-plano="centro"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
 .semana[data-plano="completo"] .bloque[data-orden="1"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]),
 .semana[data-plano="derecha"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"]) { grid-column: 6 / span 7; }
 .semana[data-plano="derecha"] .bloque[data-orden="1"][data-viz="maquina"],
 .semana[data-plano="completo"] .bloque[data-orden="1"][data-viz="maquina"] { grid-column: 1 / span 9; }
+
+/* En las escenas «detrás» y «cortado» los bloques llevan el título al margen,
+   fijo mientras se recorre su contenido (créditos al margen, como en un guion) */
+.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: start;
+}
+.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque__cabecera {
+  grid-column: 1 / span 3;
+  position: sticky; top: 96px;
+  margin-bottom: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea-fuerte);
+}
+.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque__titulo { font-size: clamp(1.25rem, 1rem + .7vw, 1.625rem); max-width: 16ch; }
+.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque__viz { grid-column: 4 / -1; min-width: 0; }
+.semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"]) .bloque__viz { grid-column: 5 / span 7; }
 
 /* Contenedor del cierre (lo pinta cierre-semana.js) */
 .semana__cierre { grid-column: 1 / -1; position: relative; margin-top: clamp(72px, 10vw, 140px); }
@@ -236,23 +297,33 @@
 /* ---------- Tableta ---------- */
 @media (max-width: 899px) {
   .semana__reflexion,
-  .semana[data-plano] .semana__reflexion { grid-column: 1 / -1; }
+  .semana[data-plano] .semana__reflexion { grid-column: 1 / -1; border-left: 0; padding-left: 0; }
   .bloque, .semana[data-plano] .bloque[data-orden] { grid-column: 1 / -1 !important; }
   .semana[data-plano="izquierda"] .semana__rotulo,
   .semana[data-plano="completo"] .semana__rotulo { grid-column: 3 / -1; }
   .semana[data-plano="derecha"] .semana__rotulo { grid-column: 1 / span 6; }
+  .semana[data-plano="detras"] .semana__rotulo { grid-column: 1 / -1; }
   .semana[data-plano="completo"] .semana__numero { grid-column: 1 / -1; grid-row: 1 / 3; align-self: start; font-size: var(--t-gigante); }
   .semana[data-plano="completo"] .semana__rotulo { grid-row: 3; }
+  .semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque { display: block; }
+  .semana:is([data-plano="detras"], [data-plano="cortado"]) .bloque__cabecera { position: static; margin-bottom: 24px; }
 }
 
 /* ---------- Móvil ---------- */
 @media (max-width: 599px) {
-  .semana__cabecera { min-height: 74svh; padding: 88px 0 40px; row-gap: 20px; }
-  .semana[data-plano="izquierda"] .semana__rotulo,
-  .semana[data-plano="derecha"] .semana__rotulo,
-  .semana[data-plano="completo"] .semana__rotulo { grid-column: 1 / -1; }
-  .semana[data-plano="completo"] .semana__rotulo { border-left: 0; padding-left: 0; border-top: 1px solid var(--linea); padding-top: 16px; padding-bottom: 0; }
+  .semana__cabecera { min-height: 74svh; padding: 88px 0 0; row-gap: 20px; }
+  .semana[data-plano] .semana__rotulo { grid-column: 1 / -1; }
+  .semana[data-plano="completo"] .semana__rotulo { border-left: 0; padding-left: 0; border-top: 1px solid var(--linea); padding-top: 16px; }
   .semana[data-plano="derecha"] .semana__cabecera { grid-template-rows: auto 1fr auto; }
+  .semana[data-plano]:not([data-plano="centro"]) .semana__cabecera { min-height: 0; }
+  .semana[data-plano="detras"] .semana__cabecera { padding-top: 104px; }
+  .semana:is([data-plano="izquierda"], [data-plano="derecha"], [data-plano="completo"]) .semana__cabecera { grid-template-rows: auto auto; }
+  .semana:is([data-plano="izquierda"], [data-plano="derecha"], [data-plano="completo"]) .semana__numero { grid-row: 1; align-self: start; }
+  .semana:is([data-plano="izquierda"], [data-plano="derecha"], [data-plano="completo"]) .semana__rotulo { grid-row: 2; }
+  .semana[data-plano="detras"] .semana__numero { font-size: 92vw; }
+  .semana[data-plano="cortado"] .semana__cabecera { min-height: 0; padding-top: 0; }
+  .semana[data-plano="cortado"] .semana__numero { font-size: 96vw; }
+  .semana[data-plano="cortado"] .semana__rotulo { margin-top: 12px; }
   .semana[data-plano="centro"] .semana__titulo { grid-column: 1 / -1; }
   .semana__ficha { font-size: 11.5px; }
   .ficha__dato + .ficha__dato::before { width: 10px; margin: 0 8px; }
@@ -264,10 +335,14 @@
   .semana { display: block; padding: 0; }
   .semana__cabecera { min-height: 0 !important; display: block; padding: 0 0 6mm; border-bottom: 1px solid #bbb; }
   .semana__numero { font-size: 64pt !important; margin: 0 0 4mm !important; letter-spacing: -.03em; }
-  .semana__rotulo { border: 0 !important; padding: 0 !important; }
+  .semana__rotulo, .semana__reflexion { border: 0 !important; padding: 0 !important; }
+  .semana__rotulo { margin-top: 0 !important; }
+  .semana__numero { color: #000 !important; -webkit-text-stroke: 0 !important; }
+  .semana[data-plano] .bloque { display: block !important; }
+  .semana[data-plano] .bloque__cabecera { position: static !important; border: 0 !important; padding: 0 !important; margin-bottom: 3mm !important; }
   .semana__ficha { justify-content: flex-start !important; margin: 0 0 3mm !important; }
   .semana__titulo { font-size: 22pt !important; max-width: none; }
-  .semana__reflexion { margin-top: 6mm; }
+  .semana__reflexion { margin-top: 6mm !important; }
   .semana__reflexion .viz-texto { font-size: 11.5pt; max-width: none; }
   .semana__bloques { display: block; margin-top: 6mm; }
   .bloque { break-inside: avoid; margin-bottom: 7mm; }

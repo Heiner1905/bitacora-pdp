@@ -25,7 +25,7 @@
   if (!FX) return;
 
   var TEXTO = {
-    pistaFino: 'Acércate: está hecho de fragmentos. La pupila es una cerradura.',
+    pistaFino: 'Te está mirando. La pupila es una cerradura: haz clic.',
     pistaTactil: 'Toca la pupila: es una cerradura.',
     bajar: 'Desliza para entrar',
     bajarQuieto: 'Bajar a la semana 01',
@@ -151,7 +151,7 @@
         var tlE = gsap.timeline({ delay: 0.15 });
         if (P && P.disponible()) {
           gsap.set(svg, { opacity: 0 });
-          tlE.add(function () { P.formarSVG(svg, { desde: 'pupila', duracion: 1.7, sostener: 0.15, alTerminar: alEnsamblar }); }, 0);
+          tlE.add(function () { P.formarSVG(svg, { desde: 'pupila', duracion: 1.5, sostener: 0, alTerminar: alEnsamblar }); }, 0);
         } else {
           tlE.fromTo(svg, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power1.out', onComplete: alEnsamblar }, 0.2);
         }
@@ -171,18 +171,30 @@
         var dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
         return Math.hypot(dx, dy) < r.width * (margen || 0.47);
       }
+      // El emblema sigue siendo vector y vivo: al acercar el cursor solo se desprenden
+      // fragmentos de su borde (dial, anillo, fragmento) que orbitan y se apagan en ~1 s.
       if (P) {
         if (punteroFino) {
+          var ult = null;
           var alMover = function (e) {
-            if (!enReposo()) return;
-            if (sobreEmblema(e.clientX, e.clientY)) { if (P.despertar(svg, {})) usarPista(); }
+            if (!enReposo()) { ult = null; return; }
+            if (!sobreEmblema(e.clientX, e.clientY, 0.6)) { ult = null; return; }
+            var r = svg.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+            var giro = 0, vel = 4;
+            if (ult) {
+              var ax = ult.x - cx, ay = ult.y - cy, bx = e.clientX - cx, by = e.clientY - cy;
+              giro = (ax * by - ay * bx) >= 0 ? 1 : -1;
+              vel = Math.hypot(e.clientX - ult.x, e.clientY - ult.y);
+            }
+            ult = { x: e.clientX, y: e.clientY };
+            P.halo(svg, { x: e.clientX, y: e.clientY, giro: giro, cantidad: Math.max(2, Math.min(8, Math.round(vel / 4))) });
           };
           window.addEventListener('pointermove', alMover, { passive: true });
           limpiezas.push(function () { window.removeEventListener('pointermove', alMover); });
         } else {
           var alTocar = function (e) {
-            if (!enReposo() || e.target.closest('.portada__cerradura')) return;
-            if (sobreEmblema(e.clientX, e.clientY, 0.5)) { P.despertar(svg, { toque: true, x: e.clientX, y: e.clientY }); usarPista(); }
+            if (!enReposo()) return;
+            if (sobreEmblema(e.clientX, e.clientY, 0.6)) { P.halo(svg, { toque: true, x: e.clientX, y: e.clientY, cantidad: 36 }); }
           };
           escena.addEventListener('pointerdown', alTocar, { passive: true });
           limpiezas.push(function () { escena.removeEventListener('pointerdown', alTocar); });

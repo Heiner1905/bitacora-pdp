@@ -45,7 +45,7 @@
   padding-top: 64px;
   font-family: var(--f-display);
   font-weight: 200;
-  font-size: min(var(--t-nombre), 14.2vw);
+  font-size: min(var(--t-nombre), 13.8vw);
   line-height: .84;
   letter-spacing: -.045em;
   color: var(--escarcha);
@@ -68,9 +68,10 @@
 .portada__escena {
   position: absolute;
   z-index: 2;
-  right: -3.4vw;
-  top: 50%;
-  width: min(47vw, calc(100svh - 96px));
+  /* sangra por el dial hacia abajo, nunca por el fragmento (que llega al 96,5 % del ancho) */
+  right: 0;
+  top: 52%;
+  width: min(45vw, calc(100svh - 96px));
   aspect-ratio: 1;
   translate: 0 -53%;
 }
@@ -265,9 +266,10 @@ html.precarga .portada__bajar { opacity: 0; }
     grid-column: 1 / -1;
     grid-row: 2;
     right: auto; top: auto; translate: none;
-    width: min(calc(100% + 2 * var(--margen)), 74svh);
-    justify-self: end;
-    margin: 0 calc(-1 * var(--margen)) 8px auto;
+    /* sangra por el dial a la izquierda; el fragmento y sus bits quedan dentro a la derecha */
+    width: min(calc(100% + var(--margen)), 74svh);
+    justify-self: start;
+    margin: 0 0 8px calc(-1 * var(--margen));
   }
   .portada__pista { left: var(--margen); bottom: -4px; max-width: none; }
   .portada__proposito { grid-column: 1 / -1; grid-row: 3; margin: 12px 0 28px; }
@@ -275,7 +277,7 @@ html.precarga .portada__bajar { opacity: 0; }
   .portada__bajar { grid-column: 1 / -1; grid-row: 5; justify-self: start; margin-top: 20px; }
 }
 @media (max-width: 599px) {
-  .portada__escena { width: calc(100% + 2 * var(--margen)); margin-top: 0; }
+  .portada__escena { width: calc(100% + var(--margen)); margin-top: 0; }
   .portada__pista { bottom: 0; }
 }
 

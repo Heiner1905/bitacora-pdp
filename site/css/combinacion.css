@@ -4,7 +4,7 @@
    ========================================================================== */
 
 .combinacion {
-  --casilla: 30px;
+  --casilla: 40px;
   --alto-casilla: 28px;
   --hueco: 4px;
   display: flex;
@@ -45,7 +45,7 @@
   transition: color var(--dur-corta) var(--ease-salida), border-color var(--dur-corta) var(--ease-salida);
 }
 /* área táctil ≥ 44px sin ensanchar la tira */
-.casilla::after { content: ""; position: absolute; inset: -9px calc(var(--hueco) / -2); }
+.casilla::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(44px, 100%); height: 44px; transform: translate(-50%, -50%); }
 
 .casilla[data-estado="recorrida"] { color: var(--hielo); border: 1px solid var(--hielo); }
 .casilla[data-estado="actual"] { color: var(--noche); border: 1px solid transparent; font-weight: 500; }
@@ -83,13 +83,27 @@
   .combinacion { --casilla: 9px; --alto-casilla: 20px; --hueco: 3px; gap: 10px; }
   .casilla { font-size: 0; border-width: 1px; }
   .casilla__num { display: none; }
-  .casilla::after { inset: -12px calc(var(--hueco) / -2); }
+  .casilla { pointer-events: none; }
+  .casilla::before { display: none; }
   .combinacion__lectura { display: block; }
 }
 
 /* Muchas semanas en pantallas medianas: se adelgaza sin perder los números */
 @media (min-width: 600px) and (max-width: 1100px) {
-  .combinacion { --casilla: 26px; --hueco: 3px; }
+  .combinacion { --casilla: 34px; --hueco: 4px; }
 }
+
+/* Botón de la tira compacta: cubre toda la tira con un área ≥ 44 px */
+.combinacion { position: relative; }
+.combinacion__abrir {
+  position: absolute;
+  left: -8px; right: -8px; top: 50%;
+  height: 44px; transform: translateY(-50%);
+  z-index: 2;
+  background: transparent;
+  border-radius: 4px;
+}
+.combinacion__abrir[hidden] { display: none; }
+@media (max-width: 380px) { .combinacion__de { display: none; } }
 
 @media print { .combinacion { display: none !important; } }

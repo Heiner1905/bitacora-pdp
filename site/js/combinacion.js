@@ -49,6 +49,23 @@
       return a;
     });
 
+    // En móvil las casillas son marcas finas: la tira entera es un solo botón (≥ 44 px) que abre el índice
+    var abrir = FX.crear('button', 'combinacion__abrir', raiz);
+    abrir.type = 'button';
+    abrir.addEventListener('click', function () {
+      if (FX.indice && typeof FX.indice.abrir === 'function') FX.indice.abrir(abrir);
+      else { var sig = Math.min(N, Math.max(1, (actual | 0) + 1)); FX.irA('#semana-' + FX.dos(sig)); }
+    });
+    var mqCompacta = window.matchMedia('(max-width: 599px)');
+    function modoCompacto() {
+      var comp = mqCompacta.matches;
+      casillas.forEach(function (a) { if (comp) a.setAttribute('tabindex', '-1'); else a.removeAttribute('tabindex'); });
+      ol.toggleAttribute('aria-hidden', comp);
+      abrir.hidden = !comp;
+    }
+    if (mqCompacta.addEventListener) mqCompacta.addEventListener('change', modoCompacto); else mqCompacta.addListener(modoCompacto);
+    modoCompacto();
+
     var lectura = FX.crear('p', 'combinacion__lectura', raiz);
     lectura.setAttribute('aria-hidden', 'true');
     var lecK = FX.crear('span', 'combinacion__k', lectura);
@@ -73,6 +90,7 @@
         sr.textContent = base + (est === 'recorrida' ? ' (recorrida)' : est === 'actual' ? ' (actual)' : ' (por recorrer)');
       });
       lecK.textContent = k > 0 ? FX.dos(k) : '00';
+      abrir.setAttribute('aria-label', (k > 0 ? 'Semana ' + FX.dos(k) + ' de ' + FX.dos(N) : 'Portada, ' + N + ' semanas') + '. Abrir el índice');
       raiz.setAttribute('data-k', k);
 
       var visible = k > 0;

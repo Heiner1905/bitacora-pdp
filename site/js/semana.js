@@ -18,7 +18,9 @@
   if (!FX) return;
 
   var ESTADOS = { 'completada': 'Completada', 'en-curso': 'En curso', 'pendiente': 'Pendiente' };
-  var PLANOS = ['izquierda', 'derecha', 'completo'];
+  // Cinco escenas que rotan: el número sangra a la izquierda, queda detrás del título (en trazo),
+  // sangra a la derecha, lo corta el borde superior del cuadro, o entra completo junto a los créditos.
+  var PLANOS = ['izquierda', 'detras', 'derecha', 'cortado', 'completo'];
 
   function plano(k) { return k === 1 ? 'centro' : PLANOS[(k - 2) % PLANOS.length]; }
 
@@ -106,6 +108,15 @@
     return sec;
   }
 
+  /* ¿particulas.js acepta { desde: 'marca' }? (lo publica el constructor 1) */
+  function soportaMarca(P) {
+    try {
+      if (typeof P.soporta === 'function') return !!P.soporta('marca');
+      var lista = P.desdes || P.origenes;
+      return !!(lista && (Array.isArray(lista) ? lista.indexOf('marca') > -1 : lista.marca));
+    } catch (e) { return false; }
+  }
+
   /* ---------- Entradas de la cabecera (k ≥ 2) ---------- */
   function animarCabeceras() {
     var gsap = window.gsap, ST = window.ScrollTrigger;
@@ -120,21 +131,16 @@
         var num = FX.$('.semana__numero', sec);
         var cab = FX.$('.semana__cabecera', sec);
         var h2 = FX.$('.semana__titulo', sec);
-        var fichaSem = FX.$('.ficha__semana dd', sec);
-        var fichaOtros = FX.$$('.ficha__fecha, .ficha__estado', sec);
+        var ficha = FX.$$('.ficha__dato', sec);
 
-        // Parallax leve del número (profundidad de plano), solo escritorio
-        if (c.escritorio) {
-          gsap.fromTo(num, { yPercent: k === 1 ? 0 : 6 }, { yPercent: -8, ease: 'none',
-            scrollTrigger: { trigger: cab, start: 'top bottom', end: 'bottom top', scrub: 0.4 } });
-        }
+        // .semana__numero no recibe transformaciones permanentes: transiciones.js lo une con Flip.
         if (k === 1) return; // la semana 01 la forma la entrada por la pupila: se ve completa de inmediato
 
         var split = null;
         var tituloAnimado = !!window.SplitText && !h2.classList.contains('pendiente');
         if (tituloAnimado) gsap.set(h2, { autoAlpha: 0 });
         gsap.set(num, { autoAlpha: 0 });
-        gsap.set(fichaOtros, { clipPath: 'inset(0% 100% 0% 0%)' });
+        gsap.set(ficha, { clipPath: 'inset(-20% 100% -20% 0%)' });
 
         var hecho = false;
         function mostrarNumeroConMascara(retraso) {
@@ -146,11 +152,14 @@
           if (hecho) return; hecho = true;
           var P = FX.particulas;
           var usado = false;
-          if (P && typeof P.formarTexto === 'function') {
+          // Las partículas salen del fragmento de la marca del encabezado (el fragmento deja un rastro).
+          // Solo si particulas.js ya ofrece la opción { desde: 'marca' }; si no, el número entra con máscara.
+          var conMarca = P && typeof P.formarTexto === 'function' && soportaMarca(P);
+          if (conMarca) {
             try {
               var cedido = false;
               var ceder = function () { if (cedido) return; cedido = true; gsap.to(num, { autoAlpha: 1, duration: 0.35, ease: 'power1.out' }); };
-              P.formarTexto(FX.dos(k), num, { desde: 'disperso', alTerminar: ceder });
+              P.formarTexto(FX.dos(k), num, { desde: 'marca', alTerminar: ceder });
               setTimeout(ceder, 3200); // seguro: si las partículas no ceden, el número aparece igual
               usado = true;
             } catch (e) { console.error('[semana] partículas', e); usado = false; }
@@ -158,10 +167,7 @@
           if (!usado) mostrarNumeroConMascara(0);
 
           var tl = gsap.timeline({ delay: usado ? 0.25 : 0.35 });
-          if (window.ScrambleTextPlugin) {
-            tl.to(fichaSem, { duration: 0.9, ease: 'none', scrambleText: { text: 'Semana ' + FX.dos(k), chars: '0123456789ABCDEFHKMRSTX', revealDelay: 0.2, speed: 0.7 } }, 0);
-          }
-          tl.to(fichaOtros, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.9, ease: 'expo.out', stagger: 0.12 }, 0.15);
+          tl.to(ficha, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.9, ease: 'expo.out', stagger: 0.12, clearProps: 'clipPath' }, 0.1);
           if (tituloAnimado) {
             split = window.SplitText.create(h2, { type: 'words', mask: 'words' });
             gsap.set(split.words, { yPercent: 110 });

@@ -122,19 +122,62 @@
   }
 
   /* ---------- Movimiento ---------- */
+  var NSVG = 'http://www.w3.org/2000/svg';
+
+  /* Envuelve un grupo del emblema en un <g> propio (permitido por el contrato:
+     «envolver grupos para animar») para amplificar el ojo abierto sin tocar simbolo.js */
+  function envolver(svg, id) {
+    var n = svg.querySelector('#' + PRE + id);
+    if (!n) return null;
+    var g = document.createElementNS(NSVG, 'g');
+    g.setAttribute('class', 'cierre__envoltura-' + id);
+    n.parentNode.insertBefore(g, n);
+    g.appendChild(n);
+    return g;
+  }
+  function escalar(g, sx, sy) {
+    if (!g) return;
+    if (sx === 1 && sy === 1) g.removeAttribute('transform');
+    else g.setAttribute('transform', 'translate(200 200) scale(' + sx.toFixed(4) + ' ' + sy.toFixed(4) + ') translate(-200 -200)');
+  }
+
+  /* El pulso del encaje: dos ondas reales de 1,4 s de rubí claro que recorren el anillo
+     y se abren hacia fuera (la segunda sale 0,5 s después) */
+  function prepararPulso(svg) {
+    var base = svg.querySelector('#' + PRE + 'pulso');
+    if (!base) return null;
+    var otra = base.cloneNode(false);
+    otra.removeAttribute('id');
+    base.parentNode.appendChild(otra);
+    return [base, otra];
+  }
+  function pulsar(ondas) {
+    var gsap = window.gsap;
+    if (!ondas || !gsap) return;
+    ondas.forEach(function (o, i) {
+      gsap.killTweensOf(o);
+      gsap.fromTo(o, { attr: { r: 140, 'stroke-width': 14, opacity: 0.95 } },
+        { attr: { r: 158, 'stroke-width': 54, opacity: 0 }, duration: 1.4, ease: 'expo.out', delay: i * 0.5 });
+    });
+  }
+
   function estadoFinal(C, ctl) {
     ctl.setDial(dialDe(1) + 360);
     ctl.setFragmento(1);
     ctl.abrirOjo(1);
+    escalar(C.envOjo, 1.06, 1.16);
+    escalar(C.envIris, 1.1, 1.1);
   }
 
   function animar(C, ctl, c) {
     var gsap = window.gsap;
+    var P = FX.particulas;
     var pendiente = FX.esPendiente(C.msj.textContent);
     var est = { q: 0, f: 0, o: 0 };
     var p0 = 0.9, dial0 = 0, dial1 = 0;
     var N = Math.max(1, FX.estado.total || 1);
-    var pulsado = false, formado = false;
+    var pulsado = false, formando = false, cedido = true;
+    var ondas = C.ondas;
 
     function aplicar() {
       // dial: de su ángulo real a una vuelta completa más, con un retén por semana
@@ -143,57 +186,63 @@
       ctl.setDial(dial0 + (dial1 - dial0) * Math.min(1, reten));
       ctl.setFragmento(p0 + (1 - p0) * est.f);
       ctl.abrirOjo(est.o);
+      // «abierto del todo»: los párpados se separan más y el iris crece por encima de abrirOjo
+      escalar(C.envOjo, 1 + 0.06 * est.o, 1 + 0.16 * est.o);
+      escalar(C.envIris, 1 + 0.1 * est.o, 1 + 0.1 * est.o);
     }
-    function medir() { p0 = Math.min(0.97, FX.estado.progreso || 0.9); dial0 = dialDe(p0); dial1 = dialDe(1) + 360; }
+    function medir() { p0 = Math.min(0.9, FX.estado.progreso || 0.85); dial0 = dialDe(p0); dial1 = dialDe(1) + 360; }
     medir();
 
-    // Estado inicial de los textos (máscaras, nunca fade-up)
+    // 1 · Las partículas forman el emblema ANTES que el vector (el vector sale cuando arranca la combinación)
+    function formar() {
+      if (formando || !P || typeof P.formarSVG !== 'function' || !(P.soporta && P.soporta('ceder'))) return;
+      formando = true; cedido = false;
+      medir(); aplicar();
+      try { P.formarSVG(C.svg, { desde: 'disperso', duracion: 1.6, ceder: false }); }
+      catch (e) { cedido = true; console.error('[cierre] partículas', e); }
+    }
+    function cederVector() {
+      if (cedido) return;
+      cedido = true;
+      try { P.ceder(); } catch (e) { gsap.set(C.svg, { opacity: 1 }); }
+    }
+    window.ScrollTrigger.create({ trigger: C.esc.parentNode, start: 'top 70%', end: 'bottom top',
+      onEnter: formar, onLeaveBack: function () { formando = false; cederVector(); } });
+
+    // Textos: todo espera al final (máscaras, nunca fade-up). El [PENDIENTE] no se anima: aparece por corte.
     gsap.set([C.hA, C.hB], { clipPath: 'inset(0% 100% 0% 0%)' });
-    if (!pendiente) gsap.set(C.msj, { clipPath: 'inset(0% 0% 100% 0%)' });
-    gsap.set(C.firma, { clipPath: 'inset(0% 100% 0% 0%)' });
+    if (pendiente) gsap.set(C.msj, { autoAlpha: 0 });
+    else gsap.set(C.msj, { clipPath: 'inset(0% 0% 100% 0%)' });
+    gsap.set(C.firma, { clipPath: 'inset(0% 0% 100% 0%)' });
     gsap.set(C.volver, { autoAlpha: 0 });
 
     var tl = gsap.timeline({ defaults: { ease: 'none' }, onUpdate: function () {
       var t = tl.progress();
-      // el encaje: pulso de rubí claro una vez por pasada (y se rearma al volver atrás)
-      if (t >= 0.46 && !pulsado) { pulsado = true; ctl.pulso(); C.esc.classList.add('cierre--encajado'); }
+      if (t > 0.02) cederVector();
+      // el encaje: pulso una vez por pasada (se rearma al volver atrás)
+      if (t >= 0.46 && !pulsado) { pulsado = true; pulsar(ondas); C.esc.classList.add('cierre--encajado'); }
       else if (t < 0.4 && pulsado) { pulsado = false; C.esc.classList.remove('cierre--encajado'); }
-      if (t > 0.9 && !formado) formar();
-      else if (t < 0.4) formado = false;
     } });
-    tl.to(est, { q: 1, duration: 0.42, ease: 'power1.inOut', onUpdate: aplicar }, 0)
-      .to(est, { f: 1, duration: 0.42, ease: 'power3.in', onUpdate: aplicar }, 0.04)
-      .to(C.hA, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.1, ease: 'power2.out' }, 0.46)
-      .to(C.hB, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.1, ease: 'power2.out' }, 0.5)
-      .to(est, { o: 1, duration: 0.24, ease: 'power2.inOut', onUpdate: aplicar }, 0.52)
-      .to(C.firma, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.14, ease: 'power3.out' }, 0.84)
-      .to(C.volver, { autoAlpha: 1, duration: 0.06 }, 0.92)
+    // 2 · la vuelta final del dial con retenes; el fragmento se acerca
+    tl.to(est, { q: 1, duration: 0.38, ease: 'power1.inOut', onUpdate: aplicar }, 0)
+      .to(est, { f: 0.82, duration: 0.36, ease: 'power2.in', onUpdate: aplicar }, 0.02)
+      // 3 · el fragmento ENCAJA (golpe seco) → pulso de rubí claro
+      .to(est, { f: 1, duration: 0.07, ease: 'power4.in', onUpdate: aplicar }, 0.39)
+      // 4 · el ojo se abre del todo
+      .to(est, { o: 1, duration: 0.2, ease: 'power2.inOut', onUpdate: aplicar }, 0.5)
+      // 5 · solo entonces: la combinación completa, el mensaje y el nombre
+      .to(C.hA, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.07, ease: 'power2.out' }, 0.7)
+      .to(C.hB, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.07, ease: 'power2.out' }, 0.73)
+      .to(C.firma, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.12, ease: 'power3.out' }, 0.82)
+      .to(C.volver, { autoAlpha: 1, duration: 0.04 }, 0.9)
       .to({}, { duration: 0.06 }, 0.94);
-    if (!pendiente) tl.to(C.msj, { clipPath: 'inset(-10% 0% -10% 0%)', duration: 0.22, ease: 'power2.out' }, 0.62);
+    if (pendiente) tl.set(C.msj, { autoAlpha: 1 }, 0.76);
+    else tl.to(C.msj, { clipPath: 'inset(-10% 0% -10% 0%)', duration: 0.12, ease: 'power2.out' }, 0.76);
 
-    function formar() {
-      // Final: las partículas rehacen el emblema completo y ceden al SVG nítido
-      if (formado) return; formado = true;
-      var P = FX.particulas;
-      if (P && typeof P.formarSVG === 'function') {
-        try {
-          var cedido = false;
-          var ceder = function () { if (cedido) return; cedido = true; gsap.to(C.svg, { autoAlpha: 1, duration: 0.45, ease: 'power1.out' }); };
-          gsap.to(C.svg, { autoAlpha: 0, duration: 0.25 });
-          P.formarSVG(C.svg, { desde: 'disperso', duracion: 1.8, alTerminar: ceder });
-          setTimeout(ceder, 3000);
-          return;
-        } catch (e) { console.error('[cierre] partículas', e); }
-      }
-      // Sin partículas: el emblema respira una vez (el todo, completo)
-      gsap.fromTo(C.marco, { scale: 0.985 }, { scale: 1, duration: 1.2, ease: 'expo.out' });
-    }
-
-    var largo = c.escritorio ? '+=170%' : '+=120%';
     window.ScrollTrigger.create({
       trigger: C.esc.parentNode,
       start: 'top top',
-      end: largo,
+      end: c.escritorio ? '+=220%' : '+=160%',
       pin: true,
       scrub: c.escritorio ? 0.8 : 0.5,
       animation: tl,
@@ -215,6 +264,9 @@
     }
     ctl = ctl || controladorPropio(C.svg);
     C.ctl = ctl;
+    C.envOjo = envolver(C.svg, 'ojo');
+    C.envIris = envolver(C.svg, 'iris');
+    C.ondas = prepararPulso(C.svg);
 
     if (!window.gsap || !window.ScrollTrigger || !FX.mm || FX.estado.reducido) {
       estadoFinal(C, ctl); C.esc.classList.add('cierre--encajado');

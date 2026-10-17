@@ -59,7 +59,7 @@
     var N = Math.max(2, FX.estado.total || 2);
     var t = (C.k - 1) / (N - 1);                      // 0 (semana 01) → 1 (semana N)
     var R = Math.round((c.movil ? 80 : 90) + t * (c.movil ? 60 : 90));
-    var DUR = 1.4 - 0.6 * t;                           // la luz se abre más rápido con las semanas
+    var DUR = 1.6 - 0.6 * t;                           // la luz se abre más rápido con las semanas
     var fino = FX.estado.punteroFino && !c.movil;
 
     // Capa tachada: el mismo texto, en la misma caja (mismas reglas de ajuste de línea)
@@ -111,6 +111,7 @@
         .add(function () { C.raiz.setAttribute('data-luz', ''); }, DUR);
       boton.textContent = 'Luz encendida';
       boton.setAttribute('aria-disabled', 'true');
+      boton.setAttribute('tabindex', '-1');
       C.estado.textContent = 'Lección revelada';
     }
     boton.addEventListener('click', revelar);
@@ -121,8 +122,15 @@
     // Solo trabaja mientras el bloque está en pantalla
     ST.create({ trigger: C.raiz, start: 'top bottom', end: 'bottom top', onToggle: function (st) { activo = st.isActive; if (activo) { medir(); aplicar(); } } });
 
-    // Regalo, no puerta: al cruzar el 40 % superior la luz se enciende sola
-    ST.create({ trigger: C.escena, start: 'top 40%', onEnter: revelar });
+    // Regalo, no puerta: la luz se enciende sola al cruzar el 18 % superior
+    // o tras ~2 s con la escena en pantalla (lo que llegue primero)
+    ST.create({ trigger: C.escena, start: 'top 18%', onEnter: revelar });
+    var reloj = null;
+    ST.create({ trigger: C.escena, start: 'top 72%', end: 'bottom top',
+      onToggle: function (st) {
+        clearTimeout(reloj);
+        if (fino && st.isActive && !revelada) reloj = setTimeout(revelar, 2200);
+      } });
 
     if (fino) {
       // La linterna se asoma sobre la primera palabra al entrar en pantalla
@@ -160,7 +168,7 @@
       // Táctil: la linterna barre las líneas con el scroll y la luz se enciende al final
       gsap.set(halo, { autoAlpha: 1 });
       ST.create({
-        trigger: C.escena, start: 'top 88%', end: 'top 42%', scrub: 0.5,
+        trigger: C.escena, start: 'top 88%', end: 'top 30%', scrub: 0.5,
         onUpdate: function (st) {
           if (revelada || !activo) return;
           medir();

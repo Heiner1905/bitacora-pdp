@@ -22,7 +22,7 @@
 }
 .tachado__tachar {
   --grosor-tachado: .1em;
-  background-image: linear-gradient(var(--rubi), var(--rubi));
+  background-image: linear-gradient(var(--escarcha), var(--escarcha));
   background-repeat: no-repeat;
   background-position: 0 58%;
   background-size: 100% var(--grosor-tachado);
@@ -145,13 +145,13 @@
   border: 1px solid var(--linea);
   border-top: 2px solid var(--hielo);
   transform-style: preserve-3d;
-  will-change: auto;
   overflow: hidden;
 }
 /* Composición escalonada: no una grilla de tarjetas idénticas */
 .tarjetas[data-tono="fortaleza"] .tarjeta:nth-child(4) { grid-column: 2 / span 2; }
 .tarjetas .tarjeta:nth-child(even) { margin-top: clamp(24px, 4vw, 56px); }
-.tarjetas[data-tono="mejora"] .tarjeta { border-top-color: var(--rubi); }
+.tarjetas[data-tono="mejora"] .tarjeta { border-top: 2px solid var(--niebla); }
+.tarjetas[data-tono="mejora"] .tarjeta__nombre { font-style: italic; font-family: var(--f-texto); font-weight: 400; }
 .tarjetas[data-tono="mejora"] .tarjeta:nth-child(1) { grid-column: 1 / span 2; }
 .tarjetas[data-tono="mejora"] .tarjeta:nth-child(2) { grid-column: 3 / span 2; }
 .tarjetas[data-tono="mejora"] .tarjeta:nth-child(3) { grid-column: 5 / span 2; }
@@ -185,8 +185,8 @@
 .anillos__svg { width: 100%; max-width: 440px; height: auto; overflow: visible; }
 .anillo__pista { fill: none; stroke: var(--pizarra); stroke-width: 11; }
 .anillo__pista--vacia { stroke: var(--acero); stroke-width: 1; stroke-dasharray: 2 5; }
-.anillo__valor { fill: none; stroke: var(--hielo); stroke-width: 11; stroke-linecap: butt; }
-.anillo__valor--mayor { stroke: var(--rubi); }
+.anillo__valor { fill: none; stroke: var(--niebla); stroke-width: 11; stroke-linecap: butt; }
+.anillo__valor--mayor { stroke: var(--escarcha); stroke-width: 15; }
 .anillo__letra { font-family: var(--f-dato); font-size: 9px; fill: var(--niebla); letter-spacing: .1em; }
 .anillos__leyenda { display: grid; gap: 0; margin: 0; }
 .anillos__fila {
@@ -200,7 +200,9 @@
 .anillos__valor { margin: 0; font-family: var(--f-dato); font-variation-settings: "wdth" 75; font-size: .9375rem; color: var(--hielo); font-variant-numeric: tabular-nums; }
 .anillos__cifra { font-family: var(--f-display); font-weight: 300; font-size: 1.75rem; color: var(--escarcha); }
 .anillos__max { color: var(--niebla); }
-.anillos__fila--mayor .anillos__letra { color: var(--rubi); }
+.anillos__fila--mayor .anillos__letra { font-weight: 500; }
+.anillos__fila--mayor .anillos__nombre { color: var(--escarcha); }
+.anillos__fila--mayor { border-top-color: var(--hielo); }
 .anillos__valor.pendiente { font-family: var(--f-texto); font-variation-settings: normal; font-size: 1rem; outline-offset: 3px; padding: 0 4px; }
 
 /* ---------- waffle ---------- */
@@ -285,7 +287,7 @@
   display: none;
   width: 2px; height: 1.05em;
   margin: 0 1px -.16em;
-  background: var(--rubi-claro);
+  background: var(--hielo);
 }
 .maquina--espera .maquina__cursor,
 .maquina--escribiendo .maquina__cursor { display: inline-block; }
