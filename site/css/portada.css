@@ -30,6 +30,7 @@
   column-gap: var(--medianil);
   padding: 0 var(--margen) 28px;
   background: var(--noche);
+  overflow: hidden;
   overflow: clip;
   isolation: isolate;
 }
@@ -256,8 +257,9 @@ html.precarga .portada__bajar { opacity: 0; }
   .portada__nombre {
     grid-column: 1 / -1;
     padding-top: 72px;
-    font-size: min(24.5vw, 13rem);
+    font-size: min(22vw, 12rem);
   }
+  .portada__linea--b { margin-left: calc(var(--col) * .6); }
   .portada__escena {
     position: relative;
     grid-column: 1 / -1;
@@ -284,10 +286,18 @@ html.precarga .portada__bajar { opacity: 0; }
 
 /* ---------- Impresión ---------- */
 @media print {
+  /* sin pin: GSAP deja estilos en línea (fixed, top, alto, translate) que aquí se anulan */
   .portada {
-    min-height: 0; display: block; padding: 0; overflow: visible;
-    break-after: page; background: #fff;
+    position: static !important; inset: auto !important; top: auto !important; left: auto !important;
+    transform: none !important; translate: none !important;
+    width: auto !important; max-width: none !important; height: auto !important; max-height: none !important;
+    min-height: 0; display: block; padding: 0 !important; margin: 0 !important; overflow: visible;
+    visibility: visible !important; break-after: page; background: #fff;
   }
+  .portada__camara { transform: none !important; visibility: visible !important; }
+  .portada__linea { transform: none !important; opacity: 1 !important; visibility: visible !important; }
+  .portada__proposito, .portada__creditos { transform: none !important; opacity: 1 !important; }
+  .emblema [style*="opacity"] { opacity: 1 !important; }
   .portada__nombre { padding-top: 0; font-size: 72pt; }
   .portada__linea--b { margin-left: 1.2em; }
   .portada__escena { position: static; translate: none; width: 9cm; margin: 8mm 0 8mm auto; }

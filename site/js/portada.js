@@ -285,7 +285,6 @@
         mir.alfa = Math.log(1 / mir.m0) / Math.log(G.Kc / G.KA);
         mir.lienzo = lienzo;
         mirilla.removeChild(lienzo);
-        mir.dentro = false;
       }
       function ponerMirilla(si) {
         if (si === mir.dentro) return;
@@ -341,7 +340,8 @@
         var Kp = p <= P_TELON ? G.b * SI * lerp(1, G.ZA, e) : G.KA * Math.pow(G.Kc / G.KA, Math.pow(bp, 1.7));
         var Z = Kp / (G.b * SI);
         var emblemaVisible = Kp < G.Kh;
-        camara.style.transform = p > 0.002 ? 'translate(' + r2(cx - G.P0.x) + 'px,' + r2(cy - G.P0.y) + 'px) scale(' + (Math.round(Z * 1000) / 1000) + ')' : '';
+        // con la pupila cubriendo la pantalla el vector se oculta y su escala ya no crece (acotada en Kh)
+        if (emblemaVisible || !camara.style.transform) camara.style.transform = p > 0.002 ? 'translate(' + r2(cx - G.P0.x) + 'px,' + r2(cy - G.P0.y) + 'px) scale(' + (Math.round(Math.min(Z, G.Kh / (G.b * SI)) * 1000) / 1000) + ')' : '';
         camara.style.visibility = emblemaVisible ? '' : 'hidden';
 
         // la mirilla: visible desde el primer instante del zoom hasta el corte
@@ -365,6 +365,8 @@
           if (borde) borde.style.visibility = 'hidden';
         }
         if (activo) forzar(p >= P_CUBRE ? 1 : 0);
+        // tras el corte la portada queda (por el pin sin espaciado) encima de la semana: se apaga
+        portada.style.visibility = (p >= 0.9999 && !activo) ? 'hidden' : '';
       }
 
       st = ST.create({
@@ -378,7 +380,7 @@
         onRefresh: function (self) { medir(); render(self.progress); },
         onUpdate: function (self) { render(self.progress); },
         onToggle: function (self) {
-          if (!self.isActive) { forzar('libre'); ponerMirilla(false); if (borde) borde.style.visibility = 'hidden'; }
+          if (!self.isActive) { forzar('libre'); render(self.progress); ponerMirilla(false); if (borde) borde.style.visibility = 'hidden'; }
           else render(self.progress);
         }
       });
@@ -387,7 +389,7 @@
       limpiezas.push(function () { FX.off('redimension', alRedim); });
       limpiezas.push(function () {
         ponerMirilla(false); forzar('libre');
-        camara.style.transform = ''; camara.style.visibility = '';
+        camara.style.transform = ''; camara.style.visibility = ''; portada.style.visibility = '';
         exteriores.forEach(function (el) { el.style.opacity = ''; });
         if (ctl) ctl.abrirOjo(0);
       });
