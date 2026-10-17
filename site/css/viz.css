@@ -201,7 +201,7 @@
 .anillos__cifra { font-family: var(--f-display); font-weight: 300; font-size: 1.75rem; color: var(--escarcha); }
 .anillos__max { color: var(--niebla); }
 .anillos__fila--mayor .anillos__letra { color: var(--rubi); }
-.anillos__valor.pendiente { font-size: .9375rem; outline-offset: 3px; }
+.anillos__valor.pendiente { font-family: var(--f-texto); font-variation-settings: normal; font-size: 1rem; outline-offset: 3px; padding: 0 4px; }
 
 /* ---------- waffle ---------- */
 .waffle {

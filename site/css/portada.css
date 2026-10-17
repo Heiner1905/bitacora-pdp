@@ -265,7 +265,7 @@ html.precarga .portada__bajar { opacity: 0; }
     right: auto; top: auto; translate: none;
     width: min(calc(100% + 2 * var(--margen)), 74svh);
     justify-self: end;
-    margin: -2vw calc(-1 * var(--margen)) 8px auto;
+    margin: 0 calc(-1 * var(--margen)) 8px auto;
   }
   .portada__pista { left: var(--margen); bottom: -4px; max-width: none; }
   .portada__proposito { grid-column: 1 / -1; grid-row: 3; margin: 12px 0 28px; }

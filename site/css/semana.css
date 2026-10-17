@@ -247,7 +247,7 @@
 
 /* ---------- Móvil ---------- */
 @media (max-width: 599px) {
-  .semana__cabecera { min-height: 92svh; padding: 88px 0 40px; }
+  .semana__cabecera { min-height: 74svh; padding: 88px 0 40px; row-gap: 20px; }
   .semana[data-plano="izquierda"] .semana__rotulo,
   .semana[data-plano="derecha"] .semana__rotulo,
   .semana[data-plano="completo"] .semana__rotulo { grid-column: 1 / -1; }

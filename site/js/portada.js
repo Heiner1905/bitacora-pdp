@@ -144,7 +144,7 @@
         mostrarPista();
       }
       if (!entradaHecha && cargaArriba) {
-        gsap.set(txts, { yPercent: 108 });
+        gsap.set(txts, { y: 0, yPercent: 108 });
         gsap.set([proposito].concat(dds), { clipPath: 'inset(-10% 100% -10% 0%)' });
         gsap.set(creditos, { '--linea': 0 });
         gsap.set(bajar, { autoAlpha: 0 });
