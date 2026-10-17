@@ -129,7 +129,7 @@ Orden: **Portada → (entrada por la pupila) → Semana 01 … Semana N → Cier
 
 ## 6 · Portada y entrada por la pupila (constructor 1)
 
-Base: el prototipo `site/lab/direccion-a/` (léelo: `principal.js`, `particulas.js`, `estilos.css`). Se adapta al emblema y la paleta nuevos.
+Base: el prototipo `docs/laboratorio/direccion-a/` (antes en site/lab) (léelo: `principal.js`, `particulas.js`, `estilos.css`). Se adapta al emblema y la paleta nuevos.
 
 **Layout 1440.** Retícula de 12 columnas, margen 40. Nombre en Zodiak 200 gigante, en dos líneas escalonadas ("Heiner" / "Rincón") a la izquierda; el emblema vivo a la derecha (≈ 44–48 vw, sangrando hacia el borde); propósito en Newsreader (`--t-proposito`) bajo el nombre; ficha de créditos tipo afiche (Martian Mono: Autor, Código A00402510, Programa · 8.º semestre, Materia · 2026-2) abajo. **No centrado, no simétrico.** **Layout 390:** nombre arriba en dos líneas, emblema grande debajo, propósito y ficha en una columna; pista de interacción en una sola línea o nada en táctil.
 
@@ -185,7 +185,7 @@ Las técnicas vienen de `docs/recursos/TECNICAS.md` (análisis de la presentaci�
 
 ## 8 · Cierres y transiciones (constructor 3)
 
-**Cierre de semana (la lección clave).** Reemplaza al GIRO. Tiene que destacar la lección de forma **memorable, propia y conectada con el concepto**. Se exploran **3 alternativas** con prototipo rápido en `site/lab/cierre-semana/` (alt-1, alt-2, alt-3, cada una con su `index.html`) y el **crítico** elige. Pista (no obligatoria): una **linterna** que sigue el cursor sobre un campo oscuro y revela un texto oculto (el observador, los trucos bajo la manga); en móvil y con reduced-motion se revela sola; el texto siempre es accesible (está en el DOM, no en canvas). `leccion` en `[PENDIENTE]` se muestra tal cual (recuadro punteado), sin efecto de revelado.
+**Cierre de semana (la lección clave).** Reemplaza al GIRO. Tiene que destacar la lección de forma **memorable, propia y conectada con el concepto**. Se exploran **3 alternativas** con prototipo rápido en `docs/laboratorio/cierre-semana/` (antes en site/lab; ya no se publica) (alt-1, alt-2, alt-3, cada una con su `index.html`) y el **crítico** elige. Pista (no obligatoria): una **linterna** que sigue el cursor sobre un campo oscuro y revela un texto oculto (el observador, los trucos bajo la manga); en móvil y con reduced-motion se revela sola; el texto siempre es accesible (está en el DOM, no en canvas). `leccion` en `[PENDIENTE]` se muestra tal cual (recuadro punteado), sin efecto de revelado.
 
 **Transiciones entre semanas** (`.transicion` entre secciones): **persianas** (franjas que se cierran/abren) y **entrada 3D** (la escena siguiente entra con perspectiva) **guiadas por scrub**, sin cambiar el modelo de página continua. Duración ≈ 60–80 svh. Con reduced-motion: un separador estático.
 
@@ -232,7 +232,7 @@ site/
   js/semana.js combinacion.js viz.js     2
   js/cierre-semana.js transiciones.js cierre.js       3   (+ pie)
   js/encabezado.js indice.js cursor.js   4
-  lab/cierre-semana/                     3 (prototipos de las 3 alternativas)
+  (los prototipos de laboratorio viven en docs/laboratorio/, no se publican)
   assets/emblema.svg marca.svg favicon.svg fonts/ img/
 ```
 
