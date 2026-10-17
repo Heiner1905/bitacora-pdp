@@ -139,7 +139,10 @@
         var split = null;
         var tituloAnimado = !!window.SplitText && !h2.classList.contains('pendiente');
         if (tituloAnimado) gsap.set(h2, { autoAlpha: 0 });
-        gsap.set(num, { autoAlpha: 0 });
+        // Si la transición forma el número de esta semana, aquí no se toca (ni partículas ni máscara)
+        var T = FX.transiciones;
+        var porTransicion = !!(T && typeof T.maneja === 'function' && T.maneja(k));
+        if (!porTransicion) gsap.set(num, { autoAlpha: 0 });
         gsap.set(ficha, { clipPath: 'inset(-20% 100% -20% 0%)' });
 
         var hecho = false;
@@ -151,11 +154,11 @@
         function entrar() {
           if (hecho) return; hecho = true;
           var P = FX.particulas;
-          var usado = false;
+          var usado = porTransicion;
           // Las partículas salen del fragmento de la marca del encabezado (el fragmento deja un rastro).
           // Solo si particulas.js ya ofrece la opción { desde: 'marca' }; si no, el número entra con máscara.
           var conMarca = P && typeof P.formarTexto === 'function' && soportaMarca(P);
-          if (conMarca) {
+          if (!porTransicion && conMarca) {
             try {
               var cedido = false;
               var ceder = function () { if (cedido) return; cedido = true; gsap.to(num, { autoAlpha: 1, duration: 0.35, ease: 'power1.out' }); };
