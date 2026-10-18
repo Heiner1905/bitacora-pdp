@@ -4,9 +4,9 @@
 
 | Fase | Objetivo | Estado |
 |---|---|---|
-| 0 · Infraestructura | Repo, skills, Cloudflare Pages, sesión remota | En cierre |
-| 1 · Dirección creativa | Analizar referencias, definir lenguaje visual y los 3–4 momentos "wow" | Siguiente |
-| 2 · Construcción | Construir el sitio con subagentes en paralelo | — |
+| 0 · Infraestructura | Repo, skills, Cloudflare Pages, sesión remota | Hecha |
+| 1 · Dirección creativa | Analizar referencias, definir lenguaje visual y los 3–4 momentos "wow" | Hecha (A · Sala de observación) |
+| 2 · Construcción | Construir el sitio con subagentes en paralelo | Hecha en `fase-2/construccion` (crítica final 7,6) — pendiente aprobación para main |
 | 3 · Revisión y pulido | Impeccable (critique, audit, polish), rendimiento, accesibilidad, móvil | — |
 | 4 · Contenido | Pegar los textos reales de cada semana | En paralelo, fuera de esta sesión |
 | 5 · Cierre | Versión impresa/PDF, Open Graph, revisión final, publicación en `main` | — |
