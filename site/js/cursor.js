@@ -49,7 +49,8 @@
 
     var xTo = gsap.quickTo(el, 'x', { duration: 0.22, ease: 'power3' });
     var yTo = gsap.quickTo(el, 'y', { duration: 0.22, ease: 'power3' });
-    var sxTo = gsap.quickTo(el, 'scaleX', { duration: 0.35, ease: 'power3' });
+    // el estiramiento va en el <svg> interior: así no compite con el `scale` de aparecer/clic sobre el contenedor
+    var sxTo = gsap.quickTo(el.querySelector('svg'), 'scaleX', { duration: 0.35, ease: 'power3' });
     var ixTo = gsap.quickTo(iris, 'x', { duration: 0.35, ease: 'expo.out' });
     var iyTo = gsap.quickTo(iris, 'y', { duration: 0.35, ease: 'expo.out' });
 
