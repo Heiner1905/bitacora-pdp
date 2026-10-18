@@ -82,9 +82,9 @@
 
 /* ---------- Móvil ---------- */
 @media (max-width: 899px) {
-  .cierre__escena { align-content: center; row-gap: 28px; padding-top: 72px; }
-  .cierre__emblema { grid-column: 1 / -1; width: min(86vw, 46svh); margin-left: -6vw; }
-  .cierre__texto { grid-column: 1 / -1; padding-left: 0; gap: 18px; }
+  .cierre__escena { align-content: center; row-gap: 20px; padding-top: 64px; padding-bottom: 24px; }
+  .cierre__emblema { grid-column: 1 / -1; width: min(76vw, 40svh); margin-left: -4vw; }
+  .cierre__texto { grid-column: 1 / -1; padding-left: 0; gap: 14px; }
   .cierre__mensaje { font-size: clamp(1.5rem, 1rem + 2.4vw, 2rem); }
   .cierre__firma { font-size: clamp(2.5rem, 1rem + 7vw, 3.5rem); }
   .pie__creditos { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }

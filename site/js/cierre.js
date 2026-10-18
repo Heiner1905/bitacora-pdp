@@ -157,12 +157,19 @@
       { attr: { 'stroke-width': 46, opacity: 0 }, duration: 1.4, ease: 'expo.out', repeat: 1 });
   }
 
+  function abrirDelTodo(C, o) {
+    var sx = 1 + 0.06 * o, sy = 1 + 0.24 * o;
+    escalar(C.envParp, sx, sy);
+    escalar(C.envPliegue, sx, 1);
+    escalar(C.clipOjo, sx, sy);
+    escalar(C.envIris, 1 + 0.16 * o, 1 + 0.16 * o);
+  }
+
   function estadoFinal(C, ctl) {
     ctl.setDial(dialDe(1) + 360);
     ctl.setFragmento(1);
     ctl.abrirOjo(1);
-    escalar(C.envOjo, 1.08, 1.26);
-    escalar(C.envIris, 1.18, 1.18);
+    abrirDelTodo(C, 1);
   }
 
   function animar(C, ctl, c) {
@@ -183,8 +190,7 @@
       ctl.setFragmento(p0 + (1 - p0) * est.f);
       ctl.abrirOjo(est.o);
       // «abierto del todo»: los párpados se separan más y el iris crece por encima de abrirOjo
-      escalar(C.envOjo, 1 + 0.08 * est.o, 1 + 0.26 * est.o);
-      escalar(C.envIris, 1 + 0.18 * est.o, 1 + 0.18 * est.o);
+      abrirDelTodo(C, est.o);
     }
     function medir() { p0 = Math.min(0.9, FX.estado.progreso || 0.85); dial0 = dialDe(p0); dial1 = dialDe(1) + 360; }
     medir();
@@ -225,20 +231,20 @@
       // 3 · el fragmento ENCAJA (golpe seco) → pulso de rubí claro
       .to(est, { f: 1, duration: 0.07, ease: 'power4.in', onUpdate: aplicar }, 0.39)
       // 4 · el ojo se abre del todo
-      .to(est, { o: 1, duration: 0.2, ease: 'power2.inOut', onUpdate: aplicar }, 0.5)
+      .to(est, { o: 1, duration: 0.2, ease: 'power2.inOut', onUpdate: aplicar }, 0.48)
       // 5 · solo entonces: la combinación completa, el mensaje y el nombre
-      .to(C.hA, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.07, ease: 'power2.out' }, 0.7)
-      .to(C.hB, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.07, ease: 'power2.out' }, 0.73)
-      .to(C.firma, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.12, ease: 'power3.out' }, 0.82)
-      .to(C.volver, { autoAlpha: 1, duration: 0.04 }, 0.9)
+      .to(C.hA, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.07, ease: 'power2.out' }, 0.5)
+      .to(C.hB, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.07, ease: 'power2.out' }, 0.53)
+      .to(C.firma, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.12, ease: 'power3.out' }, 0.68)
+      .to(C.volver, { autoAlpha: 1, duration: 0.04 }, 0.8)
       .to({}, { duration: 0.06 }, 0.94);
-    if (pendiente) tl.set(C.msj, { autoAlpha: 1 }, 0.76);
-    else tl.to(C.msj, { clipPath: 'inset(-10% 0% -10% 0%)', duration: 0.12, ease: 'power2.out' }, 0.76);
+    if (pendiente) tl.set(C.msj, { autoAlpha: 1 }, 0.58);
+    else tl.to(C.msj, { clipPath: 'inset(-10% 0% -10% 0%)', duration: 0.12, ease: 'power2.out' }, 0.58);
 
     window.ScrollTrigger.create({
       trigger: C.esc.parentNode,
       start: 'top top',
-      end: c.escritorio ? '+=220%' : '+=160%',
+      end: c.escritorio ? '+=170%' : '+=140%',
       pin: true,
       scrub: c.escritorio ? 0.8 : 0.5,
       animation: tl,
@@ -260,7 +266,11 @@
     }
     ctl = ctl || controladorPropio(C.svg);
     C.ctl = ctl;
-    C.envOjo = envolver(C.svg, 'ojo');
+    // el ojo «abierto del todo»: se estiran los párpados, el pliegue y el recorte del iris,
+    // pero el iris solo escala de forma uniforme (el emblema no se deforma)
+    C.envParp = envolver(C.svg, 'parpados');
+    C.envPliegue = envolver(C.svg, 'pliegue');
+    C.clipOjo = C.svg.querySelector('#' + PRE + 'clip-ojo');
     C.envIris = envolver(C.svg, 'iris');
     C.ondas = prepararPulso(C.svg);
 

@@ -128,11 +128,18 @@
     function copiarFuente() {
       if (!real) return;
       var cs = getComputedStyle(real);
-      ['fontSize', 'fontWeight', 'letterSpacing', 'lineHeight', 'paddingTop', 'paddingBottom', 'fontVariationSettings'].forEach(function (p) { T.num.style[p] = cs[p]; });
+      ['fontSize', 'fontWeight', 'letterSpacing', 'lineHeight', 'paddingTop', 'paddingBottom', 'fontVariationSettings', 'webkitTextStroke'].forEach(function (p) { T.num.style[p] = cs[p]; });
+      // ¿el número real es de contorno (relleno transparente)? entonces el de la transición
+      // pierde su relleno al aterrizar y llega con el mismo trazo
+      var m = /rgba?\(([^)]+)\)/.exec(cs.color), alfa = 1;
+      if (m) { var partes = m[1].split(','); alfa = partes.length > 3 ? parseFloat(partes[3]) : 1; }
+      if (cs.color === 'transparent') alfa = 0;
+      T.contorno = alfa < 0.05;
+      T.colorBase = T.colorBase || getComputedStyle(T.num).color;
     }
     copiarFuente();
 
-    var E = { z: movil ? -500 : -900, ry: movil ? -8 : -16, a: 0, t: 0, f: 1, cub: 0, des: 0 };
+    var E = { z: movil ? -500 : -900, ry: movil ? -8 : -16, a: 0, t: 0, f: 1, cub: 0, des: 0, o: 1 };
     var POSE = { x: 0, y: 0, s: 1, cx: 50, cy: 50 };   // última pose (sin leer de GSAP)
     var entregado = null;
 
@@ -144,7 +151,11 @@
       var dx = cx, dy = cy;
       if (real) { var r = real.getBoundingClientRect(); dx = r.left; dy = r.top; }
       var t = E.t, sc = s0 + (1 - s0) * t, x = cx + (dx - cx) * t, y = cy + (dy - cy) * t;
-      var op = E.f * E.a * (1 - Math.min(1, Math.max(0, (t - 0.75) / 0.25)));
+      var op = E.f * E.a * E.o;
+      if (T.contorno && T.colorBase) {
+        var rgb = /rgba?\(([^)]+)\)/.exec(T.colorBase);
+        if (rgb) { var c3 = rgb[1].split(',').slice(0, 3).join(','); T.num.style.color = 'rgba(' + c3 + ',' + (1 - Math.min(1, Math.max(0, (t - 0.4) / 0.6))).toFixed(3) + ')'; }
+      }
       T.num.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) perspective(1600px) translateZ(' + E.z.toFixed(1) + 'px) rotateY(' + E.ry.toFixed(2) + 'deg) scale(' + sc.toFixed(4) + ')';
       T.num.style.opacity = op.toFixed(3);
       POSE.x = x; POSE.y = y; POSE.s = sc; POSE.cx = x + w * sc / 2; POSE.cy = y + h * sc / 2;
@@ -215,9 +226,10 @@
         // la cerradura crece desde el centro hasta tapar la sala; al salir gira 90° y se cierra sobre el número
         var cubre = Math.hypot(G.vw, G.vh) * 2.6;
         var sIn = 0.0001 + cubre * Math.pow(E.cub, 3);
-        if (E.des <= 0) { cerradura(T, sIn, 0, G.cx, G.cy); return; }
-        var q = suave(E.des);
+        if (E.des <= 0) { T.llave.style.display = E.cub > 0.001 ? '' : 'none'; cerradura(T, sIn, 0, G.cx, G.cy); return; }
+        var q = suave(Math.min(1, E.des / 0.8));
         var s = cubre * Math.pow(1 - q, 3);
+        T.llave.style.display = q >= 0.999 ? 'none' : '';
         cerradura(T, s, 90 * Math.min(1, E.des * 1.6), G.cx + (POSE.cx - G.cx) * q, G.cy + (POSE.cy - G.cy) * q);
       }
     }
@@ -234,7 +246,7 @@
       if (activo && arma.ida && p >= 0.3 && p < 0.6) { arma.ida = false; formarNumero(); }
       if (activo && arma.vuelta && p <= 0.56 && p > 0.3) { arma.vuelta = false; formarNumero(); }
       // la entrega: en el último cuarto del aterrizaje aparece el número real y el de la transición se funde
-      entregar(E.t >= 0.75);
+      entregar(p >= 0.84);
       pose();
       piezas();
     } });
@@ -244,8 +256,9 @@
       .to(T.ficha, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.14, ease: 'power2.out' }, 0.4)
       // retén (0.5 → 0.6): la sala tapada, el número quieto
       .to(T.ficha, { clipPath: 'inset(-20% 0% 120% 0%)', duration: 0.08, ease: 'power2.in' }, 0.6)
-      .to(E, { des: 1, duration: 0.3 }, 0.6)
-      .to(E, { t: 1, duration: 0.3, ease: 'power3.inOut' }, 0.6)
+      .to(E, { des: 1, duration: 0.24 }, 0.6)
+      .to(E, { t: 1, duration: 0.24, ease: 'power3.inOut' }, 0.6)
+      .to(E, { o: 0, duration: 0.06 }, 0.84)
       .to({}, { duration: 0.1 }, 0.9);
 
     function limpiar(fin) {
@@ -259,7 +272,8 @@
     if (sec) sec.setAttribute('data-tr-oculta', '');
     st = window.ScrollTrigger.create({
       trigger: T.tr,
-      start: 'top bottom',
+      // empieza cuando la lección de la semana anterior ya salió de pantalla
+      start: movil ? 'top 8%' : 'top 12%',
       end: 'bottom top',
       scrub: movil ? 0.25 : 0.4,
       animation: tl,

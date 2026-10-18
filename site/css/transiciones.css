@@ -27,7 +27,7 @@
 .transicion__escena { display: none; }
 
 /* ---------- Con movimiento ---------- */
-.transiciones-vivas .transicion { height: 70svh; padding: 0; }
+.transiciones-vivas .transicion { height: 90svh; padding: 0; }
 .transiciones-vivas .transicion__separador { display: none; }
 .transiciones-vivas .transicion__escena {
   display: block;
@@ -88,7 +88,7 @@
 .transicion__titulo.pendiente { font-family: var(--f-dato); font-style: normal; outline-offset: 3px; justify-self: start; }
 
 @media (max-width: 899px) {
-  .transiciones-vivas .transicion { height: 60svh; }
+  .transiciones-vivas .transicion { height: 80svh; }
   .transicion__ficha { width: calc(100vw - 2 * var(--margen)); }
 }
 @media print { .transicion { display: none !important; } }
