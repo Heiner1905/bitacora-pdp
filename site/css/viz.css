@@ -450,6 +450,9 @@
   .tarjetas { grid-template-columns: repeat(3, 1fr); }
   .tarjetas .tarjeta, .tarjetas[data-tono] .tarjeta:nth-child(n) { grid-column: auto; }
   .escalera { --alto: 140px; }
+  .imagen { break-inside: avoid; }
+  .imagen__img { max-height: 16cm; width: auto; max-width: 100%; }
+  .bloque__cabecera { break-after: avoid; }
   .escalera--filas .col { padding-block: 6px; break-inside: avoid; }
   .escalera--filas .col__pista { height: 28px; }
   .escalera--escala .col__pista::after { background-image: repeating-linear-gradient(to right, transparent 0 calc(100% / var(--max) - 3px), #fff calc(100% / var(--max) - 3px) calc(100% / var(--max))); }
