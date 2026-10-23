@@ -57,3 +57,7 @@ screenshots/
 .playwright-mcp/
 test-results/
 playwright-report/
+
+# ── Archivos locales de herramientas ──
+.impeccable/config.local.json
+.~lock.*#
