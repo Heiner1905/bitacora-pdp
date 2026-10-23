@@ -228,14 +228,14 @@
       var real = v != null && max > 0;
       li.classList.toggle('col--vacia', !real);
       li.classList.toggle('col--tope', real && v === max);
-      li.style.setProperty('--h', real ? Math.max(0.08, v / max).toFixed(4) : 1);
+      li.style.setProperty('--h', real ? Math.min(1, Math.max(0.08, v / max)).toFixed(4) : 1);
       var pista = el('div', 'col__pista', li);
       pista.setAttribute('aria-hidden', 'true');
       var barra = el('div', 'col__barra', pista);
       var cifra = el('span', 'col__valor', barra);
       if (real) { cifra.textContent = formato(v, decimales(v)); barras.push(barra); cifras.push({ el: cifra, v: v }); }
       var et = pintar('p', 'col__etiqueta', li, it.etiqueta);
-      var sr = el('span', 'sr-only', null, real ? ': ' + formato(v, decimales(v)) : ': sin valor todavía');
+      var sr = el('span', 'sr-only', null, real ? ': ' + formato(v, decimales(v)) + (escala ? ' de ' + escala : '') : ': sin valor todavía');
       et.appendChild(sr);
       if (it.nota !== '') pintar('p', 'col__nota', li, it.nota);
     });
