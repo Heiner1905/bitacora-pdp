@@ -272,6 +272,7 @@
     ul.setAttribute('data-tono', d.tono === 'mejora' ? 'mejora' : 'fortaleza');
     var items = arr(d.items);
     ul.style.setProperty('--n', items.length);
+    ul.setAttribute('data-n', items.length);
     var tarjetas = [];
     items.forEach(function (it, i) {
       var li = el('li', 'tarjeta', ul);
