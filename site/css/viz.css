@@ -8,6 +8,7 @@
 .viz { position: relative; min-width: 0; }
 .viz .pendiente { text-transform: none; letter-spacing: 0; font-variation-settings: normal; }
 .viz-texto { max-width: var(--medida-lectura); }
+.viz-texto + .viz-texto { margin-top: 1em; }
 .viz-linea { padding-bottom: .06em; }
 
 /* Pendientes de lectura: un plano reservado, no una etiqueta suelta */
