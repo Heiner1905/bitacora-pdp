@@ -70,21 +70,22 @@
      ====================================================================== */
   var T = {};
 
-  /* ---------- texto: párrafo de lectura, se revela por líneas con máscara ---------- */
+  /* ---------- texto: párrafos de lectura (separados por línea en blanco), se revelan por líneas con máscara ---------- */
   T.texto = function (c, d) {
-    var p = pintar('p', 'viz-texto t-lectura', c, d.texto);
     var real = !vacio(d.texto);
+    var trozos = real ? String(d.texto).split(/\n\s*\n/).map(function (t) { return t.trim(); }).filter(Boolean) : [d.texto];
+    var ps = trozos.map(function (t) { return pintar('p', 'viz-texto t-lectura', c, t); });
     var split = null;
     return {
-      animables: real ? [p] : [],
+      animables: real ? ps : [],
       // se oculta y se divide en líneas al ENTRAR (las fuentes ya cargaron y el ancho es el real)
-      preparar: function () { if (real) gsap.set(p, { autoAlpha: 0 }); },
+      preparar: function () { if (real) gsap.set(ps, { autoAlpha: 0 }); },
       entrar: function () {
         if (!real) return;
-        if (!window.SplitText) { gsap.to(p, { autoAlpha: 1, duration: 0.6 }); return; }
-        split = window.SplitText.create(p, { type: 'lines', mask: 'lines', linesClass: 'viz-linea' });
+        if (!window.SplitText) { gsap.to(ps, { autoAlpha: 1, duration: 0.6 }); return; }
+        split = window.SplitText.create(ps, { type: 'lines', mask: 'lines', linesClass: 'viz-linea' });
         gsap.set(split.lines, { yPercent: 105 });
-        gsap.set(p, { autoAlpha: 1 });
+        gsap.set(ps, { autoAlpha: 1 });
         gsap.to(split.lines, { yPercent: 0, duration: 1.05, ease: 'expo.out', stagger: 0.075,
           onComplete: function () { if (split) { split.revert(); split = null; } } });
       },
@@ -209,29 +210,42 @@
     var wrap = el('div', 'escalera', c);
     var items = arr(d.items);
     var valores = items.map(function (it) { return typeof it.valor === 'number' ? it.valor : null; });
-    var max = Math.max.apply(null, valores.filter(function (v) { return v != null; }).concat([0]));
+    // La escala es datos.maximo si viene (p. ej. «Nivel de 1 a 4»); si no, el mayor valor
+    var max = typeof d.maximo === 'number' && d.maximo > 0 ? d.maximo : Math.max.apply(null, valores.filter(function (v) { return v != null; }).concat([0]));
     pintar('p', 'escalera__unidad', wrap, d.unidad);
     var ol = el('ol', 'escalera__cols', wrap);
     wrap.style.setProperty('--n', Math.max(1, items.length));
+    // Muchas columnas (> 6) no caben con sus etiquetas: se pintan como filas (etiqueta | pista),
+    // y si hay escala fija (datos.maximo ≤ 10) la pista se divide en sus niveles.
+    var filas = items.length > 6;
+    var escala = typeof d.maximo === 'number' && d.maximo > 0 && d.maximo <= 10 && d.maximo % 1 === 0 ? d.maximo : 0;
+    wrap.classList.toggle('escalera--filas', filas);
+    if (escala) { wrap.classList.add('escalera--escala'); wrap.style.setProperty('--max', escala); }
     var barras = [], cifras = [];
     items.forEach(function (it, i) {
       var li = el('li', 'col', ol);
       var v = valores[i];
       var real = v != null && max > 0;
       li.classList.toggle('col--vacia', !real);
-      li.style.setProperty('--h', real ? Math.max(0.08, v / max).toFixed(4) : 1);
+      li.classList.toggle('col--tope', real && v === max);
+      li.style.setProperty('--h', real ? Math.min(1, Math.max(0.08, v / max)).toFixed(4) : 1);
       var pista = el('div', 'col__pista', li);
       pista.setAttribute('aria-hidden', 'true');
       var barra = el('div', 'col__barra', pista);
       var cifra = el('span', 'col__valor', barra);
       if (real) { cifra.textContent = formato(v, decimales(v)); barras.push(barra); cifras.push({ el: cifra, v: v }); }
       var et = pintar('p', 'col__etiqueta', li, it.etiqueta);
-      var sr = el('span', 'sr-only', null, real ? ': ' + formato(v, decimales(v)) : ': sin valor todavía');
+      var sr = el('span', 'sr-only', null, real ? ': ' + formato(v, decimales(v)) + (escala ? ' de ' + escala : '') : ': sin valor todavía');
       et.appendChild(sr);
-      pintar('p', 'col__nota', li, it.nota);
+      if (it.nota !== '') pintar('p', 'col__nota', li, it.nota);
     });
+    if (filas && escala) {
+      var reg = el('div', 'escalera__escala', wrap);
+      reg.setAttribute('aria-hidden', 'true');
+      for (var e = 1; e <= escala; e++) el('span', null, reg, String(e));
+    }
     var tl;
-    var vertical = function () { return window.matchMedia('(max-width: 599px)').matches; };
+    var vertical = function () { return filas || window.matchMedia('(max-width: 599px)').matches; };
     return {
       animables: barras,
       preparar: function () {
@@ -258,6 +272,7 @@
     ul.setAttribute('data-tono', d.tono === 'mejora' ? 'mejora' : 'fortaleza');
     var items = arr(d.items);
     ul.style.setProperty('--n', items.length);
+    ul.setAttribute('data-n', items.length);
     var tarjetas = [];
     items.forEach(function (it, i) {
       var li = el('li', 'tarjeta', ul);

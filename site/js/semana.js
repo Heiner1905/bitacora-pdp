@@ -3,7 +3,7 @@
    DOM por semana k (docs/DIRECCION.md §7):
      <div class="transicion" data-desde="k-1" data-hacia="k" aria-hidden="true"></div>  (k > 1, lo anima transiciones.js)
      <section class="semana" id="semana-0k" data-semana="k" data-estado="…" data-plano="…" aria-labelledby="semana-0k-titulo">
-       <header class="semana__cabecera">   número-plano + ficha + h2
+       <header class="semana__cabecera">   número-plano + ficha (semana · fecha si existe · estado) + h2
        <div class="semana__reflexion">
        <div class="semana__bloques">       un .bloque[data-viz] por bloque
        <div class="semana__cierre" data-semana="k"></div>   (lo pinta cierre-semana.js)
@@ -61,7 +61,8 @@
     }
     var ddSemana = dato('Semana', 'ficha__semana');
     ddSemana.textContent = 'Semana ' + kk;
-    FX.pintar(dato('Fecha', 'ficha__fecha'), s.fecha);
+    // Sin fecha (vacía, ausente o [PENDIENTE]) no se pinta nada: ni hueco ni separador
+    if (s.fecha != null && String(s.fecha).trim() !== '' && !FX.esPendiente(s.fecha)) FX.pintar(dato('Fecha', 'ficha__fecha'), s.fecha);
     var ddEstado = dato('Estado', 'ficha__estado');
     var marca = FX.crear('span', 'estado__marca', ddEstado); marca.setAttribute('aria-hidden', 'true');
     FX.crear('span', 'estado__texto', ddEstado).textContent = ESTADOS[estado];
