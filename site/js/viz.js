@@ -215,12 +215,19 @@
     pintar('p', 'escalera__unidad', wrap, d.unidad);
     var ol = el('ol', 'escalera__cols', wrap);
     wrap.style.setProperty('--n', Math.max(1, items.length));
+    // Muchas columnas (> 6) no caben con sus etiquetas: se pintan como filas (etiqueta | pista),
+    // y si hay escala fija (datos.maximo ≤ 10) la pista se divide en sus niveles.
+    var filas = items.length > 6;
+    var escala = typeof d.maximo === 'number' && d.maximo > 0 && d.maximo <= 10 && d.maximo % 1 === 0 ? d.maximo : 0;
+    wrap.classList.toggle('escalera--filas', filas);
+    if (escala) { wrap.classList.add('escalera--escala'); wrap.style.setProperty('--max', escala); }
     var barras = [], cifras = [];
     items.forEach(function (it, i) {
       var li = el('li', 'col', ol);
       var v = valores[i];
       var real = v != null && max > 0;
       li.classList.toggle('col--vacia', !real);
+      li.classList.toggle('col--tope', real && v === max);
       li.style.setProperty('--h', real ? Math.max(0.08, v / max).toFixed(4) : 1);
       var pista = el('div', 'col__pista', li);
       pista.setAttribute('aria-hidden', 'true');
@@ -232,8 +239,13 @@
       et.appendChild(sr);
       if (it.nota !== '') pintar('p', 'col__nota', li, it.nota);
     });
+    if (filas && escala) {
+      var reg = el('div', 'escalera__escala', wrap);
+      reg.setAttribute('aria-hidden', 'true');
+      for (var e = 1; e <= escala; e++) el('span', null, reg, String(e));
+    }
     var tl;
-    var vertical = function () { return window.matchMedia('(max-width: 599px)').matches; };
+    var vertical = function () { return filas || window.matchMedia('(max-width: 599px)').matches; };
     return {
       animables: barras,
       preparar: function () {

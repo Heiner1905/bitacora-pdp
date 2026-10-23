@@ -142,6 +142,58 @@
 .col__nota { margin-top: 6px; font-size: .9375rem; color: var(--niebla); line-height: 1.4; }
 .col__etiqueta.pendiente, .col__nota.pendiente { justify-self: start; outline-offset: 3px; }
 
+/* Escalera en filas (> 6 ítems): etiqueta completa a la izquierda, pista horizontal a la derecha.
+   Con escala fija (--max) la pista se parte en sus niveles: 3 de 4 se lee como tres tramos de cuatro. */
+.escalera--filas .escalera__cols { grid-template-columns: minmax(0, 1fr); gap: 0; border-top: 1px solid var(--linea); }
+.escalera--filas .col {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-rows: auto;
+  column-gap: var(--medianil);
+  align-items: center;
+  padding-block: 12px;
+  border-bottom: 1px solid var(--linea);
+}
+.escalera--filas .col__etiqueta { grid-column: 1; grid-row: 1; align-self: center; margin: 0; font-size: 1.0625rem; text-wrap: balance; }
+.escalera--filas .col__nota { grid-column: 1; grid-row: 2; margin-top: 4px; }
+.escalera--filas .col__pista {
+  grid-column: 2; grid-row: 1;
+  box-shadow: inset 0 0 0 1px var(--linea);
+  height: 44px;
+  align-items: stretch;
+  border-bottom: 0;
+  border-left: 1px solid var(--linea-fuerte);
+}
+/* Cortes entre niveles por encima de la barra: la barra se lee en tramos */
+.escalera--escala .col__pista::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: repeating-linear-gradient(to right,
+    transparent 0 calc(100% / var(--max) - 4px),
+    var(--noche) calc(100% / var(--max) - 4px) calc(100% / var(--max)));
+}
+.escalera--filas .col__barra,
+.escalera--filas .col:last-child .col__barra {
+  height: 100%;
+  width: calc(var(--h) * 100%);
+  border-top: 0;
+  border-right: 2px solid var(--hielo);
+  background: var(--grafito);
+}
+.escalera--escala.escalera--filas .col:not(.col--vacia) .col__barra { width: calc(var(--h) * 100% - 4px); }
+.escalera--filas .col--tope .col__barra { background: var(--pizarra); border-right-color: var(--escarcha); }
+.escalera--filas .col__valor { left: 14px; top: 50%; transform: translateY(-50%); font-size: clamp(1.625rem, 1.2rem + .9vw, 2.125rem); }
+.escalera--filas .col--vacia .col__barra { width: 100%; border: 1px dashed var(--acero); border-left: 0; background: transparent; }
+.escalera__escala {
+  display: grid;
+  grid-template-columns: repeat(var(--max), minmax(0, 1fr));
+  margin-left: calc((100% - var(--medianil)) * 5 / 12 + var(--medianil));
+  padding-top: 8px;
+  font-family: var(--f-dato); font-variation-settings: "wdth" 75; font-weight: 300;
+  font-size: var(--t-dato-m); color: var(--niebla);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.escalera__escala span { padding-right: 6px; }
+
 /* ---------- tarjetas ---------- */
 .tarjetas {
   list-style: none;
@@ -353,6 +405,11 @@
   .col--vacia .col__barra { width: 100%; border: 1px dashed var(--acero); border-left: 0; }
   .col__valor { top: 50%; transform: translateY(-50%); font-size: 2rem; }
   .col__etiqueta { margin-top: 10px; }
+  .escalera--filas .col { grid-template-columns: minmax(0, 1fr); row-gap: 8px; padding-block: 14px; }
+  .escalera--filas .col__etiqueta { grid-row: 1; }
+  .escalera--filas .col__pista { grid-column: 1; grid-row: 2; height: 40px; }
+  .escalera--filas .col__nota { grid-row: 3; }
+  .escalera__escala { margin-left: 0; }
 
   .waffle { grid-template-columns: 1fr; --celda: calc((100vw - 2 * var(--margen) - 45px) / 10); }
   .waffle__rejilla { --celda: min(26px, calc((100vw - 2 * var(--margen) - 45px) / 10)); }
@@ -391,6 +448,9 @@
   .tarjetas { grid-template-columns: repeat(3, 1fr); }
   .tarjetas .tarjeta, .tarjetas[data-tono] .tarjeta:nth-child(n) { grid-column: auto; }
   .escalera { --alto: 140px; }
+  .escalera--filas .col { padding-block: 6px; break-inside: avoid; }
+  .escalera--filas .col__pista { height: 28px; }
+  .escalera--escala .col__pista::after { background-image: repeating-linear-gradient(to right, transparent 0 calc(100% / var(--max) - 3px), #fff calc(100% / var(--max) - 3px) calc(100% / var(--max))); }
   .anillos__svg { max-width: 180px; }
   .waffle__rejilla { --celda: 12px; gap: 3px; }
   .cifra__valor { font-size: 40pt; }
