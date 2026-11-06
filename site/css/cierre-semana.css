@@ -1,99 +1,125 @@
 /* ==========================================================================
    cierre-semana.css — la lección clave de cada semana (constructor 3 · §8)
-   Vive dentro de .semana (que ya pone el margen lateral): misma retícula de 12/8/4.
+   Tarjeta estática sobre --superficie con filo rubí de 2 px, sello de la
+   cerradura y halo radial suave de tinta que sigue al cursor.
    ========================================================================== */
 .cs {
   position: relative;
+  overflow: hidden;
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--medianil);
-  row-gap: 28px;
-  align-content: center;
-  min-height: 72svh;
-  padding-block: 10svh;
-  isolation: isolate;
+  row-gap: 20px;
+  align-items: start;
+  padding: clamp(28px, 4vw, 48px) clamp(24px, 3.5vw, 44px);
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-left: 2px solid var(--rubi);
 }
+
+/* Halo al cursor: círculo radial suave de tinta al ~7 %, detrás del contenido */
+.cs__halo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  width: 480px;
+  height: 480px;
+  margin: -240px 0 0 -240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tinta) 7%, transparent) 0%, transparent 65%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cs__ficha,
+.cs__cuerpo,
+.cs__sello {
+  position: relative;
+  z-index: 1;
+}
+
 .cs__ficha {
   grid-column: 1 / span 3;
   align-self: start;
-  display: grid; gap: 6px;
-  padding-top: .9em;
-  border-top: 1px solid var(--linea-fuerte);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+  font-family: var(--f-mono, var(--f-dato));
+  font-size: var(--t-dato-m);
+  color: var(--tinta-2);
 }
-.cs__ficha b { font-weight: 400; color: var(--hielo); }
-.cs__cuerpo { grid-column: 4 / span 8; display: grid; gap: 32px; }
+.cs__ficha b {
+  font-weight: 500;
+  color: var(--tinta-2);
+}
+
+.cs__cuerpo {
+  grid-column: 4 / span 8;
+  min-width: 0;
+}
+
 .cs__texto {
   font-family: var(--f-texto);
-  font-weight: 300;
-  font-size: clamp(1.75rem, 1rem + 2.5vw, 3.5rem);
-  line-height: 1.16;
-  letter-spacing: -.012em;
-  color: var(--escarcha);
-  max-width: 26ch;
+  font-weight: 400;
+  font-size: var(--t-subtitulo);
+  line-height: 1.24;
+  letter-spacing: -0.01em;
+  color: var(--tinta);
+  max-width: 30ch;
+  opacity: 1;
+  transform: none;
   text-wrap: pretty;
 }
-/* [PENDIENTE]: tal cual, sin efecto */
-.cs--pendiente { min-height: 0; padding-block: 6svh; }
-.cs--pendiente .cs__texto { font-size: var(--t-subtitulo); color: var(--niebla); font-style: italic; letter-spacing: 0; justify-self: start; }
 
-
-/* ---------- La linterna (alternativa 1) ---------- */
-.cs__escena { position: relative; display: grid; }
-.cs__escena > * { grid-area: 1 / 1; }
-
-/* Capa tachada: el mismo texto en la misma caja; las barras son fondo (no cambian el ajuste de línea) */
-.cs__tachado { color: transparent; user-select: none; pointer-events: none; }
-.cs__tachado span {
-  background: linear-gradient(transparent 30%, var(--pizarra) 30% 80%, transparent 80%);
-  box-decoration-break: clone; -webkit-box-decoration-break: clone;
-}
-.cs-linterna[data-modo="linterna"] .cs__escena { --lx: 0px; --ly: 0px; --lr: 0px; }
-.cs-linterna[data-modo="linterna"]:not([data-luz]) .cs__texto:not(.cs__tachado) {
-  position: relative; z-index: 1;
-  -webkit-mask-image: radial-gradient(circle at var(--lx) var(--ly), #000 calc(var(--lr) * .5), transparent var(--lr));
-          mask-image: radial-gradient(circle at var(--lx) var(--ly), #000 calc(var(--lr) * .5), transparent var(--lr));
-}
-.cs-linterna[data-modo="linterna"]:not([data-luz]) .cs__tachado {
-  -webkit-mask-image: radial-gradient(circle at var(--lx) var(--ly), transparent calc(var(--lr) * .5), #000 var(--lr));
-          mask-image: radial-gradient(circle at var(--lx) var(--ly), transparent calc(var(--lr) * .5), #000 var(--lr));
-}
-.cs-linterna[data-luz] .cs__tachado { visibility: hidden; }
-
-/* Halo: luz fría (hielo), nunca rubí */
-.cs__halo {
-  position: absolute; left: 0; top: 0; z-index: -1;
-  width: 640px; height: 640px; margin: -320px 0 0 -320px;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--hielo) 7%, transparent) 0, transparent 62%);
-  opacity: 0; visibility: hidden; pointer-events: none;
+/* [PENDIENTE] en su recuadro punteado con contraste ≥ 4,5:1 */
+.cs--pendiente .cs__texto,
+.cs__texto.pendiente {
+  display: inline-block;
+  color: var(--tinta-2);
+  font-style: italic;
+  letter-spacing: 0;
+  padding: 2px 6px;
+  outline-offset: 4px;
 }
 
-.cs__pie { display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap; }
-.cs__cerradura { width: 26px; height: 28px; flex: none; overflow: visible; }
-.cs__cerradura g { fill: var(--rubi); }
-.cs__estado { color: var(--niebla); }
-.cs__luz {
-  min-height: 44px; padding: 0 18px; border: 1px solid var(--linea-fuerte); border-radius: 999px;
-  font-family: var(--f-dato); font-size: var(--t-dato); font-variation-settings: "wdth" 75;
-  letter-spacing: .14em; text-transform: uppercase; color: var(--hielo);
-  transition: border-color var(--dur-corta), background-color var(--dur-corta), color var(--dur-corta);
+.cs__sello {
+  grid-column: 12;
+  justify-self: end;
+  align-self: start;
 }
-.cs__luz:hover { border-color: var(--hielo); background: var(--pizarra); }
-.cs__luz[aria-disabled="true"] { color: var(--niebla); border-color: var(--linea); background: none; cursor: default; }
+.cs__cerradura {
+  width: 24px;
+  height: 26px;
+  flex: none;
+  overflow: visible;
+}
+.cs__cerradura g {
+  fill: var(--rubi);
+}
 
-@media (hover: hover) and (pointer: fine) {
-  .cs-linterna[data-modo="linterna"]:not([data-revelada]) .cs__escena { cursor: none; }
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cs__halo {
+    opacity: 0 !important;
+  }
 }
 
 @media (max-width: 899px) {
-  .cs { min-height: 0; padding-block: 8svh; }
-  .cs__ficha { grid-column: 1 / -1; grid-template-columns: auto auto; justify-content: space-between; }
-  .cs__cuerpo { grid-column: 1 / -1; }
+  .cs__ficha {
+    grid-column: 1 / -2;
+  }
+  .cs__sello {
+    grid-column: -2 / -1;
+  }
+  .cs__cuerpo {
+    grid-column: 1 / -1;
+  }
 }
+
 @media print {
   .semana__cierre { break-inside: avoid; page-break-inside: avoid; }
-  .cs { min-height: 0; padding: 8mm 0 0; break-inside: avoid; }
-  .cs__texto { font-size: 18pt; color: #000; }
-  .cs__tachado, .cs__halo, .cs__luz { display: none !important; }
-  .cs-linterna .cs__texto { -webkit-mask-image: none !important; mask-image: none !important; }
+  .cs { min-height: 0; padding: 6mm 0 0; background: none; border: 0; border-top: 1px solid #bbb; break-inside: avoid; }
+  .cs__texto { font-size: 16pt; color: #000; }
+  .cs__halo { display: none !important; }
 }

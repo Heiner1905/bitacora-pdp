@@ -73,7 +73,7 @@
     var s = svg('svg', { viewBox: '-14 -14 428 428', class: 'indice__svg', 'aria-hidden': 'true', focusable: 'false' }, anilloCaja);
     var defs = svg('defs', {}, s);
     var mask = svg('mask', { id: 'indice-mascara', maskUnits: 'userSpaceOnUse', x: -14, y: -14, width: 428, height: 428 }, defs);
-    var trazoMascara = svg('circle', { cx: C, cy: C, r: R, fill: 'none', stroke: '#fff', 'stroke-width': 72, transform: 'rotate(-90 200 200)' }, mask);
+    var trazoMascara = svg('circle', { cx: C, cy: C, r: R, fill: 'none', stroke: 'rgb(255,255,255)', 'stroke-width': 72, transform: 'rotate(-90 200 200)' }, mask);
 
     // Dial: corona fina continua + graduación mayor en cada frontera de semana
     var dial = svg('g', { class: 'indice__dial' }, s);
@@ -138,7 +138,7 @@
       if (k >= 1 && k <= N) {
         var sem = semanas[k - 1];
         lNum.textContent = FX.dos(k);
-        lEstado.textContent = ESTADOS[estadoDe(sem)] + (k === actual ? ' · aquí estás' : '');
+        lEstado.textContent = k === actual ? 'aquí estás' : '';
         lEstado.setAttribute('data-estado', estadoDe(sem));
         FX.pintar(lTitulo, sem.titulo);
       } else {
