@@ -1,5 +1,5 @@
 /* ==========================================================================
-   core.js — núcleo compartido de FRAGMENTO.EXE
+   core.js — núcleo compartido de Bitácora Heiner Rincón
    - Registra los plugins de GSAP y crea Lenis (scroll suave) sincronizado con ScrollTrigger.
    - Expone window.FX: estado, bus de eventos, registro de módulos y utilidades.
    - Calcula el HILO: progreso global (0–1) y semana actual k de N. Todos los
