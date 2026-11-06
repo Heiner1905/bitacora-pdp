@@ -1,4 +1,33 @@
-# Dirección creativa final — FRAGMENTO.EXE (Fase 2)
+# Dirección creativa final — Bitácora Heiner Rincón (antes FRAGMENTO.EXE)
+
+## 0-bis · Rediseño de noviembre de 2026 (prevalece sobre todo lo que contradiga este documento)
+
+Lo decidió Heiner el 5 nov 2026. El plan completo está en `.orquestador/fase2/01-plan.md`.
+
+- **Nombre:** «Bitácora Heiner Rincón». **Materia:** «Programa de Desarrollo Profesional I» (PDP I).
+- **Paleta «Niebla»**, análoga fría a partir del hielo y el acero del emblema. Reemplaza a «Hielo y rubí» (§2):
+
+  | Rol | Hex | Contraste sobre el fondo |
+  |---|---|---|
+  | Fondo | `#E3E9F0` | — |
+  | Superficie | `#F1F4F8` | — |
+  | Elevado | `#D2DBE6` | — |
+  | Tinta | `#121821` | 14,6:1 |
+  | Tinta secundaria | `#46505D` | 6,7:1 (5,9 sobre elevado) |
+  | Línea | `#6C7A8C` | 3,6:1 (nunca texto) |
+  | Rubí | `#E23E57` | 3,4:1 (solo gráfico) |
+  | Rubí hondo | `#B3243D` | 5,3:1 (acento en texto; CTA con texto superficie, 5,9:1) |
+
+  Texto sobre rubí: ya no va en `--noche`. Se usa fondo rubí hondo con texto superficie.
+- **Emblema:** forma intacta. Sobre el fondo claro sus trazos claros pasan a tinta, el acero a línea y la niebla a tinta secundaria. El rubí no cambia. Se recolorea con CSS por id, incluidas las copias con prefijo.
+- **Colores DISC**, solo en las visualizaciones DISC: D `#D04A3C`, I `#9E7400`, S `#367F59` y C `#3B74BE`.
+- **Estados de semana:** se quitan las etiquetas visibles («Completada», etc.). Los colores de estado siguen en la tira y en el índice.
+- **Lección clave (§8):** deja de ser la linterna. Es una **tarjeta estática** (ficha, texto, sello de la cerradura y filo rubí) con un halo suave que sigue al cursor en pointer fino.
+- **Semana 02:** la imagen del resultado DISC se reemplaza por la escena `disc` (scroll con ScrollTrigger) con los datos exactos del formulario. **No se menciona la plataforma.**
+- **Portada:** sin pistas de interacción. Constelación de partículas en canvas propio, pausada fuera de pantalla y mientras `#particulas` forma algo.
+- **Interacciones nuevas:** casillas magnéticas (tira e Índice) y DISC vinculado (hover o foco resalta una dimensión).
+- **Viñetas:** cerradura del emblema en miniatura.
+- **Semanas:** 14 (de la 11 a la 14 quedan pendientes).
 
 > Fase 1 (historia en git y en `docs/CRITICA-FASE1*.md`): se exploraron dos direcciones. Heiner eligió la **Dirección A · "Sala de observación"**. De la **B · "Sistema vivo"** se traen solo dos piezas: **la tira de la combinación** (avance semana a semana) y **el destello del anillo** para el cierre. El símbolo y la paleta se reemplazaron por los definitivos (§2 y §4). **El GIRO se eliminó**: cada semana cierra con su **lección clave**, en un cierre diseñado aparte (§8).
 
