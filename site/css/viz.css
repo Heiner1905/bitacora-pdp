@@ -64,18 +64,17 @@
 .tachado__par--vacio .tachado__despues { font-family: var(--f-texto); font-size: var(--t-lectura); }
 .tachado__par--vacio .pendiente { display: inline-block; }
 
-/* ---------- checklist ---------- */
+/* ---------- checklist (viñeta propia: cerradura del emblema) ---------- */
 .checklist { list-style: none; display: grid; gap: 18px; counter-reset: none; }
 .check { display: grid; grid-template-columns: 36px 1fr; gap: 16px; align-items: start; }
 .check__marca { width: 36px; height: 36px; overflow: visible; margin-top: -4px; }
-.check__aro, .check__chulo { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.check__aro { stroke: var(--hielo); stroke-width: 1.25; }
-.check__chulo { stroke: var(--escarcha); stroke-width: 2.5; }
-.check--vacio .check__aro { stroke: var(--acero); stroke-dasharray: 3 4; }
+.check__aro { fill: none; stroke: var(--tinta); stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
+.check__ojo { fill: var(--rubi); transform-origin: 200px 200px; }
+.check--vacio .check__aro { stroke: var(--linea-solida); stroke-dasharray: 3 4; }
 .check__texto {
   font-size: var(--t-lectura);
   line-height: 1.5;
-  color: var(--hielo);
+  color: var(--tinta);
   max-width: 54ch;
   padding-top: 2px;
 }
@@ -142,8 +141,7 @@
 .col__nota { margin-top: 6px; font-size: .9375rem; color: var(--niebla); line-height: 1.4; }
 .col__etiqueta.pendiente, .col__nota.pendiente { justify-self: start; outline-offset: 3px; }
 
-/* Escalera en filas (> 6 ítems): etiqueta completa a la izquierda, pista horizontal a la derecha.
-   Con escala fija (--max) la pista se parte en sus niveles: 3 de 4 se lee como tres tramos de cuatro. */
+/* Escalera en filas (> 6 ítems): etiqueta completa a la izquierda, pista horizontal a la derecha. */
 .escalera--filas .escalera__cols { grid-template-columns: minmax(0, 1fr); gap: 0; border-top: 1px solid var(--linea); }
 .escalera--filas .col {
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
@@ -153,7 +151,7 @@
   padding-block: 12px;
   border-bottom: 1px solid var(--linea);
 }
-.escalera--filas .col__etiqueta { grid-column: 1; grid-row: 1; align-self: center; margin: 0; font-size: 1.0625rem; text-wrap: balance; }
+.escalera--filas .col__etiqueta { grid-column: 1; grid-row: 1; align-self: center; margin: 0; font-size: 1.0625rem; text-wrap: balance; color: var(--tinta); }
 .escalera--filas .col__nota { grid-column: 1; grid-row: 2; margin-top: 4px; }
 .escalera--filas .col__pista {
   grid-column: 2; grid-row: 1;
@@ -164,7 +162,7 @@
   border-left: 1px solid var(--linea-fuerte);
 }
 /* Cortes entre niveles por encima de la barra: la barra se lee en tramos */
-.escalera--escala .col__pista::after {
+.escalera--escala:not(.escalera--dial) .col__pista::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background-image: repeating-linear-gradient(to right,
     transparent 0 calc(100% / var(--max) - 4px),
@@ -182,6 +180,83 @@
 .escalera--filas .col--tope .col__barra { background: var(--pizarra); border-right-color: var(--escarcha); }
 .escalera--filas .col__valor { left: 14px; top: 50%; transform: translateY(-50%); font-size: clamp(1.625rem, 1.2rem + .9vw, 2.125rem); }
 .escalera--filas .col--vacia .col__barra { width: 100%; border: 1px dashed var(--acero); border-left: 0; background: transparent; }
+
+/* Variante dial de caja fuerte (autoanálisis 1..4) */
+.escalera--dial .col__pista--dial {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  height: 40px;
+  box-shadow: none;
+  border-left: 0;
+}
+.col__dial {
+  display: grid;
+  grid-template-columns: repeat(var(--max, 4), minmax(0, 1fr));
+  gap: 8px;
+  height: 30px;
+  align-items: center;
+}
+.col__marca {
+  position: relative;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  transform-origin: left center;
+}
+.col__marca-graduacion {
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  top: 4px;
+  height: 5px;
+  background-image: repeating-linear-gradient(to right, var(--tinta) 0 1px, transparent 1px 7px);
+  opacity: .42;
+  pointer-events: none;
+}
+.col__marca--on {
+  background: var(--elevado);
+  border-top: 2px solid var(--tinta);
+  border-right: 2px solid var(--tinta);
+  border-bottom: 1px solid var(--linea);
+  border-left: 1px solid var(--linea);
+}
+.col__marca--off {
+  background: transparent;
+  border: 1px dashed var(--linea-solida);
+}
+.col__marca--off .col__marca-graduacion {
+  background-image: repeating-linear-gradient(to right, var(--linea-solida) 0 1px, transparent 1px 7px);
+  opacity: .35;
+}
+.col__marca--rubi {
+  border-right-color: var(--rubi);
+}
+.col__punto-rubi {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rubi);
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+}
+.escalera--filas .col__valor--dial {
+  position: static;
+  transform: none;
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--tinta);
+  min-width: 1.6ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 .escalera__escala {
   display: grid;
   grid-template-columns: repeat(var(--max), minmax(0, 1fr));
@@ -192,6 +267,7 @@
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
+.escalera--dial .escalera__escala { padding-right: 42px; }
 .escalera__escala span { padding-right: 6px; }
 
 /* ---------- tarjetas ---------- */
@@ -243,7 +319,7 @@
 .tarjeta--viva .tarjeta__brillo { opacity: 1; }
 .tarjeta--viva { border-color: var(--linea-fuerte); }
 
-/* ---------- anillos ---------- */
+/* ---------- anillos (con colores DISC y vínculo) ---------- */
 .anillos {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 5fr);
@@ -254,24 +330,223 @@
 .anillo__pista { fill: none; stroke: var(--pizarra); stroke-width: 11; }
 .anillo__pista--vacia { stroke: var(--acero); stroke-width: 1; stroke-dasharray: 2 5; }
 .anillo__valor { fill: none; stroke: var(--niebla); stroke-width: 11; stroke-linecap: butt; }
-.anillo__valor--mayor { stroke: var(--escarcha); stroke-width: 15; }
-.anillo__letra { font-family: var(--f-dato); font-size: 9px; fill: var(--niebla); letter-spacing: .1em; }
+.anillo__valor[data-dim="D"], .anillo__valor--d { stroke: var(--disc-d); }
+.anillo__valor[data-dim="I"], .anillo__valor--i { stroke: var(--disc-i); }
+.anillo__valor[data-dim="S"], .anillo__valor--s { stroke: var(--disc-s); }
+.anillo__valor[data-dim="C"], .anillo__valor--c { stroke: var(--disc-c); }
+.anillo__valor--mayor { stroke-width: 15; }
+.anillo__letra { font-family: var(--f-dato); font-size: 9px; fill: var(--tinta-2); letter-spacing: .1em; }
 .anillos__leyenda { display: grid; gap: 0; margin: 0; }
 .anillos__fila {
   display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 16px;
-  padding: 14px 0; border-top: 1px solid var(--linea);
+  padding: 14px 8px; border-top: 1px solid var(--linea);
+  cursor: pointer;
+  transition: background-color .2s var(--ease-salida);
 }
+.anillos__fila:hover,
+.anillos__fila:focus-visible { background-color: var(--elevado); }
+.anillos__fila:focus-visible { outline: 2px solid var(--rubi-hondo); outline-offset: 2px; }
 .anillos__fila:last-child { border-bottom: 1px solid var(--linea); }
 .anillos__dim { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
-.anillos__letra { font-family: var(--f-display); font-weight: 300; font-size: 2rem; line-height: 1; color: var(--escarcha); min-width: 1.1em; }
-.anillos__nombre { font-size: 1.0625rem; color: var(--hielo); }
-.anillos__valor { margin: 0; font-family: var(--f-dato); font-variation-settings: "wdth" 75; font-size: .9375rem; color: var(--hielo); font-variant-numeric: tabular-nums; }
-.anillos__cifra { font-family: var(--f-display); font-weight: 300; font-size: 1.75rem; color: var(--escarcha); }
-.anillos__max { color: var(--niebla); }
-.anillos__fila--mayor .anillos__letra { font-weight: 500; }
-.anillos__fila--mayor .anillos__nombre { color: var(--escarcha); }
-.anillos__fila--mayor { border-top-color: var(--hielo); }
+.anillos__letra { font-family: var(--f-display); font-weight: 600; font-size: 2rem; line-height: 1; color: var(--tinta); min-width: 1.1em; }
+.anillos__letra[data-dim="D"], .anillos__letra--d { color: var(--disc-d); }
+.anillos__letra[data-dim="I"], .anillos__letra--i { color: var(--disc-i); }
+.anillos__letra[data-dim="S"], .anillos__letra--s { color: var(--disc-s); }
+.anillos__letra[data-dim="C"], .anillos__letra--c { color: var(--disc-c); }
+.anillos__nombre { font-size: 1.0625rem; color: var(--tinta); }
+.anillos__valor { margin: 0; font-family: var(--f-dato); font-variation-settings: "wdth" 75; font-size: .9375rem; color: var(--tinta); font-variant-numeric: tabular-nums; }
+.anillos__cifra { font-family: var(--f-display); font-weight: 400; font-size: 1.75rem; color: var(--tinta); }
+.anillos__max { color: var(--tinta-2); }
+.anillos__fila--mayor .anillos__letra { font-weight: 700; }
+.anillos__fila--mayor .anillos__nombre { color: var(--tinta); font-weight: 500; }
+.anillos__fila--mayor { border-top-color: var(--tinta); }
 .anillos__valor.pendiente { font-family: var(--f-texto); font-variation-settings: normal; font-size: 1rem; outline-offset: 3px; padding: 0 4px; }
+
+/* ---------- disc: escena DISC completa (semana 02) ---------- */
+.semana[data-reticula="sangre"] .bloque[data-viz="disc"] {
+  width: calc(100% + (2 * var(--margen)));
+  box-sizing: border-box;
+}
+.semana[data-reticula="sangre"] .pin-spacer {
+  grid-column: 1 / -1 !important;
+  width: calc(100% + (2 * var(--margen))) !important;
+  max-width: none !important;
+  margin-inline: calc(-1 * var(--margen)) !important;
+  box-sizing: border-box !important;
+}
+.semana[data-reticula="sangre"] .pin-spacer > .bloque[data-viz="disc"] {
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+  box-sizing: border-box !important;
+}
+.semana[data-reticula="sangre"] .bloque[data-viz="disc"] .bloque__cabecera {
+  grid-column: 1 / -1;
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+.semana[data-reticula="sangre"] .bloque[data-viz="disc"] .bloque__viz {
+  grid-column: 1 / -1;
+}
+.disc {
+  display: grid;
+  gap: clamp(28px, 3.8vw, 44px);
+}
+.disc__encabezado {
+  border-bottom: 1px solid var(--linea);
+  padding-bottom: 10px;
+}
+.disc__fuente,
+.disc__subrotulo {
+  margin: 0;
+  font-family: var(--f-dato);
+  font-variation-settings: "wdth" 75;
+  font-size: var(--t-dato-m);
+  font-weight: 400;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+}
+.disc__subrotulo {
+  margin-bottom: 14px;
+}
+.disc__dimensiones {
+  display: grid;
+  gap: 16px;
+}
+.disc__dim {
+  display: grid;
+  gap: 10px;
+  padding: 16px 20px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  cursor: pointer;
+  transition: border-color .2s var(--ease-salida);
+}
+.disc__dim--mayor {
+  border-color: var(--linea-fuerte);
+}
+.disc__dim:focus-visible {
+  outline: 2px solid var(--rubi-hondo);
+  outline-offset: 2px;
+}
+.disc__dim-cab {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.disc__dim-id {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-width: 0;
+}
+.disc__letra {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--tinta);
+  min-width: 1.15em;
+}
+.disc__letra--d { color: var(--disc-d); }
+.disc__letra--i { color: var(--disc-i); }
+.disc__letra--s { color: var(--disc-s); }
+.disc__letra--c { color: var(--disc-c); }
+.disc__nombre {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--tinta);
+}
+.disc__lectura {
+  font-family: var(--f-dato);
+  font-variation-settings: "wdth" 75;
+  font-size: .9375rem;
+  color: var(--tinta-2);
+  font-variant-numeric: tabular-nums;
+}
+.disc__cifra {
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--tinta);
+}
+.disc__max {
+  color: var(--tinta-2);
+}
+.disc__pista {
+  position: relative;
+  width: 100%;
+  height: 18px;
+  background: var(--elevado);
+  overflow: hidden;
+}
+.disc__barra {
+  height: 100%;
+  transform-origin: left center;
+  background-color: var(--tinta);
+}
+.disc__dim[data-dim="D"] .disc__barra,
+.disc__barra--d { background-color: var(--disc-d); }
+.disc__dim[data-dim="I"] .disc__barra,
+.disc__barra--i { background-color: var(--disc-i); }
+.disc__dim[data-dim="S"] .disc__barra,
+.disc__barra--s { background-color: var(--disc-s); }
+.disc__dim[data-dim="C"] .disc__barra,
+.disc__barra--c { background-color: var(--disc-c); }
+
+.disc__sintesis {
+  display: grid;
+  gap: clamp(24px, 3.2vw, 40px);
+}
+.disc__bloque-estilo {
+  padding: 20px 24px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-top: 1px solid var(--linea-solida);
+}
+.disc__estilo {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 300;
+  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -.01em;
+  color: var(--tinta);
+}
+.disc__cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+}
+.disc__claves {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+}
+.disc__clave {
+  padding: 18px 20px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-top: 2px solid var(--tinta);
+  display: grid;
+  gap: 8px;
+}
+.disc__clave-titulo {
+  font-family: var(--f-display);
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: var(--tinta);
+}
+.disc__clave-texto {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--tinta);
+}
 
 /* ---------- waffle ---------- */
 .waffle {
@@ -391,6 +666,7 @@
   .tarjetas[data-tono] .tarjeta:nth-child(n) { grid-column: auto; }
   .anillos { grid-template-columns: 1fr; }
   .anillos__svg { max-width: 360px; }
+  .disc__cuerpo { grid-template-columns: 1fr; }
   .flujo { --nodo: 60px; }
 }
 
@@ -412,6 +688,10 @@
   .escalera--filas .col__pista { grid-column: 1; grid-row: 2; height: 40px; }
   .escalera--filas .col__nota { grid-row: 3; }
   .escalera__escala { margin-left: 0; }
+
+  .disc__dim { padding: 14px 16px; }
+  .disc__bloque-estilo { padding: 16px 18px; }
+  .disc__cuerpo { grid-template-columns: 1fr; gap: 28px; }
 
   .waffle { grid-template-columns: 1fr; --celda: calc((100vw - 2 * var(--margen) - 45px) / 10); }
   .waffle__rejilla { --celda: min(26px, calc((100vw - 2 * var(--margen) - 45px) / 10)); }
