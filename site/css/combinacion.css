@@ -60,23 +60,23 @@
 }
 .casilla[data-estado="recorrida"] { color: var(--hielo); }
 .casilla[data-estado="recorrida"]::after { border: 1px solid var(--hielo); }
-.casilla[data-estado="actual"] { color: var(--noche); font-weight: 500; }
+.casilla[data-estado="actual"] { color: var(--superficie); font-weight: 500; }
 .casilla[data-estado="actual"]::after { border-color: transparent; }
 .casilla:hover { color: var(--escarcha); }
 .casilla:hover::after { border-color: var(--hielo); }
-.casilla[data-estado="actual"]:hover { color: var(--noche); }
+.casilla[data-estado="actual"]:hover { color: var(--superficie); }
 .casilla[data-estado="actual"]:hover::after { border-color: transparent; }
 .casilla:focus-visible { outline: none; }
 .casilla:focus-visible::after { outline: 2px solid var(--rubi-claro); outline-offset: 3px; }
 
-/* La aguja rubí: una sola pieza que salta de casilla en casilla */
+/* La aguja rubí hondo: una sola pieza que salta de casilla en casilla */
 .combinacion__aguja {
   position: absolute;
   left: calc((var(--paso) - var(--caja-w)) / 2);
   top: calc((40px - var(--caja-h)) / 2);
   width: var(--caja-w);
   height: var(--caja-h);
-  background: var(--rubi);
+  background: var(--rubi-hondo);
   z-index: 0;
   opacity: 0;
   pointer-events: none;
@@ -86,7 +86,7 @@
 .combinacion__marcas { display: none; list-style: none; margin: 0; padding: 0; gap: 3px; align-items: center; }
 .combinacion__marca { width: 9px; height: 20px; border: 1px dashed var(--acero); }
 .combinacion__marca[data-estado="recorrida"] { border: 1px solid var(--hielo); }
-.combinacion__marca[data-estado="actual"] { border: 1px solid var(--rubi); background: var(--rubi); }
+.combinacion__marca[data-estado="actual"] { border: 1px solid var(--rubi-hondo); background: var(--rubi-hondo); }
 
 .combinacion__lectura {
   display: none;

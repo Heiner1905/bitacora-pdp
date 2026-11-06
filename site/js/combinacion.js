@@ -111,7 +111,92 @@
       xTo(x);
       // la casilla recién alcanzada hace «clic»
       var a = casillas[k - 1];
-      if (a) gsap.fromTo(a, { y: dir * -3 }, { y: 0, duration: 0.45, ease: 'back.out(3)' });
+      if (a) gsap.fromTo(a, { y: dir * -3 }, { y: 0, duration: 0.45, ease: 'back.out(3)', onComplete: function () { gsap.set(a, { clearProps: 'transform' }); } });
+    }
+
+    /* ---------- Imán magnético en las casillas (solo puntero fino y sin movimiento reducido) ---------- */
+    if (gsap && !FX.estado.reducido && FX.estado.punteroFino) {
+      var RADIO = 60;
+      var cab = document.getElementById('encabezado');
+      var imanItems = casillas.map(function (el) {
+        return {
+          el: el,
+          cx: 0,
+          cy: 0,
+          activo: false,
+          xTo: gsap.quickTo(el, 'x', { duration: 0.3, ease: 'power3.out' }),
+          yTo: gsap.quickTo(el, 'y', { duration: 0.3, ease: 'power3.out' })
+        };
+      });
+      var cacheValido = false;
+      var rafIman = 0;
+
+      var medirCasillas = function () {
+        rafIman = 0;
+        if (mqCompacta.matches) {
+          cacheValido = false;
+          return;
+        }
+        var offX = 0, offY = 0;
+        if (cab) {
+          var rc = cab.getBoundingClientRect();
+          offX = rc.left;
+          offY = rc.top;
+        }
+        var ok = false;
+        for (var i = 0; i < imanItems.length; i++) {
+          var it = imanItems[i];
+          var r = it.el.getBoundingClientRect();
+          if (!r.width || !r.height) continue;
+          var curX = Number(gsap.getProperty(it.el, 'x')) || 0;
+          var curY = Number(gsap.getProperty(it.el, 'y')) || 0;
+          it.cx = r.left - offX + r.width / 2 - curX;
+          it.cy = r.top - offY + r.height / 2 - curY;
+          ok = true;
+        }
+        cacheValido = ok;
+      };
+
+      var agendarMedicion = function () {
+        if (rafIman) return;
+        rafIman = requestAnimationFrame(medirCasillas);
+      };
+
+      medirCasillas();
+      FX.on('listo', medirCasillas);
+      FX.on('redimension', medirCasillas);
+      FX.on('semana', agendarMedicion);
+      window.addEventListener('resize', agendarMedicion, { passive: true });
+      window.addEventListener('scroll', agendarMedicion, { passive: true });
+      if (cab) cab.addEventListener('transitionend', agendarMedicion);
+      if (mqCompacta.addEventListener) mqCompacta.addEventListener('change', agendarMedicion);
+
+      var moverIman = function (e) {
+        if (FX.estado.reducido || !FX.estado.punteroFino || mqCompacta.matches) return;
+        if (!cacheValido) {
+          medirCasillas();
+          if (!cacheValido) return;
+        }
+        var mx = e.clientX, my = e.clientY;
+        for (var i = 0; i < imanItems.length; i++) {
+          var it = imanItems[i];
+          var dx = mx - it.cx, dy = my - it.cy;
+          var dist = Math.hypot(dx, dy);
+          if (dist < RADIO) {
+            it.activo = true;
+            var factor = (1 - dist / RADIO) * 0.35;
+            var tx = Math.max(-6, Math.min(6, dx * factor));
+            var ty = Math.max(-6, Math.min(6, dy * factor));
+            it.xTo(tx);
+            it.yTo(ty);
+          } else if (it.activo) {
+            it.activo = false;
+            it.xTo(0);
+            it.yTo(0);
+          }
+        }
+      };
+      window.addEventListener('mousemove', moverIman, { passive: true });
     }
 
     FX.on('semana', function (e) {

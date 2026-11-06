@@ -110,6 +110,67 @@
       if (FX.indice && FX.indice.abrir) FX.indice.abrir(boton);
     });
 
+    /* ---------- Imán magnético en el botón Índice (solo puntero fino y sin movimiento reducido) ---------- */
+    if (gsap && !FX.estado.reducido && FX.estado.punteroFino) {
+      var RADIO = 60;
+      var xTo = gsap.quickTo(boton, 'x', { duration: 0.3, ease: 'power3.out' });
+      var yTo = gsap.quickTo(boton, 'y', { duration: 0.3, ease: 'power3.out' });
+      var botonCx = 0, botonCy = 0;
+      var cacheValido = false;
+      var rafIman = 0;
+      var imanBoton = false;
+
+      var medirBoton = function () {
+        rafIman = 0;
+        var r = boton.getBoundingClientRect();
+        if (!r.width || !r.height) {
+          cacheValido = false;
+          return;
+        }
+        var rc = cab.getBoundingClientRect();
+        var curX = Number(gsap.getProperty(boton, 'x')) || 0;
+        var curY = Number(gsap.getProperty(boton, 'y')) || 0;
+        botonCx = r.left - rc.left + r.width / 2 - curX;
+        botonCy = r.top - rc.top + r.height / 2 - curY;
+        cacheValido = true;
+      };
+
+      var agendarMedicion = function () {
+        if (rafIman) return;
+        rafIman = requestAnimationFrame(medirBoton);
+      };
+
+      medirBoton();
+      FX.on('listo', medirBoton);
+      FX.on('redimension', medirBoton);
+      FX.on('semana', agendarMedicion);
+      window.addEventListener('resize', agendarMedicion, { passive: true });
+      window.addEventListener('scroll', agendarMedicion, { passive: true });
+      cab.addEventListener('transitionend', agendarMedicion);
+
+      window.addEventListener('mousemove', function (e) {
+        if (FX.estado.reducido || !FX.estado.punteroFino) return;
+        if (!cacheValido) {
+          medirBoton();
+          if (!cacheValido) return;
+        }
+        var dx = e.clientX - botonCx, dy = e.clientY - botonCy;
+        var dist = Math.hypot(dx, dy);
+        if (dist < RADIO) {
+          imanBoton = true;
+          var factor = (1 - dist / RADIO) * 0.35;
+          var tx = Math.max(-6, Math.min(6, dx * factor));
+          var ty = Math.max(-6, Math.min(6, dy * factor));
+          xTo(tx);
+          yTo(ty);
+        } else if (imanBoton) {
+          imanBoton = false;
+          xTo(0);
+          yTo(0);
+        }
+      }, { passive: true });
+    }
+
     /* ---------- Aparecer tras la portada ---------- */
     var visible = null;
     function mostrar(si) {
