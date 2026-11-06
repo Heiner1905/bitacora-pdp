@@ -1,6 +1,6 @@
 /* ==========================================================================
-   FRAGMENTO.EXE · Contenido de la bitácora
-   TODO el texto del sitio vive aquí. El diseño lo lee y lo pinta.
+   Bitácora Heiner Rincón · Contenido de la bitácora
+   Todo el texto del sitio vive aquí. El diseño lo lee y lo pinta.
 
    Reglas:
    - Nunca inventar: lo que falte va como "[PENDIENTE: qué falta]".
@@ -12,19 +12,19 @@
 
    Bloques: { titulo, viz, datos }
      viz = "tachado" | "escalera" | "tarjetas" | "anillos" | "waffle" | "flujo"
-         | "maquina" | "checklist" | "contador" | "texto" | "imagen"
+         | "maquina" | "checklist" | "contador" | "texto" | "imagen" | "disc"
      El esquema de `datos` para cada viz está en docs/DIRECCION.md §6.
    ========================================================================== */
 window.BITACORA = {
-  proyecto: "FRAGMENTO.EXE",
-  proposito: "Registro semanal, en primera persona, de lo que trabajo en Proyecto de Desarrollo Personal I y de lo que reflexiono sobre ello.",
+  proyecto: "Bitácora Heiner Rincón",
+  proposito: "Registro semanal, en primera persona, de lo que trabajo en Programa de Desarrollo Profesional I y de lo que reflexiono sobre ello.",
   autor: {
     nombre: "Heiner Danit Rincón Carrillo",
     nombreCorto: "Heiner Rincón",
     codigo: "A00402510",
     programa: "Ingeniería de Sistemas",
     semestre: "8.º semestre",
-    materia: "Proyecto de Desarrollo Personal I",
+    materia: "Programa de Desarrollo Profesional I",
     materiaCorta: "PDP I",
     periodo: "2026-2",
     rolObjetivo: "Analista de Seguridad Junior / práctica en ciberseguridad"
@@ -66,8 +66,25 @@ window.BITACORA = {
             "Pensar en mi comportamiento habitual en el estudio o el trabajo, no en un día puntual.",
             "Leer cada pregunta completa y responder sin darle demasiadas vueltas."
           ] } },
-        { titulo: "Evidencia de haber presentado el test", viz: "imagen",
-          datos: { src: "assets/img/semana-02-disc.png", alt: "Resultado de mi test DISC: Dominancia 7, Influencia 79, Estabilidad 96 y Cumplimiento 36. Perfil constante, leal y cooperador." } }
+        { titulo: "Mi perfil DISC", viz: "disc", datos: {
+          fuente: "Formulario de la clase",
+          maximo: 100,
+          dimensiones: [
+            { letra: "D", nombre: "Dominancia",   valor: 7  },
+            { letra: "I", nombre: "Influencia",   valor: 79 },
+            { letra: "S", nombre: "Estabilidad",  valor: 96 },
+            { letra: "C", nombre: "Cumplimiento", valor: 36 } ],
+          estilo: ["Constante", "Leal", "Cooperador"],
+          rasgos: [
+            "Sostiene el esfuerzo en tareas prolongadas",
+            "Facilita la colaboración y sostiene acuerdos",
+            "Aporta orden y previsión a las tareas",
+            "Ofrece apoyo a las personas del equipo",
+            "Transmite entusiasmo y apertura a nuevas ideas" ],
+          claves: [
+            { titulo: "Qué distingue su perfil", texto: "la combinación de constancia y cordialidad se traduce en un esfuerzo sostenido y relaciones de confianza." },
+            { titulo: "En qué se enfoca", texto: "en apoyar a las personas, coordinar esfuerzos y mantener acuerdos estables." },
+            { titulo: "Qué conviene regular", texto: "la tendencia a sostener la continuidad, cuando el entorno cambia con rapidez, puede retrasar la incorporación de ajustes necesarios." } ] } }
       ],
       leccion: "Una prueba de personalidad solo me sirve si respondo como soy, no como creo que me quieren ver."
     },
@@ -232,6 +249,54 @@ window.BITACORA = {
           datos: { texto: "[PENDIENTE]" } },
         { titulo: "Contactos y canales de búsqueda", viz: "checklist",
           datos: { items: ["[PENDIENTE: canal 1]", "[PENDIENTE: canal 2]", "[PENDIENTE: contacto]"] } }
+      ],
+      leccion: "[PENDIENTE: la lección clave de la semana]"
+    },
+    {
+      id: "semana-11", numero: 11,
+      titulo: "[PENDIENTE: título de la semana]",
+      estado: "pendiente",
+      fecha: "",
+      reflexion: "[PENDIENTE: reflexión de la semana]",
+      bloques: [
+        { titulo: "[PENDIENTE: título del bloque]", viz: "texto",
+          datos: { texto: "[PENDIENTE]" } }
+      ],
+      leccion: "[PENDIENTE: la lección clave de la semana]"
+    },
+    {
+      id: "semana-12", numero: 12,
+      titulo: "[PENDIENTE: título de la semana]",
+      estado: "pendiente",
+      fecha: "",
+      reflexion: "[PENDIENTE: reflexión de la semana]",
+      bloques: [
+        { titulo: "[PENDIENTE: título del bloque]", viz: "texto",
+          datos: { texto: "[PENDIENTE]" } }
+      ],
+      leccion: "[PENDIENTE: la lección clave de la semana]"
+    },
+    {
+      id: "semana-13", numero: 13,
+      titulo: "[PENDIENTE: título de la semana]",
+      estado: "pendiente",
+      fecha: "",
+      reflexion: "[PENDIENTE: reflexión de la semana]",
+      bloques: [
+        { titulo: "[PENDIENTE: título del bloque]", viz: "texto",
+          datos: { texto: "[PENDIENTE]" } }
+      ],
+      leccion: "[PENDIENTE: la lección clave de la semana]"
+    },
+    {
+      id: "semana-14", numero: 14,
+      titulo: "[PENDIENTE: título de la semana]",
+      estado: "pendiente",
+      fecha: "",
+      reflexion: "[PENDIENTE: reflexión de la semana]",
+      bloques: [
+        { titulo: "[PENDIENTE: título del bloque]", viz: "texto",
+          datos: { texto: "[PENDIENTE]" } }
       ],
       leccion: "[PENDIENTE: la lección clave de la semana]"
     }

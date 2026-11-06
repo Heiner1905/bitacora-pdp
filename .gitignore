@@ -61,3 +61,12 @@ playwright-report/
 # ── Archivos locales de herramientas ──
 .impeccable/config.local.json
 .~lock.*#
+
+# ── Orquestador (planes, reportes y capturas de agy; no se publican) ──
+.orquestador/
+
+# ── Material personal (no se publica) ──
+linkedin/
+github/
+linkedin_op.md
+.impeccable/hook.cache.json

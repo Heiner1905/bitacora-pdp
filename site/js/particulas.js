@@ -157,12 +157,17 @@
     if (c && c[0] === '#') { var n = parseInt(c.slice(1).length === 3 ? c.slice(1).replace(/./g, '$&$&') : c.slice(1, 7), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255, 1]; }
     return null;
   }
-  function conAlfa(c, a) { var p = rgb(c) || [220, 225, 230]; return 'rgba(' + p[0] + ',' + p[1] + ',' + p[2] + ',' + a + ')'; }
+  function tokenColor(nombre, def) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+    return normal(v) || def;
+  }
+  function colorTinta() { return tokenColor('--tinta', 'rgb(18,24,33)'); }
+  function conAlfa(c, a) { var p = rgb(c) || rgb(colorTinta()) || [18, 24, 33]; return 'rgba(' + p[0] + ',' + p[1] + ',' + p[2] + ',' + a + ')'; }
   function normal(c) { var p = rgb(c); return p ? 'rgb(' + Math.round(p[0]) + ',' + Math.round(p[1]) + ',' + Math.round(p[2]) + ')' : null; }
   function alfaDe(c) { var p = rgb(c); return p && p.length > 3 && !isNaN(p[3]) ? p[3] : 1; }
 
   /* ---------------- Muestreo ---------------- */
-  function colorFondo() { return normal(getComputedStyle(document.body).backgroundColor) || 'rgb(10,11,14)'; }
+  function colorFondo() { return normal(getComputedStyle(document.body).backgroundColor) || tokenColor('--fondo', 'rgb(227,233,240)'); }
 
   // Recorta un conjunto de puntos {u,v,c,a,g,parte} al presupuesto: lo pequeño se queda completo.
   function recortar(partes, max) {
@@ -243,7 +248,7 @@
       if (w * h > 4e6) return;
       off.width = w; off.height = h;
       g.setTransform(R * M.a, R * M.b, R * M.c, R * M.d, R * (M.e - x0), R * (M.f - y0));
-      g.fillStyle = '#000'; g.strokeStyle = '#000';
+      g.fillStyle = 'rgb(0,0,0)'; g.strokeStyle = 'rgb(0,0,0)';
       if (conTrazo) {
         g.lineWidth = sw;
         g.lineCap = cs.strokeLinecap || 'butt';
@@ -281,7 +286,7 @@
     var off = document.createElement('canvas'); off.width = Math.max(1, Math.ceil(w * q)); off.height = Math.max(1, Math.ceil(h * q));
     var g = off.getContext('2d', { willReadFrequently: true });
     g.scale(q, q);
-    g.fillStyle = '#000'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+    g.fillStyle = 'rgb(0,0,0)'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
     var color = null;
     var propio = (el.textContent || '').replace(/\s+/g, '') === String(texto).replace(/\s+/g, '');
     if (propio) {
@@ -310,7 +315,7 @@
       g.textAlign = 'center'; g.textBaseline = 'middle';
       g.fillText(texto, w / 2, h / 2);
     }
-    if (!color || alfaDe(cs.color) < 0.05) color = normal(getComputedStyle(document.documentElement).getPropertyValue('--escarcha').trim()) || 'rgb(244,246,248)';
+    if (!color || alfaDe(cs.color) < 0.05) color = colorTinta();
     var ow = off.width, oh = off.height;
     var datos = g.getImageData(0, 0, ow, oh).data;
     var max = Math.max(60, Math.round((movil ? 440 : tope) * factor)), pts, paso = 1.2;

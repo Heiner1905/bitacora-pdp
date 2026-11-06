@@ -4,7 +4,7 @@ Lee este archivo completo al iniciar cualquier sesión. Luego lee, según la tar
 
 ## Qué estamos construyendo
 
-La bitácora semanal de **Heiner Danit Rincón Carrillo** (código A00402510, Ingeniería de Sistemas, 8.º semestre) para la materia **Proyecto de Desarrollo Personal I (PDP I)**: una reflexión por semana sobre lo trabajado en clase (autoconocimiento, pruebas de selección, hoja de vida, entrevistas, marca personal, búsqueda de práctica).
+La bitácora semanal de **Heiner Danit Rincón Carrillo** (código A00402510, Ingeniería de Sistemas, 8.º semestre) para la materia **Programa de Desarrollo Profesional I (PDP I)**. El sitio se llama **«Bitácora Heiner Rincón»** (antes FRAGMENTO.EXE). Contiene una reflexión por semana sobre lo trabajado en clase (autoconocimiento, pruebas de selección, hoja de vida, entrevistas, marca personal, búsqueda de práctica).
 
 No es un PDF de plantilla: es un **sitio web de una sola página**, publicado en **Cloudflare Pages**, que funciona también como pieza de marca personal (irá en su LinkedIn; su rol objetivo es Analista de Seguridad Junior / práctica en ciberseguridad).
 
@@ -16,8 +16,9 @@ No es un PDF de plantilla: es un **sitio web de una sola página**, publicado en
 
 | Archivo | Qué contiene | Cuándo leerlo |
 |---|---|---|
-| `docs/BRIEF.md` | Quién es Heiner, el concepto FRAGMENTO.EXE, el emblema y la paleta «Hielo y rubí» | Siempre antes de diseñar |
-| `docs/DIRECCION.md` | Dirección creativa final (A · Sala de observación), arquitectura, contratos y especificación de cada bloque | Antes de construir |
+| `docs/ESTADO-ACTUAL.md` | **Dónde quedó el proyecto**: qué está publicado, qué está verificado y qué falta | **Siempre, primero** |
+| `docs/BRIEF.md` | Quién es Heiner, el concepto original (FRAGMENTO.EXE), el emblema y la paleta original «Hielo y rubí» (ya reemplazada por «Niebla») | Siempre antes de diseñar |
+| `docs/DIRECCION.md` | Dirección creativa, arquitectura, contratos y especificación de cada bloque. **La sección §0-bis (rediseño Niebla, nov 2026) prevalece sobre el resto** | Antes de construir |
 | `docs/CONTENIDO.md` | Estructura de la bitácora, semanas, modelo de datos, reglas de contenido | Antes de tocar estructura o textos |
 | `docs/PLAN.md` | Fases del proyecto, forma de trabajar, despliegue | Al iniciar cada fase |
 | `docs/REFERENCIAS.md` | Páginas de referencia de diseño que eligió Heiner | En la fase de dirección creativa |
@@ -69,7 +70,7 @@ Heiner quiere que el trabajo se haga con **varios subagentes en paralelo** para 
 8. **Imprimible:** hoja `@media print` (carta, una semana por página) para exportar a PDF desde Chrome.
 9. **Español colombiano** impecable: tildes, concordancia, primera persona.
 10. **Nada de** emojis, efecto Matrix, terminal verde sobre negro, ni personajes/logos/frases de obras con derechos (las referencias de Heiner son solo mood).
-11. **Paleta «Hielo y rubí» y emblema definitivos:** colores solo desde `site/css/tokens.css` (noche, grafito, pizarra, escarcha, hielo, niebla, acero, rubí, rubí hondo, rubí claro); el rubí es ~2 % de la pantalla (cerradura, fragmento, CTA); texto sobre rubí en `--noche`. El emblema (`site/assets/emblema.svg`, contrato de ids `#simbolo-*`) no se rediseña.
+11. **Paleta «Niebla» (pastel, nov 2026) y emblema definitivo:** colores solo desde `site/css/tokens.css`. Fondo `#E3E9F0`, superficie `#F1F4F8`, elevado `#D2DBE6`, tinta `#121821`, tinta secundaria `#46505D`, línea `#6C7A8C` (nunca texto), rubí `#E23E57` (solo gráfico, ~2 %: cerradura, fragmento, acentos) y rubí hondo `#B3243D` (texto de acento y fondo de CTA, con texto claro encima). Se permiten los colores DISC estándar solo en las visualizaciones DISC: D `#D04A3C`, I `#9E7400`, S `#367F59` y C `#3B74BE`. El emblema (`site/assets/emblema.svg`, contrato de ids `#simbolo-*`) no se rediseña: sobre el fondo claro se recolorea en tinta desde CSS. Detalle en `docs/DIRECCION.md` §0-bis.
 
 ## Flujo de trabajo y despliegue
 

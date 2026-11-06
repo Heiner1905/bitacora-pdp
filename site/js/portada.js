@@ -25,8 +25,6 @@
   if (!FX) return;
 
   var TEXTO = {
-    pistaFino: 'Te está mirando. La pupila es una cerradura: haz clic.',
-    pistaTactil: 'Toca la pupila: es una cerradura.',
     bajar: 'Desliza para entrar',
     bajarQuieto: 'Bajar a la semana 01',
     sufijo: ', bitácora de '
@@ -44,6 +42,19 @@
   function lerp(a, b, t) { return a + (b - a) * t; }
   function inOut(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
   function r2(v) { return Math.round(v * 100) / 100; }
+
+  function leerRGB(token, def) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+    if (!v) return def;
+    if (v[0] === '#') {
+      var h = v.slice(1);
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      var n = parseInt(h.slice(0, 6), 16);
+      if (!isNaN(n)) return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+    var m = v.match(/\d+(\.\d+)?/g);
+    return m && m.length >= 3 ? [+m[0], +m[1], +m[2]] : def;
+  }
 
   FX.registrar('portada', function (FX) {
     var portada = document.getElementById('portada');
@@ -63,6 +74,7 @@
     var bajarTxt = $('.portada__bajar-txt');
     var bajarLleno = $('.portada__bajar-lleno');
     var pista = $('.portada__pista');
+    if (pista) { pista.textContent = ''; }
     var recorrido = document.querySelector('.portada__recorrido');
     var mirilla = document.querySelector('.portada__mirilla');
     var borde = document.querySelector('.portada__borde');
@@ -123,25 +135,182 @@
       var E = ctl ? { dial: ctl.el('dial'), orbita: ctl.el('orbita'), todo: ctl.el('todo'), fragmento: ctl.el('fragmento'), pliegue: ctl.el('pliegue'), horizonte: svg.querySelector('#simbolo-horizonte') } : {};
       var exteriores = [E.dial, E.orbita, E.todo, E.fragmento, E.horizonte].filter(Boolean);
       if (bajarTxt) bajarTxt.textContent = TEXTO.bajar;
+      if (pista) pista.textContent = '';
 
-      /* ---------- Pista de interacción ---------- */
-      var pistaUsada = false;
-      function mostrarPista() {
-        if (!pista || pistaUsada) return;
-        pista.textContent = punteroFino ? TEXTO.pistaFino : TEXTO.pistaTactil;
-        gsap.fromTo(pista, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8, delay: 0.3, ease: 'power1.out' });
-      }
-      function usarPista() {
-        if (!pista || pistaUsada) return;
-        pistaUsada = true;
-        gsap.to(pista, { autoAlpha: 0, duration: 0.6, delay: 1.4 });
+      /* ---------- Constelación de fondo (solo puntero fino y sin movimiento reducido) ---------- */
+      var pararConst = function () {};
+      var arrancarConst = function () {};
+      if (punteroFino && !FX.estado.reducido) {
+        var cConst = document.createElement('canvas');
+        cConst.className = 'portada__constelacion';
+        cConst.setAttribute('aria-hidden', 'true');
+        portada.insertBefore(cConst, portada.firstChild);
+        var ctxC = null;
+        try { ctxC = cConst.getContext('2d'); } catch (err) { ctxC = null; }
+        var dprC = 1, WC = 0, HC = 0, nodos = [], rafConst = 0, enVistaConst = true;
+        var colTinta = leerRGB('--tinta', [18, 24, 33]);
+        var colRubi = leerRGB('--rubi', [226, 62, 87]);
+        var curC = { x: -9999, y: -9999, activo: false };
+
+        var dimensionarConst = function () {
+          colTinta = leerRGB('--tinta', [18, 24, 33]);
+          colRubi = leerRGB('--rubi', [226, 62, 87]);
+          dprC = Math.min(window.devicePixelRatio || 1, 1.5);
+          WC = portada.clientWidth || window.innerWidth;
+          HC = portada.clientHeight || window.innerHeight;
+          cConst.width = Math.max(1, Math.round(WC * dprC));
+          cConst.height = Math.max(1, Math.round(HC * dprC));
+          var nObj = Math.max(70, Math.min(110, Math.round((WC * HC) / 14000)));
+          cConst.setAttribute('data-particulas', String(nObj));
+          while (nodos.length < nObj) {
+            var idx = nodos.length;
+            var ang = Math.random() * Math.PI * 2;
+            var vel = 0.16 + Math.random() * 0.28;
+            nodos.push({
+              x: Math.random() * WC,
+              y: Math.random() * HC,
+              vx: Math.cos(ang) * vel,
+              vy: Math.sin(ang) * vel,
+              ox: 0,
+              oy: 0,
+              r: idx < 2 ? 2.2 : (1.15 + Math.random() * 0.85),
+              alfa: idx < 2 ? 0.78 : (0.20 + Math.random() * 0.15),
+              rubi: idx < 2
+            });
+          }
+          if (nodos.length > nObj) nodos.length = nObj;
+        };
+
+        var debeCorrerConst = function () {
+          if (!ctxC || document.hidden || !enVistaConst) return false;
+          if (portada.style.visibility === 'hidden') return false;
+          if (progreso() >= P_CUBRE || FX.estado.semana > 0) return false;
+          var rp = portada.getBoundingClientRect();
+          if (rp.bottom <= 0 || rp.top >= window.innerHeight) return false;
+          return true;
+        };
+
+        var dibujarConst = function () {
+          ctxC.setTransform(dprC, 0, 0, dprC, 0, 0);
+          ctxC.clearRect(0, 0, WC, HC);
+          var n = nodos.length, i, j, a, b, dx, dy, d2, d, f;
+          for (i = 0; i < n; i++) {
+            a = nodos[i];
+            if (curC.activo) {
+              dx = curC.x - a.x;
+              dy = curC.y - a.y;
+              d2 = dx * dx + dy * dy;
+              if (d2 < 32400 && d2 > 625) {
+                d = Math.sqrt(d2);
+                f = (1 - d / 180) * 0.04;
+                a.ox += (dx / d) * f;
+                a.oy += (dy / d) * f;
+              }
+            }
+            a.ox *= 0.92;
+            a.oy *= 0.92;
+            a.x += a.vx + a.ox;
+            a.y += a.vy + a.oy;
+            if (a.x < 0) { a.x = 0; a.vx = Math.abs(a.vx); }
+            else if (a.x > WC) { a.x = WC; a.vx = -Math.abs(a.vx); }
+            if (a.y < 0) { a.y = 0; a.vy = Math.abs(a.vy); }
+            else if (a.y > HC) { a.y = HC; a.vy = -Math.abs(a.vy); }
+          }
+          ctxC.lineWidth = 0.75;
+          for (i = 0; i < n; i++) {
+            a = nodos[i];
+            for (j = i + 1; j < n; j++) {
+              b = nodos[j];
+              dx = a.x - b.x;
+              if (dx > 120 || dx < -120) continue;
+              dy = a.y - b.y;
+              if (dy > 120 || dy < -120) continue;
+              d2 = dx * dx + dy * dy;
+              if (d2 < 14400) {
+                var op = (1 - Math.sqrt(d2) / 120) * 0.22;
+                ctxC.strokeStyle = 'rgba(' + colTinta[0] + ',' + colTinta[1] + ',' + colTinta[2] + ',' + op.toFixed(3) + ')';
+                ctxC.beginPath();
+                ctxC.moveTo(a.x, a.y);
+                ctxC.lineTo(b.x, b.y);
+                ctxC.stroke();
+              }
+            }
+          }
+          for (i = 0; i < n; i++) {
+            a = nodos[i];
+            var col = a.rubi ? colRubi : colTinta;
+            ctxC.fillStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + a.alfa.toFixed(2) + ')';
+            ctxC.beginPath();
+            ctxC.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+            ctxC.fill();
+          }
+        };
+
+        var bucleConst = function () {
+          rafConst = 0;
+          if (!debeCorrerConst()) return;
+          rafConst = requestAnimationFrame(bucleConst);
+          if (P && typeof P.activa === 'function' && P.activa()) return;
+          dibujarConst();
+        };
+
+        pararConst = function () {
+          if (rafConst) { cancelAnimationFrame(rafConst); rafConst = 0; }
+        };
+        arrancarConst = function () {
+          if (!rafConst && debeCorrerConst()) {
+            rafConst = requestAnimationFrame(bucleConst);
+          }
+        };
+
+        var alMoverConst = function (e) {
+          var rect = portada.getBoundingClientRect();
+          curC.x = e.clientX - rect.left;
+          curC.y = e.clientY - rect.top;
+          curC.activo = curC.x >= 0 && curC.x <= rect.width && curC.y >= 0 && curC.y <= rect.height;
+        };
+        var alSalirConst = function () { curC.activo = false; };
+        var alVisConst = function () { if (document.hidden) pararConst(); else arrancarConst(); };
+        var alSemConst = function (e) { if (e.k > 0) pararConst(); else arrancarConst(); };
+
+        dimensionarConst();
+        window.addEventListener('mousemove', alMoverConst, { passive: true });
+        window.addEventListener('resize', dimensionarConst, { passive: true });
+        document.addEventListener('mouseleave', alSalirConst, { passive: true });
+        document.addEventListener('visibilitychange', alVisConst);
+        FX.on('semana', alSemConst);
+
+        var ioConst = null;
+        if (typeof IntersectionObserver === 'function') {
+          ioConst = new IntersectionObserver(function (entries) {
+            entries.forEach(function (ent) {
+              enVistaConst = ent.isIntersecting && ent.intersectionRatio > 0;
+              if (enVistaConst) arrancarConst();
+              else pararConst();
+            });
+          }, { threshold: 0.01 });
+          ioConst.observe(portada);
+        }
+
+        arrancarConst();
+
+        limpiezas.push(function () {
+          pararConst();
+          if (ioConst) ioConst.disconnect();
+          window.removeEventListener('mousemove', alMoverConst);
+          window.removeEventListener('resize', dimensionarConst);
+          document.removeEventListener('mouseleave', alSalirConst);
+          document.removeEventListener('visibilitychange', alVisConst);
+          FX.off('semana', alSemConst);
+          if (cConst.parentNode) cConst.parentNode.removeChild(cConst);
+        });
       }
 
       /* ---------- 2 · Entrada al cargar ---------- */
       function alEnsamblar() {
         entradaHecha = true;
         if (ctl && progreso() < 0.002) ctl.vivo(true);
-        mostrarPista();
+        arrancarConst();
       }
       if (!entradaHecha && cargaArriba) {
         gsap.set(txts, { y: 0, yPercent: 108 });
@@ -200,9 +369,6 @@
           limpiezas.push(function () { escena.removeEventListener('pointerdown', alTocar); });
         }
       }
-      var botonCerr = document.getElementById('emblema-cerradura');
-      var alCerradura = function () { usarPista(); };
-      if (botonCerr) { botonCerr.addEventListener('click', alCerradura); limpiezas.push(function () { botonCerr.removeEventListener('click', alCerradura); }); }
 
       /* ---------- 3 · Entrada por la pupila ---------- */
       if (!ST) return function () { limpiezas.forEach(function (f) { f(); }); };
@@ -318,7 +484,6 @@
       var telon = gsap.timeline({ paused: true, defaults: { ease: 'power2.in' } });
       if (lineas[0]) telon.fromTo(lineas[0], { x: 0, autoAlpha: 1 }, { x: function () { return -window.innerWidth * (desk ? 0.2 : 0.35); }, autoAlpha: 0, duration: 1 }, 0);
       if (lineas[1]) telon.fromTo(lineas[1], { x: 0, autoAlpha: 1 }, { x: function () { return window.innerWidth * (desk ? 0.2 : 0.35); }, autoAlpha: 0, duration: 1 }, 0);
-      if (pista) telon.fromTo(pista, { opacity: 1 }, { opacity: 0, duration: 0.18, ease: 'none' }, 0);
       telon.fromTo([proposito, creditos, bajar].filter(Boolean), { y: 0, opacity: 1 }, { y: 18, opacity: 0, duration: 0.7, stagger: 0.08 }, 0);
       limpiezas.push(function () { telon.progress(0).kill(); });
 
@@ -380,6 +545,8 @@
         if (activo) forzar(p >= P_CUBRE ? 1 : 0);
         // tras el corte la portada queda (por el pin sin espaciado) encima de la semana: se apaga
         portada.style.visibility = (p >= 0.9999 && !activo) ? 'hidden' : '';
+        if (p >= P_CUBRE || portada.style.visibility === 'hidden') pararConst();
+        else arrancarConst();
       }
 
       st = ST.create({

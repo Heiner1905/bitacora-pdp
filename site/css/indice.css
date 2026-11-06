@@ -103,6 +103,7 @@ html.indice-abierto { overflow: hidden; scrollbar-gutter: stable; }
   color: var(--escarcha); font-variant-numeric: tabular-nums;
 }
 .indice__lectura-estado { color: var(--niebla); }
+.indice__lectura-estado:empty { display: none; }
 .indice__lectura-estado[data-estado="en-curso"] { color: var(--rubi-claro); }
 .indice__lectura-titulo {
   max-width: 24ch;

@@ -1,11 +1,15 @@
 /* ==========================================================================
-   FRAGMENTO.EXE · Tokens — paleta «Hielo y rubí» + tipografía + medidas
+   Bitácora Heiner Rincón · paleta Niebla + tipografía + medidas
    Fuente de verdad del color. Ningún otro archivo define hex propios.
-   Contrastes (WCAG) calculados sobre --noche / --grafito / --pizarra:
-     escarcha 18.2 / 17.0 / 15.4   hielo 15.0 / 14.0 / 12.7
-     niebla    6.6 /  6.2 /  5.6   acero 3.4 (NUNCA texto: líneas, dial, pendientes)
-     rubí      4.7 /  4.4 /  4.0   → como texto solo sobre --noche y ≥ 18px; sobre fondo rubí el texto va en --noche (4.7)
-     rubí claro 7.9 sobre noche     → foco y destello final
+   Contrastes (WCAG) de la paleta Niebla:
+     Fondo             #E3E9F0
+     Superficie        #F1F4F8
+     Elevado           #D2DBE6
+     Tinta             #121821 · 14,6:1 sobre fondo
+     Tinta secundaria  #46505D · 6,7:1 sobre fondo / 5,9:1 sobre elevado
+     Línea             #6C7A8C · 3,6:1 (nunca texto)
+     Rubí              #E23E57 · 3,4:1 (solo gráfico, nunca texto)
+     Rubí hondo        #B3243D · 5,3:1 sobre fondo / CTA con texto superficie 5,9:1
    ========================================================================== */
 
 @font-face {
@@ -17,33 +21,45 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Fondos */
-  --noche: #0A0B0E;      /* fondo principal (≈64 % de la pantalla) */
-  --grafito: #12141A;    /* superficies: bloques, visualizaciones (≈14 %) */
-  --pizarra: #1B1E25;    /* elevado, separadores sólidos, hover */
+  /* Paleta Niebla */
+  --fondo: #E3E9F0;        /* fondo principal */
+  --superficie: #F1F4F8;   /* superficies: bloques, visualizaciones */
+  --elevado: #D2DBE6;      /* elevado, separadores sólidos, hover */
+  --tinta: #121821;        /* texto principal, títulos, emblema y marca (14,6:1) */
+  --tinta-2: #46505D;      /* texto secundario, etiquetas, iris (6,7:1 / 5,9:1) */
+  --linea-solida: #6C7A8C; /* líneas, dial, estados pendientes — nunca texto (3,6:1) */
 
-  /* Tinta */
-  --escarcha: #F4F6F8;   /* títulos y números grandes */
-  --hielo: #DCE1E6;      /* texto principal, anillo y párpados del símbolo */
-  --niebla: #8F96A0;     /* texto secundario, etiquetas, fibras del iris */
-  --acero: #5D6672;      /* líneas, dial, estados pendientes — nunca texto */
+  /* Acento rubí: cerradura, pieza y CTA */
+  --rubi: #E23E57;         /* acento gráfico (3,4:1) */
+  --rubi-hondo: #B3243D;   /* acento en texto (5,3:1) y fondo de CTA/casilla activa (5,9:1 con superficie) */
 
-  /* El único color vivo (≈2 % de la pantalla): cerradura, fragmento, CTA */
-  --rubi: #E23E57;
-  --rubi-hondo: #9E2338; /* pressed, halos detrás del rubí */
-  --rubi-claro: #FF7A8E; /* anillo de foco, destello del encaje final */
+  /* Colores DISC (≥ 3:1 sobre fondo y elevado) */
+  --disc-d: #D04A3C;
+  --disc-i: #9E7400;
+  --disc-s: #367F59;
+  --disc-c: #3B74BE;
 
-  /* Derivados (alfa sobre la paleta, no colores nuevos) */
-  --linea: rgba(220, 225, 230, .14);        /* hairline sobre noche */
-  --linea-fuerte: rgba(220, 225, 230, .28);
-  --pendiente-borde: var(--acero);          /* recuadro punteado [PENDIENTE] (3.4:1, no es texto) */
+  /* Alias de compatibilidad (nombres anteriores → roles de Niebla) */
+  --noche: var(--fondo);
+  --grafito: var(--superficie);
+  --pizarra: var(--elevado);
+  --escarcha: var(--tinta);
+  --hielo: var(--tinta);
+  --niebla: var(--tinta-2);
+  --acero: var(--linea-solida);
+  --rubi-claro: var(--rubi-hondo);
+
+  /* Derivados (alfa de tinta sobre la paleta) */
+  --linea: rgba(18, 24, 33, 0.14);
+  --linea-fuerte: rgba(18, 24, 33, 0.28);
+  --pendiente-borde: var(--acero);
 
   /* Estados de semana */
-  --estado-completada: var(--hielo);        /* hielo lleno */
-  --estado-en-curso: var(--rubi);           /* rubí */
-  --estado-pendiente: var(--acero);         /* acero punteado */
+  --estado-completada: var(--tinta);
+  --estado-en-curso: var(--rubi);
+  --estado-pendiente: var(--linea-solida);
 
   /* Tipografía: Zodiak (display, local) · Newsreader (lectura) · Martian Mono (datos) */
   --f-display: "Zodiak", "Times New Roman", serif;

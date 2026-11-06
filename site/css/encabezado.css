@@ -34,10 +34,10 @@
 
 .marca { width: 36px; height: 36px; flex: none; overflow: visible; }
 .marca * { fill: none; }
-.marca__dial circle:first-child { stroke: var(--acero); }
-.marca__indice { fill: var(--escarcha) !important; stroke: none; }
-.marca__trazo { stroke: var(--hielo); }
-.marca__iris { stroke: var(--niebla); }
+.marca__dial circle:first-child { stroke: var(--linea-solida); }
+.marca__indice { fill: var(--tinta) !important; stroke: none; }
+.marca__trazo, .marca__trazo path { stroke: var(--tinta); }
+.marca__iris { stroke: var(--tinta-2); }
 .marca__cerradura * { fill: var(--rubi) !important; }
 .marca__fragmento { stroke: var(--rubi); }
 .marca__pulso { stroke: var(--rubi-claro); opacity: 0; }

@@ -63,9 +63,6 @@
     ddSemana.textContent = 'Semana ' + kk;
     // Sin fecha (vacía, ausente o [PENDIENTE]) no se pinta nada: ni hueco ni separador
     if (s.fecha != null && String(s.fecha).trim() !== '' && !FX.esPendiente(s.fecha)) FX.pintar(dato('Fecha', 'ficha__fecha'), s.fecha);
-    var ddEstado = dato('Estado', 'ficha__estado');
-    var marca = FX.crear('span', 'estado__marca', ddEstado); marca.setAttribute('aria-hidden', 'true');
-    FX.crear('span', 'estado__texto', ddEstado).textContent = ESTADOS[estado];
 
     var h2 = FX.crear('h2', 'semana__titulo', rot);
     h2.id = id + '-titulo';

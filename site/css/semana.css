@@ -50,7 +50,7 @@
 
 .semana__rotulo { position: relative; z-index: 2; }
 
-/* Ficha de créditos: SEMANA 0k · FECHA · ESTADO */
+/* Ficha de créditos: SEMANA 0k · FECHA (si existe) */
 .semana__ficha {
   display: flex;
   flex-wrap: wrap;
@@ -81,17 +81,6 @@
   text-transform: none; letter-spacing: 0; font-size: 1rem;
   outline-offset: 3px; padding: 0 4px;
 }
-
-/* Estado con su color: completada hielo lleno · en curso rubí · pendiente acero punteado */
-.ficha__estado dd { display: inline-flex; align-items: center; gap: 8px; color: var(--hielo); }
-.estado__marca {
-  width: 10px; height: 10px; flex: none;
-  border-radius: 50%;
-  border: 1px dashed var(--estado-pendiente);
-}
-.semana[data-estado="completada"] .estado__marca { background: var(--estado-completada); border: 1px solid var(--estado-completada); }
-.semana[data-estado="en-curso"] .estado__marca { background: var(--estado-en-curso); border: 1px solid var(--estado-en-curso); box-shadow: 0 0 0 3px var(--noche), 0 0 0 4px var(--rubi-hondo); }
-.semana[data-estado="pendiente"] .estado__texto { color: var(--niebla); }
 
 .semana__titulo {
   font-family: var(--f-display);
