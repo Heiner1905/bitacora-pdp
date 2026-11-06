@@ -3,7 +3,7 @@
 Léelo justo después de `CLAUDE.md` al abrir un chat nuevo. Resume dónde quedó todo y qué sigue.
 
 ## Lo publicado
-- Sitio en vivo: https://bitacora-pdp.pages.dev (Cloudflare Pages publica `site/` desde `main`).
+- Sitio en vivo: **sin confirmar.** El 6 nov 2026, `bitacora-pdp.pages.dev` no resolvía en DNS y GitHub no mostraba despliegues de Cloudflare para este repo. Hay que revisar en el panel de Cloudflare que el proyecto de Pages exista, que esté conectado a `Heiner1905/bitacora-pdp` (rama de producción `main`, carpeta de salida `site`) y cuál es su subdominio real. Hasta entonces, el sitio se revisa abriendo `site/index.html`.
 - Último gran cambio: **rediseño «Niebla»** (Fase 2 de rediseño), fusionado en `main` desde la rama `fase-3/rediseno-niebla`. Incluye:
   - Nombre del sitio «Bitácora Heiner Rincón»; materia «Programa de Desarrollo Profesional I» (PDP I).
   - **Paleta pastel «Niebla»** (`site/css/tokens.css`). Los tokens viejos (`--noche`, `--hielo`, …) quedan como alias de los nuevos (`--fondo`, `--tinta`, …). El emblema se recolorea en tinta desde CSS, sin tocar su forma.
