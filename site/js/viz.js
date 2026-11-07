@@ -882,11 +882,13 @@
     if (!vacio(d.texto)) el('p', 'enlace__texto', tarjeta, d.texto);
 
     var vid = tipo === 'video' ? idYouTube(d.url) : null;
+    // Nombre del video para lectores de pantalla, sin el punto final del texto
+    var nombreVideo = String(!vacio(d.texto) ? d.texto : d.etiqueta).trim().replace(/[.\s]+$/, '');
     if (vid) {
       var marco = el('div', 'enlace__reproductor', tarjeta);
       var fachada = el('button', 'enlace__fachada', marco);
       fachada.type = 'button';
-      fachada.setAttribute('aria-label', 'Reproducir el video aquí: ' + (d.texto || d.etiqueta) + ' (se carga desde YouTube)');
+      fachada.setAttribute('aria-label', 'Reproducir aquí: ' + nombreVideo + ' (se carga desde YouTube)');
       var img = el('img', 'enlace__miniatura', fachada);
       img.alt = '';
       img.loading = 'lazy';
@@ -904,7 +906,7 @@
         var fr = document.createElement('iframe');
         fr.className = 'enlace__iframe';
         fr.src = 'https://www.youtube-nocookie.com/embed/' + vid + '?autoplay=1&rel=0';
-        fr.title = (d.texto || d.etiqueta) + ' · video de YouTube';
+        fr.title = nombreVideo + ' (YouTube)';
         fr.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
         fr.setAttribute('allowfullscreen', '');
         fr.referrerPolicy = 'strict-origin-when-cross-origin';

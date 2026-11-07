@@ -100,5 +100,5 @@
   .cierre__escena { min-height: 0; padding: 0; }
   .cierre__emblema { width: 70mm; margin: 0; }
   .cierre__volver { display: none; }
-  .pie { border-top-color: #bbb; }
+  .pie { border-top-color: #bbb; padding: 14px 0 0; gap: 10px 32px; break-inside: avoid; }
 }
