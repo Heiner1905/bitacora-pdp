@@ -81,19 +81,19 @@
 
   /* ---------- DOM ---------- */
   function pintar(sec) {
-    var D = FX.datos || {}, A = D.autor || {}, N = (D.semanas || []).length;
+    var D = FX.datos || {}, A = D.autor || {};
     sec.textContent = '';
     var esc = FX.crear('div', 'cierre__escena', sec);
     var marco = FX.crear('div', 'cierre__emblema', esc);
     var svg = montarEmblema(marco);
 
     var texto = FX.crear('div', 'cierre__texto', esc);
-    var h = FX.crear('h2', 'cierre__estado t-dato', texto);
+    // Sin rótulo visible: el h2 queda solo para lectores de pantalla
+    var h = FX.crear('h2', 'sr-only', texto);
     h.id = 'cierre-titulo';
+    h.textContent = 'Cierre de la bitácora';
     sec.setAttribute('aria-labelledby', 'cierre-titulo');
     sec.removeAttribute('aria-label');
-    var hA = FX.crear('span', 'cierre__estado-a', h); hA.textContent = 'Combinación completa';
-    var hB = FX.crear('span', 'cierre__estado-b', h); hB.textContent = N ? N + ' semanas recorridas' : '';
     var msj = FX.pintar(FX.crear('p', 'cierre__mensaje', texto), D.cierre && D.cierre.mensaje);
     var firma = FX.crear('p', 'cierre__firma', texto);
     FX.pintar(firma, A.nombreCorto || A.nombre);
@@ -102,7 +102,7 @@
     volver.textContent = 'Volver al inicio';
     volver.addEventListener('click', function (e) { e.preventDefault(); FX.irA('#portada'); });
 
-    return { esc: esc, marco: marco, svg: svg, texto: texto, estado: h, hA: hA, hB: hB, msj: msj, firma: firma, volver: volver };
+    return { esc: esc, marco: marco, svg: svg, texto: texto, estado: h, msj: msj, firma: firma, volver: volver };
   }
 
   function pintarPie() {
@@ -212,7 +212,6 @@
       onEnter: formar, onLeaveBack: function () { formando = false; cederVector(); } });
 
     // Textos: todo espera al final (máscaras, nunca fade-up). El [PENDIENTE] no se anima: aparece por corte.
-    gsap.set([C.hA, C.hB], { clipPath: 'inset(0% 100% 0% 0%)' });
     if (pendiente) gsap.set(C.msj, { autoAlpha: 0 });
     else gsap.set(C.msj, { clipPath: 'inset(0% 0% 100% 0%)' });
     gsap.set(C.firma, { clipPath: 'inset(0% 0% 100% 0%)' });
@@ -232,9 +231,7 @@
       .to(est, { f: 1, duration: 0.07, ease: 'power4.in', onUpdate: aplicar }, 0.39)
       // 4 · el ojo se abre del todo
       .to(est, { o: 1, duration: 0.2, ease: 'power2.inOut', onUpdate: aplicar }, 0.48)
-      // 5 · solo entonces: la combinación completa, el mensaje y el nombre
-      .to(C.hA, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.07, ease: 'power2.out' }, 0.5)
-      .to(C.hB, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.07, ease: 'power2.out' }, 0.53)
+      // 5 · solo entonces: el mensaje y el nombre
       .to(C.firma, { clipPath: 'inset(-20% 0% -20% 0%)', duration: 0.12, ease: 'power3.out' }, 0.68)
       .to(C.volver, { autoAlpha: 1, duration: 0.04 }, 0.8)
       .to({}, { duration: 0.06 }, 0.94);

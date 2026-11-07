@@ -32,14 +32,6 @@
   gap: clamp(22px, 3.2vh, 36px);
   padding-left: clamp(0px, 4vw, 72px);
 }
-.cierre__estado {
-  display: grid; gap: 6px;
-  padding-top: .9em;
-  border-top: 1px solid var(--linea-fuerte);
-  min-width: 15rem;
-  font-weight: 400;
-}
-.cierre__estado-a { color: var(--hielo); }
 .cierre__mensaje {
   font-family: var(--f-texto);
   font-weight: 300;
