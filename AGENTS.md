@@ -73,7 +73,7 @@ Heiner quiere que el trabajo se haga con **varios subagentes en paralelo** para 
 
 ## Flujo de trabajo y despliegue
 
-- Cloudflare Pages publica `site/` desde `main` → `https://bitacora-pdp.pages.dev`.
+- Cloudflare Pages publica `site/` desde `main` → `https://bitacora-pdp.heinerdanitrincon.workers.dev/`.
 - Cada rama distinta de `main` genera un **link de vista previa** automático en Cloudflare. Para cambios grandes, trabaja en una rama, empuja y dale a Heiner el link de vista previa para que apruebe antes de fusionar.
 - Revisa visualmente con Playwright (capturas a 1440px y 390px) antes de dar algo por terminado.
 - Commits pequeños y descriptivos en español.
