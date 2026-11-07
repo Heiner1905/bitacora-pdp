@@ -15,7 +15,7 @@ Léelo justo después de `CLAUDE.md` al abrir un chat nuevo. Resume dónde qued�
   - Lección clave como **tarjeta estática**, con halo al cursor (ya no es la «linterna»).
   - Portada sin pistas de interacción, con **constelación** en canvas (se pausa fuera de pantalla, en táctil y con reduced-motion) y **casillas magnéticas** (tira e Índice).
   - En ese momento: 14 semanas, 1–5 con contenido y 6–14 en `[PENDIENTE]` (ya resuelto, ver abajo).
-- **Contenido completo** (rama `contenido/semanas-06-13`, nov 2026; se fusiona cuando Heiner la apruebe):
+- **Contenido completo** (rama `contenido/semanas-06-13`, fusionada en `main` el 6 nov 2026):
   - **13 semanas, todas con contenido.** La semana 14 (conversatorios) no entra. La tira, el índice y «13 semanas recorridas» salen de la longitud del array.
   - Textos de las semanas 6 a 13 copiados exactos de `docs/CONTENIDO-SEMANAS-06-14.md`.
   - **Mensaje de cierre** listo (frase atribuida a Tesla, con el ajuste de Heiner: «entender cómo funciona el universo»). Se bajó su cuerpo de letra para que quepa con el emblema.
@@ -32,11 +32,10 @@ Léelo justo después de `CLAUDE.md` al abrir un chat nuevo. Resume dónde qued�
 - `impeccable detect site/`: 0 anti-patrones; quedan 2 avisos que ya existían (el emblema inline y las rayas punteadas).
 
 ## Pendientes del sitio
-1. **Revisar y fusionar** la rama `contenido/semanas-06-13` en `main` (Heiner revisa la vista previa primero).
-2. **«Desliza para entrar»** (portada): decidir si se queda (es el enlace para bajar a la semana 01).
-3. **Auditoría de movimiento:** Heiner puede correr `/review-animations` (skill instalada; solo se invoca a mano).
-4. **Documentos personales en el repo público:** `docs/recursos/` (PDF del DISC con la plataforma, HTML de WorkClue, `.docx` del curso) sigue versionado. Si Heiner decide sacarlo: `git rm -r --cached` de esos archivos + `.gitignore`, conservando `docs/recursos/TECNICAS.md`. Siguen en el historial; limpiarlo es un paso aparte.
-5. `docs/BRIEF.md`, `docs/PLAN.md` y `docs/CONTENIDO.md` todavía hablan de FRAGMENTO.EXE y de «Hielo y rubí». Son historia; si se tocan, que digan que la dirección vigente es §0-bis.
+1. **«Desliza para entrar»** (portada): decidir si se queda (es el enlace para bajar a la semana 01).
+2. **Auditoría de movimiento:** Heiner puede correr `/review-animations` (skill instalada; solo se invoca a mano).
+3. **Documentos personales en el repo público:** `docs/recursos/` (PDF del DISC con la plataforma, HTML de WorkClue, `.docx` del curso) sigue versionado. Si Heiner decide sacarlo: `git rm -r --cached` de esos archivos + `.gitignore`, conservando `docs/recursos/TECNICAS.md`. Siguen en el historial; limpiarlo es un paso aparte.
+4. `docs/BRIEF.md`, `docs/PLAN.md` y `docs/CONTENIDO.md` todavía hablan de FRAGMENTO.EXE y de «Hielo y rubí». Son historia; si se tocan, que digan que la dirección vigente es §0-bis.
 
 ## Cómo se trabajó la fase (para repetirlo)
 - **Orquestador agy** (`/orquestador-agy`): Claude Code planea y escribe un prompt; agy (Argon 4, máximo 3 obreros) implementa; Claude Code revisa el diff real, corre los scripts de verificación y decide PASA/CORREGIR. Git queda en solo lectura para los agentes.
