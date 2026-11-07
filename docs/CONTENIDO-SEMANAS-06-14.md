@@ -212,11 +212,10 @@ Guía: ¿Qué imagen quiero proyectar en el mundo laboral?
 
 ### Bloque 4 · «Dónde se ve mi marca» · viz `checklist`
 
-1. LinkedIn, con un perfil principal en inglés, uno secundario en español y un titular bilingüe.
+1. LinkedIn, con un perfil principal en inglés.
 2. GitHub, con mis proyectos públicos.
 3. La hoja de vida.
 4. El pitch en video.
-5. Esta bitácora, que muestra lo que puedo construir con la tecnología.
 
 ### leccion
 
@@ -362,7 +361,7 @@ Guía: ¿Qué emociones están presentes en mí en este momento de preparación 
 
 ### Bloque 2 · «Observar sin reaccionar» · viz `texto`
 
-> En la materia de Estoicismo, y por interés propio, he practicado observar mis pensamientos y emociones sin identificarme con ellos. En una entrevista eso me permite sentir nervios sin que los nervios decidan lo que respondo.
+> Temas de interés propio como el estoicismo, me han enseñado a observar mis pensamientos y emociones sin identificarme con ellos. En una entrevista eso me permite sentir nervios sin que los nervios decidan lo que respondo.
 
 ### leccion
 

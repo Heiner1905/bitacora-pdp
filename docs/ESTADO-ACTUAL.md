@@ -16,10 +16,11 @@ Léelo justo después de `CLAUDE.md` al abrir un chat nuevo. Resume dónde qued�
   - Portada sin pistas de interacción, con **constelación** en canvas (se pausa fuera de pantalla, en táctil y con reduced-motion) y **casillas magnéticas** (tira e Índice).
   - En ese momento: 14 semanas, 1–5 con contenido y 6–14 en `[PENDIENTE]` (ya resuelto, ver abajo).
 - **Contenido completo** (rama `contenido/semanas-06-13`, fusionada en `main` el 6 nov 2026):
-  - **13 semanas, todas con contenido.** La semana 14 (conversatorios) no entra. La tira, el índice y «13 semanas recorridas» salen de la longitud del array.
+  - **13 semanas, todas con contenido.** La semana 14 (conversatorios) no entra. La tira y el índice salen de la longitud del array.
   - Textos de las semanas 6 a 13 copiados exactos de `docs/CONTENIDO-SEMANAS-06-14.md`.
   - **Mensaje de cierre** listo (frase atribuida a Tesla, con el ajuste de Heiner: «entender cómo funciona el universo»). Se bajó su cuerpo de letra para que quepa con el emblema.
   - **Bloque nuevo `enlace`** (`js/viz.js`, esquema en `docs/DIRECCION.md` §7): LinkedIn en la semana 10 y el pitch en video en la semana 11 (fachada que carga `youtube-nocookie` solo al hacer clic).
+  - El cierre ya no muestra el rótulo «Combinación completa · 13 semanas recorridas» (queda un h2 solo para lectores de pantalla). Heiner ajustó a mano textos de las semanas 9 y 13.
   - Tarjetas: los grupos de 4 van de a dos por fila y los de 5 centran la segunda fila.
 - La dirección vigente está en `docs/DIRECCION.md` **§0-bis**, que prevalece sobre el resto del documento (lo demás describe la versión oscura anterior).
 
