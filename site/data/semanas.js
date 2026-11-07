@@ -293,11 +293,10 @@ window.BITACORA = {
           ] } },
         { titulo: "Dónde se ve mi marca", viz: "checklist",
           datos: { items: [
-            "LinkedIn, con un perfil principal en inglés, uno secundario en español y un titular bilingüe.",
+            "LinkedIn, con un perfil principal en inglés.",
             "GitHub, con mis proyectos públicos.",
             "La hoja de vida.",
-            "El pitch en video.",
-            "Esta bitácora, que muestra lo que puedo construir con la tecnología."
+            "El pitch en video."
           ] } }
       ],
       leccion: "Si no defino la imagen que proyecto, otros la definen por mí."
@@ -396,7 +395,7 @@ window.BITACORA = {
             { nombre: "Inseguridad frente a las entrevistas", texto: "La trato como información: me dice qué practicar. Cada simulacro la reduce un poco." }
           ] } },
         { titulo: "Observar sin reaccionar", viz: "texto",
-          datos: { texto: "En la materia de Estoicismo, y por interés propio, he practicado observar mis pensamientos y emociones sin identificarme con ellos. En una entrevista eso me permite sentir nervios sin que los nervios decidan lo que respondo." } }
+          datos: { texto: "Temas de interés propio como el estoicismo, me han enseñado a observar mis pensamientos y emociones sin identificarme con ellos. En una entrevista eso me permite sentir nervios sin que los nervios decidan lo que respondo." } }
       ],
       leccion: "Mis emociones me informan; las decisiones las tomo yo."
     }
