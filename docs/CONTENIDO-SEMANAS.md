@@ -222,7 +222,7 @@ Título temático de la guía: «La conciencia de sí mismo y la toma de decisio
 
 ## Guía del curso (Mindset Formación 26-2)
 
-El curso tiene **14 semanas**; el sitio hoy tiene 10. Al final hay que agregar las semanas 11 a 14 en `semanas.js` (el diseño se adapta solo a la longitud del array).
+El curso tiene **14 semanas**, pero **la bitácora tiene 13**: Heiner decidió que la semana 14 (conversatorios con expertos) no entra. El contenido de las semanas 6 a 13 y el mensaje de cierre está en el apéndice.
 
 | Semana | Tema | Preguntas a responder |
 |---|---|---|
@@ -242,3 +242,9 @@ El curso tiene **14 semanas**; el sitio hoy tiene 10. Al final hay que agregar l
 | 12 | Gestión de mis finanzas (invitado) | ¿Tengo claridad de cómo manejar mis finanzas personales? ¿Qué debo tener en cuenta? |
 | 13 | Gestión emocional y el mundo laboral | ¿Qué emociones están presentes en mí en este momento de preparación para la práctica? ¿Qué necesito hacer para usarlas de forma inteligente? |
 | 14 | Conversatorios con expertos | (sin pregunta en la guía) |
+
+---
+
+## Apéndice · semanas 6 a 13 y cierre
+
+El contenido real de las semanas 6 a 13 y el mensaje de cierre está en [`CONTENIDO-SEMANAS-06-14.md`](CONTENIDO-SEMANAS-06-14.md) (nov 2026, ya publicado en `site/data/semanas.js`).

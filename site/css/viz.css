@@ -299,6 +299,10 @@
 .tarjetas[data-tono="mejora"] .tarjeta:nth-child(3) { grid-column: 5 / span 2; }
 /* Dos tarjetas: cada una ocupa media fila (sin un tercio vacío a la derecha) */
 .tarjetas[data-n="2"] .tarjeta:nth-child(n) { grid-column: span 3; min-height: 0; }
+/* Cuatro tarjetas: dos por fila. Cinco: la segunda fila queda centrada (2–3 y 4–5) */
+.tarjetas[data-n="4"] .tarjeta:nth-child(n) { grid-column: span 3; min-height: 0; }
+.tarjetas[data-n="5"] .tarjeta:nth-child(4) { grid-column: 2 / span 2; }
+.tarjetas[data-n="5"] .tarjeta:nth-child(5) { grid-column: 4 / span 2; }
 .tarjeta--vacia { border: 1px dashed var(--acero); background: transparent; }
 .tarjeta__cara { position: relative; z-index: 1; padding: 22px 22px 26px; display: grid; gap: 14px; align-content: start; height: 100%; }
 .tarjeta__orden { color: var(--niebla); }
@@ -659,6 +663,111 @@
 .cifra__etiqueta { font-size: 1.0625rem; color: var(--hielo); max-width: 22ch; padding-top: 12px; border-top: 1px solid var(--linea); }
 .cifra__etiqueta.pendiente { border-top: 0; justify-self: start; outline-offset: 3px; }
 
+/* ---------- enlace (LinkedIn o video) ----------
+   Tarjeta en superficie con el filo rubí de la lección; la acción es el CTA
+   de §0-bis (rubí hondo con texto superficie, 5,9:1). Sin logos de marca. */
+.enlace {
+  position: relative;
+  display: grid;
+  gap: clamp(20px, 2.4vw, 28px);
+  max-width: 720px;
+  padding: clamp(24px, 3vw, 36px) clamp(20px, 3vw, 36px);
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-left: 2px solid var(--rubi);
+}
+.semana[data-reticula="sangre"] .bloque:nth-child(odd) .enlace { background: var(--fondo); }
+.enlace__texto {
+  font-family: var(--f-texto);
+  font-size: var(--t-proposito);
+  line-height: 1.3;
+  color: var(--tinta);
+  max-width: 34ch;
+  text-wrap: pretty;
+}
+.enlace__texto.pendiente, .enlace__accion-vacia.pendiente { justify-self: start; font-size: 1rem; outline-offset: 3px; }
+.enlace--vacio { border: 1px dashed var(--acero); background: transparent; }
+.enlace__pie { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; min-width: 0; }
+.enlace__accion {
+  display: inline-flex; align-items: center; gap: .75em;
+  min-height: 48px; max-width: 100%;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--rubi-hondo);
+  color: var(--superficie);
+  font-family: var(--f-dato);
+  font-size: var(--t-dato-m);
+  line-height: 1.3;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color var(--dur-corta) var(--ease-salida);
+}
+.enlace__accion:hover { background: var(--tinta); }
+.enlace__accion:focus-visible { outline: 2px solid var(--rubi-hondo); outline-offset: 4px; border-radius: 999px; }
+.enlace__flecha { flex: none; transition: transform var(--dur-corta) var(--ease-salida); }
+.enlace__accion:hover .enlace__flecha,
+.enlace__accion:focus-visible .enlace__flecha { transform: translate(2px, -2px); }
+.enlace__url {
+  min-width: 0;
+  font-family: var(--f-dato);
+  font-size: var(--t-dato-m);
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+.enlace__url-completa { display: none; }
+
+/* Fachada del video: nada de YouTube hasta el clic (solo la miniatura, diferida) */
+.enlace__reproductor { position: relative; aspect-ratio: 16 / 9; background: var(--tinta); }
+.enlace__fachada {
+  appearance: none;
+  position: absolute; inset: 0;
+  display: block;
+  width: 100%; height: 100%;
+  margin: 0; padding: 0; border: 0;
+  overflow: hidden;
+  background: var(--tinta);
+  color: var(--superficie);
+  font: inherit;
+  cursor: pointer;
+}
+.enlace__fachada:focus-visible { outline: 2px solid var(--rubi-hondo); outline-offset: 4px; border-radius: 0; }
+.enlace__miniatura {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .9s var(--ease-salida);
+}
+.enlace__fachada:hover .enlace__miniatura { transform: scale(1.03); }
+/* Control abajo a la izquierda: no tapa el centro de la miniatura */
+.enlace__control {
+  position: absolute; left: 14px; bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.enlace__play {
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--rubi-hondo);
+  color: var(--superficie);
+  transition: transform var(--dur-corta) var(--ease-salida);
+}
+.enlace__play svg { width: 24px; height: 24px; margin-left: 3px; }
+.enlace__fachada:hover .enlace__play,
+.enlace__fachada:focus-visible .enlace__play { transform: scale(1.08); }
+.enlace__aviso {
+  padding: 6px 10px;
+  background: var(--tinta);
+  color: var(--superficie);
+  font-family: var(--f-dato);
+  font-size: var(--t-dato);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.enlace__iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
 /* ---------- Tableta ---------- */
 @media (max-width: 899px) {
   .tarjetas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -710,6 +819,10 @@
 
   .maquina__linea { font-size: 1.375rem; }
   .contador { gap: 32px; }
+
+  .enlace__accion { letter-spacing: .07em; padding-inline: 18px; gap: .6em; }
+  .enlace__control { left: 10px; bottom: 10px; }
+  .enlace__play { width: 48px; height: 48px; }
 }
 
 /* ---------- reduced-motion: estado final sin bucles ---------- */
@@ -717,6 +830,12 @@
   .paso__viajero { display: none; }
   .maquina__cursor { display: none !important; }
   .tarjeta__brillo { display: none; }
+  .enlace__accion, .enlace__flecha, .enlace__miniatura, .enlace__play { transition: none; }
+  .enlace__fachada:hover .enlace__miniatura,
+  .enlace__fachada:hover .enlace__play,
+  .enlace__fachada:focus-visible .enlace__play,
+  .enlace__accion:hover .enlace__flecha,
+  .enlace__accion:focus-visible .enlace__flecha { transform: none; }
 }
 
 /* ---------- Impresión ---------- */
@@ -744,6 +863,11 @@
   .celda { background: #e6e6e6; }
   .celda--on { background: #111; }
   .paso__nodo { background: #fff; }
+  .enlace { break-inside: avoid; background: #fff; border-color: #bbb; border-left-color: #B0213A; }
+  .enlace__reproductor, .enlace__flecha { display: none !important; }
+  .enlace__accion { min-height: 0; padding: 0; background: none; color: #000; border-radius: 0; }
+  .enlace__url-corta { display: none; }
+  .enlace__url-completa { display: inline; color: #111; }
 }
 .waffle__de { font-size: var(--t-dato-m); }
 .col.col--vacia:nth-child(n) .col__barra { background: transparent; border: 1px dashed var(--acero); border-bottom: 0; }

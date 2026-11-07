@@ -27,7 +27,7 @@ Lo decidió Heiner el 5 nov 2026. El plan completo está en `.orquestador/fase2/
 - **Portada:** sin pistas de interacción. Constelación de partículas en canvas propio, pausada fuera de pantalla y mientras `#particulas` forma algo.
 - **Interacciones nuevas:** casillas magnéticas (tira e Índice) y DISC vinculado (hover o foco resalta una dimensión).
 - **Viñetas:** cerradura del emblema en miniatura.
-- **Semanas:** 14 (de la 11 a la 14 quedan pendientes).
+- **Semanas:** 13, todas con contenido (nov 2026). La semana 14 (conversatorios) no entra en la bitácora. Las semanas 10 y 11 usan el bloque nuevo `enlace` (§7).
 
 > Fase 1 (historia en git y en `docs/CRITICA-FASE1*.md`): se exploraron dos direcciones. Heiner eligió la **Dirección A · "Sala de observación"**. De la **B · "Sistema vivo"** se traen solo dos piezas: **la tira de la combinación** (avance semana a semana) y **el destello del anillo** para el cierre. El símbolo y la paleta se reemplazaron por los definitivos (§2 y §4). **El GIRO se eliminó**: cada semana cierra con su **lección clave**, en un cierre diseñado aparte (§8).
 
@@ -205,6 +205,7 @@ Cabecera (de A, corregida): el número es un **plano de cine** (Zodiak 100–200
 | `maquina` | 06, 09, 10 | Escritura tipo máquina con cursor (texto real accesible aparte; pendiente no se escribe) | `{ texto }` |
 | `contador` | 08 | Cifras que cuentan hasta su valor (tabulares) | `{ items: [{valor, etiqueta}] }` |
 | `texto` | varias | Párrafo de lectura | `{ texto }` |
+| `enlace` | 10, 11 | Tarjeta en superficie con filo rubí: texto, CTA rubí hondo (enlace real, pestaña nueva, `noopener noreferrer`) y URL corta en mono. Con `tipo: "video"` muestra una fachada (miniatura diferida de `i.ytimg.com` + botón «Reproducir aquí») y crea el iframe de `youtube-nocookie.com/embed/<id>` solo al hacer clic. Sin logos de marca. En impresión: sin reproductor y con la URL completa en texto | `{ texto, url, etiqueta, tipo: 'linkedin'|'video' }` |
 
 Las técnicas vienen de `docs/recursos/TECNICAS.md` (análisis de la presentación de referencia): se reutiliza el **cómo**, nunca el look.
 

@@ -256,9 +256,9 @@
 }
 
 /* -- pareja -- */
-.semana[data-reticula="pareja"] .bloque:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"]) { grid-column: 1 / span 6; }
-.semana[data-reticula="pareja"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"]),
-.semana[data-reticula="pareja"] .bloque[data-orden="4"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"]) { grid-column: 7 / span 6; }
+.semana[data-reticula="pareja"] .bloque:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"], [data-viz="enlace"]) { grid-column: 1 / span 6; }
+.semana[data-reticula="pareja"] .bloque[data-orden="2"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"], [data-viz="enlace"]),
+.semana[data-reticula="pareja"] .bloque[data-orden="4"]:is([data-viz="texto"], [data-viz="checklist"], [data-viz="tachado"], [data-viz="maquina"], [data-viz="contador"], [data-viz="enlace"]) { grid-column: 7 / span 6; }
 .semana[data-reticula="pareja"] .bloque {
   padding-top: 18px;
   border-top: 1px solid var(--linea-fuerte);

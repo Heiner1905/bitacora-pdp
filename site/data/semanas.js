@@ -12,8 +12,8 @@
 
    Bloques: { titulo, viz, datos }
      viz = "tachado" | "escalera" | "tarjetas" | "anillos" | "waffle" | "flujo"
-         | "maquina" | "checklist" | "contador" | "texto" | "imagen" | "disc"
-     El esquema de `datos` para cada viz está en docs/DIRECCION.md §6.
+         | "maquina" | "checklist" | "contador" | "texto" | "imagen" | "disc" | "enlace"
+     El esquema de `datos` para cada viz está en docs/DIRECCION.md §7.
    ========================================================================== */
 window.BITACORA = {
   proyecto: "Bitácora Heiner Rincón",
@@ -30,7 +30,7 @@ window.BITACORA = {
     rolObjetivo: "Analista de Seguridad Junior / práctica en ciberseguridad"
   },
   cierre: {
-    mensaje: "[PENDIENTE: mensaje final de la bitácora]"
+    mensaje: "Hay una frase que se le atribuye a Nikola Tesla: «Si quieres entender cómo funciona el universo, piensa en términos de energía, frecuencia y vibración». Este semestre la entendí a mi manera. Vibro con lo que deseo para materializar lo que quiero, y mi energía la dedico a lo que me gusta. Y me gusta todo lo que hago."
   },
   semanas: [
     {
@@ -177,128 +177,228 @@ window.BITACORA = {
     {
       id: "semana-06", numero: 6,
       titulo: "Hoja de vida",
-      estado: "pendiente",
+      estado: "completada",
       fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
+      reflexion: "Esta semana construí mi hoja de vida en español sobre la plantilla de la universidad. Entendí que un reclutador la revisa en pocos segundos y que en ese tiempo tiene que ver quién soy: un estudiante de octavo semestre de Ingeniería de Sistemas que ya ha trabajado en proyectos reales y que se está orientando hacia la ciberseguridad defensiva.\n\nTambién entendí que la hoja de vida y el perfil de LinkedIn tienen que contar la misma historia. Si un reclutador encuentra datos distintos en cada uno, pierde la confianza antes de hablar conmigo.",
       bloques: [
         { titulo: "Propósito de mi hoja de vida", viz: "maquina",
-          datos: { texto: "[PENDIENTE: propósito de mi CV]" } },
-        { titulo: "Lecciones aprendidas", viz: "checklist",
-          datos: { items: ["[PENDIENTE: lección 1]", "[PENDIENTE: lección 2]", "[PENDIENTE: lección 3]"] } }
+          datos: { texto: "Que alguien quiera conocerme en una entrevista." } },
+        { titulo: "Qué debo evitar", viz: "tarjetas",
+          datos: { tono: "mejora", items: [
+            { nombre: "Información vieja", texto: "Los logros del colegio o de hace más de cinco años ocupan espacio y no dicen quién soy hoy." },
+            { nombre: "Habilidades sin respaldo", texto: "Cada herramienta que pongo la tengo que poder explicar en una entrevista." },
+            { nombre: "Funciones sin resultados", texto: "«Encargado de…» describe un cargo. Lo que interesa es lo que logré en él." },
+            { nombre: "Exagerar", texto: "Todavía no tengo certificaciones en ciberseguridad, y prefiero mostrar cómo me estoy preparando." },
+            { nombre: "Revelar información confidencial", texto: "Uno de mis proyectos es para un cliente; lo describo sin nombrarlo ni dar detalles internos." }
+          ] } },
+        { titulo: "Lo que no puede faltar", viz: "checklist",
+          datos: { items: [
+            "Datos de contacto claros y los enlaces a mi LinkedIn y mi GitHub.",
+            "Un perfil corto que diga a qué rol apunto.",
+            "La experiencia contada con resultados: el desarrollo full stack en Vamo y los modelos de inteligencia artificial que detectan daños y leen etiquetas para automatizar la inspección de contenedores.",
+            "Mi formación, las certificaciones que sí tengo y mi nivel de inglés.",
+            "Las palabras clave de cada oferta, porque muchas empresas filtran las hojas de vida con sistemas automáticos antes de que las lea una persona."
+          ] } }
       ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
+      leccion: "Mi hoja de vida no cuenta todo lo que he hecho. Cuenta lo que hace que quieran conocerme."
     },
     {
       id: "semana-07", numero: 7,
-      titulo: "Entrevistas",
-      estado: "pendiente",
+      titulo: "Entrevista de selección y otros métodos de evaluación",
+      estado: "completada",
       fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
+      reflexion: "Todavía no me siento preparado. En mi vida he presentado una sola entrevista de selección y sé que me falta práctica. Esta semana entendí que eso se puede corregir, porque las preguntas se repiten y se agrupan por tipos. Las que rompen el hielo, como «háblame de ti», abren la conversación. Las incómodas buscan señales de alerta en la trayectoria y las difíciles miden cómo manejo la presión o un error. Las capciosas, como «¿cuál es tu mayor debilidad?», evalúan qué tan honesto soy y cuánto me conozco, y las retadoras piden ejemplos concretos de conflictos, liderazgo o riesgos. También hay preguntas prohibidas, sobre religión, orientación sexual, salud o planes de tener hijos, que nadie debería hacerme en un proceso de selección.\n\nPara las retadoras sirve el método STAR. Ahí tengo material, porque ya he trabajado en proyectos reales; lo que me falta es ordenarlo y ensayarlo en voz alta. Aprendí además que la entrevista no es el único filtro: una empresa también puede evaluarme con pruebas técnicas, casos prácticos o actividades en grupo.",
       bloques: [
-        { titulo: "Puntos fuertes y débiles", viz: "tachado",
+        { titulo: "Antes y ahora", viz: "tachado",
           datos: { pares: [
-            { antes: "[PENDIENTE: punto débil]", despues: "[PENDIENTE: cómo lo convierto]" }
+            { antes: "Una entrevista se improvisa.", despues: "Una entrevista se prepara: las preguntas se repiten y las respuestas se pueden ensayar." }
+          ] } },
+        { titulo: "Mis puntos fuertes", viz: "tarjetas",
+          datos: { tono: "fortaleza", items: [
+            { nombre: "Comunicación", texto: "Me gusta conversar con personas nuevas, mi perfil DISC tiene una influencia alta (79 de 100) y tengo una formación en comunicación de alto impacto." },
+            { nombre: "Ejemplos reales", texto: "Puedo contar con el método STAR lo que hice en Vamo y en el proyecto de inspección de contenedores." },
+            { nombre: "Inglés", texto: "Viví un año en Londres y puedo presentar una entrevista en inglés." },
+            { nombre: "Una presentación ya armada", texto: "Mi pitch me da la base para responder «háblame de ti»." }
+          ] } },
+        { titulo: "Mis puntos débiles", viz: "tarjetas",
+          datos: { tono: "mejora", items: [
+            { nombre: "Poca práctica", texto: "Solo he presentado una entrevista y no sé cómo respondo bajo la presión de una real." },
+            { nombre: "Preguntas técnicas de ciberseguridad", texto: "No tengo experiencia laboral ni certificaciones en el área; lo que sé lo aprendí en la carrera y por mi cuenta." },
+            { nombre: "Errores y fracasos", texto: "No tengo preparados ejemplos de errores que haya cometido y de lo que aprendí de ellos." },
+            { nombre: "Pretensiones económicas", texto: "Todavía no sé cuánto se le paga a un practicante en mi área." }
           ] } },
         { titulo: "Un ejemplo con el método STAR", viz: "flujo",
           datos: { pasos: [
-            { letra: "S", nombre: "Situación", texto: "[PENDIENTE]" },
-            { letra: "T", nombre: "Tarea", texto: "[PENDIENTE]" },
-            { letra: "A", nombre: "Acción", texto: "[PENDIENTE]" },
-            { letra: "R", nombre: "Resultado", texto: "[PENDIENTE]" }
+            { letra: "S", nombre: "Situación", texto: "En un proyecto para un cliente, la inspección de contenedores se hacía a ojo, revisando uno por uno." },
+            { letra: "T", nombre: "Tarea", texto: "Me encargué de automatizar dos partes de esa revisión: detectar daños y leer las etiquetas." },
+            { letra: "A", nombre: "Acción", texto: "Desarrollé y entrené dos modelos de inteligencia artificial, uno para cada tarea." },
+            { letra: "R", nombre: "Resultado", texto: "Los dos modelos quedaron terminados y entregados al cliente." }
+          ] } },
+        { titulo: "Mi plan de preparación", viz: "checklist",
+          datos: { items: [
+            "Escribir cinco historias con el método STAR: un reto técnico, un error, un conflicto en equipo, un logro y una situación de presión.",
+            "Ensayar en voz alta y grabarme respondiendo las preguntas más comunes, para corregir lo que solo se nota cuando uno se escucha.",
+            "Antes de cada entrevista, investigar la empresa: qué hace, sus servicios, sus noticias recientes y cómo trabaja su equipo de seguridad.",
+            "Averiguar cuánto se ofrece a los practicantes en mi área, para responder con un rango y no con una cifra al azar.",
+            "Llevar al menos dos preguntas para el entrevistador. Decir que no tengo preguntas transmite falta de interés."
           ] } }
       ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
+      leccion: "La seguridad en una entrevista se construye ensayando antes de que llegue."
     },
     {
       id: "semana-08", numero: 8,
-      titulo: "Sector, rol y empresas objetivo",
-      estado: "pendiente",
+      titulo: "Mercado laboral",
+      estado: "completada",
       fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
+      reflexion: "Me veo trabajando en ciberseguridad defensiva, en la detección de amenazas, combinada con la inteligencia artificial. Ya construí modelos de detección: en un proyecto para un cliente desarrollé modelos que identifican daños y leen etiquetas en contenedores. Me interesa aplicar esa misma lógica a la seguridad, buscando en grandes volúmenes de datos las señales que delatan un ataque.\n\nAl investigar el mercado para mi perfil de LinkedIn encontré que la mayoría de las plazas de práctica en ciberseguridad en Colombia están del lado defensivo: centros de operaciones de seguridad (SOC), gestión de vulnerabilidades, respuesta a incidentes y seguridad en la nube. Eso coincide con lo que quiero hacer y con lo que descubrí en la semana 5: rindo mejor en roles con procesos definidos.",
       bloques: [
-        { titulo: "Mi objetivo en cifras", viz: "contador",
-          datos: { items: [
-            { valor: null, etiqueta: "Empresas objetivo" },
-            { valor: null, etiqueta: "[PENDIENTE: otra cifra]" }
+        { titulo: "Sectores", viz: "tarjetas",
+          datos: { tono: "fortaleza", items: [
+            { nombre: "Empresas de ciberseguridad", texto: "Su producto es la protección misma, así que ahí aprendería cómo se construyen y se operan las herramientas de detección." },
+            { nombre: "Consultoría y servicios de tecnología", texto: "Se trabaja con varios clientes y tecnologías a la vez; para un practicante, eso significa aprender rápido." }
           ] } },
-        { titulo: "Sector, rol y empresas", viz: "texto",
-          datos: { texto: "[PENDIENTE: sector, rol (Analista de Seguridad Junior) y empresas objetivo]" } }
+        { titulo: "Área", viz: "checklist",
+          datos: { items: [
+            "Monitoreo y detección de amenazas en un SOC (blue team), mi primera opción.",
+            "Gestión de vulnerabilidades.",
+            "Seguridad en la nube y DevSecOps, donde aprovecho lo que ya sé de Docker, Kubernetes, Terraform y Jenkins."
+          ] } },
+        { titulo: "Empresas que me llaman la atención", viz: "tarjetas",
+          datos: { tono: "fortaleza", items: [
+            { nombre: "Fortinet, mi primera opción", texto: "Es una empresa dedicada por completo a la ciberseguridad, y su laboratorio de investigación de amenazas usa inteligencia artificial para detectarlas. Es justo la combinación que quiero aprender." },
+            { nombre: "Perficient", texto: "Es una consultora de tecnología con presencia en Colombia, donde trabajaría con clientes y tecnologías distintas." },
+            { nombre: "Globant", texto: "Es una empresa de tecnología con sedes en Colombia y proyectos para clientes de todo el mundo." }
+          ] } }
       ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
+      leccion: "Ya construí modelos que detectan. Ahora quiero que detecten amenazas."
     },
     {
       id: "semana-09", numero: 9,
       titulo: "Marca personal",
-      estado: "pendiente",
+      estado: "completada",
       fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
+      reflexion: "La imagen que quiero proyectar se resume en una idea: ver lo que otros no ven. Es lo que me atrajo de la ciberseguridad y lo que quiero que la gente asocie con mi nombre. Quiero que me vean como un analista atento a los detalles, que encuentra la señal entre el ruido y explica con claridad lo que encontró.\n\nBusco que esa imagen sea seria y profesional, y que se sostenga con hechos. Mi perfil de LinkedIn, mi GitHub, mi hoja de vida, mi pitch y esta bitácora tienen que contar la misma historia con el mismo tono. Si una de esas piezas dice algo distinto, la imagen se cae.",
       bloques: [
-        { titulo: "La imagen profesional que quiero proyectar", viz: "maquina",
-          datos: { texto: "[PENDIENTE]" } }
+        { titulo: "La imagen que quiero proyectar", viz: "maquina",
+          datos: { texto: "Ver lo que otros no ven." } },
+        { titulo: "Antes y ahora", viz: "tachado",
+          datos: { pares: [
+            { antes: "La marca personal es cosa de influenciadores.", despues: "Mi marca personal es la impresión que dejo, en persona y en internet, la cuide o no." }
+          ] } },
+        { titulo: "Cómo quiero que me describan", viz: "tarjetas",
+          datos: { tono: "fortaleza", items: [
+            { nombre: "Atento al detalle", texto: "Reviso lo que otros pasan por alto, que es la base del trabajo en seguridad." },
+            { nombre: "Constante", texto: "La estabilidad es mi dimensión DISC más alta (96 de 100), y la demuestro estudiando, trabajando y entrenando al mismo tiempo." },
+            { nombre: "Cercano", texto: "Me gusta trabajar con personas y sé explicar un hallazgo técnico a alguien que no es técnico." }
+          ] } },
+        { titulo: "Dónde se ve mi marca", viz: "checklist",
+          datos: { items: [
+            "LinkedIn, con un perfil principal en inglés, uno secundario en español y un titular bilingüe.",
+            "GitHub, con mis proyectos públicos.",
+            "La hoja de vida.",
+            "El pitch en video.",
+            "Esta bitácora, que muestra lo que puedo construir con la tecnología."
+          ] } }
       ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
+      leccion: "Si no defino la imagen que proyecto, otros la definen por mí."
     },
     {
       id: "semana-10", numero: 10,
-      titulo: "Búsqueda de práctica",
-      estado: "pendiente",
+      titulo: "Gestión de oportunidades laborales",
+      estado: "completada",
       fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
+      reflexion: "Tengo claro el tipo de práctica que busco y para cuándo: el segundo semestre de 2027. Estoy abierto a cualquier ciudad y modalidad, presencial, híbrida o remota. Todavía no estoy aplicando; estoy preparando el terreno para que mi perfil esté listo cuando llegue el momento.\n\nMi medio principal es LinkedIn. Esta semana lo optimicé desde cero, con un titular, un «Acerca de» y una experiencia orientados a prácticas en ciberseguridad. Mi otra fuente son las personas: los profesores con los que he construido una buena relación y mis compañeros de carrera.",
       bloques: [
-        { titulo: "Tipo de práctica que busco", viz: "maquina",
-          datos: { texto: "[PENDIENTE]" } },
-        { titulo: "Contactos y canales de búsqueda", viz: "checklist",
-          datos: { items: ["[PENDIENTE: canal 1]", "[PENDIENTE: canal 2]", "[PENDIENTE: contacto]"] } }
+        { titulo: "La práctica que busco", viz: "maquina",
+          datos: { texto: "Ciberseguridad defensiva, en detección de amenazas." } },
+        { titulo: "Mis contactos", viz: "tarjetas",
+          datos: { tono: "fortaleza", items: [
+            { nombre: "Profesores de la universidad", texto: "Conocen mi trabajo de cerca y pueden orientarme, recomendarme o contarme de convocatorias." },
+            { nombre: "Compañeros de carrera", texto: "Los que empiezan su práctica antes que yo me pueden contar cómo fueron sus procesos y avisarme de vacantes." },
+            { nombre: "Profesionales y reclutadores de seguridad en LinkedIn", texto: "Es la red que voy a construir de aquí a la práctica, empezando por las empresas que me interesan." }
+          ] } },
+        { titulo: "Cómo uso LinkedIn para buscar", viz: "checklist",
+          datos: { items: [
+            "Alertas de empleo con términos como «practicante de ciberseguridad» y «security intern».",
+            "Seguir a Fortinet, Perficient y Globant, y a sus reclutadores, para conocer cómo seleccionan practicantes.",
+            "Conectar con profesionales del área con una nota personalizada, nunca con invitaciones masivas.",
+            "Mantener el perfil al día cada vez que termine un proyecto o un curso."
+          ] } },
+        { titulo: "Mi perfil de LinkedIn", viz: "enlace",
+          datos: { tipo: "linkedin", etiqueta: "Ver mi perfil en LinkedIn", texto: "Este es el perfil que optimicé esta semana.",
+            url: "https://www.linkedin.com/in/heiner-rincon-sw-engineering/" } }
       ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
+      leccion: "Las oportunidades llegan primero a quien ya conoce a las personas correctas."
     },
     {
       id: "semana-11", numero: 11,
-      titulo: "[PENDIENTE: título de la semana]",
-      estado: "pendiente",
+      titulo: "Pitch laboral",
+      estado: "completada",
       fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
+      reflexion: "Mi pitch tiene el propósito de presentarme en poco más de un minuto y dejar una idea clara: soy un estudiante de Ingeniería de Sistemas que construyó modelos de detección con inteligencia artificial y quiere aplicar esa experiencia a la ciberseguridad defensiva. Lo grabé en video pensando en un reclutador o en un líder técnico de seguridad. Al terminar de verlo, quiero que esa persona revise mi LinkedIn o me escriba.\n\nEntendí que un pitch es una historia corta con una sola idea central, en la que cada parte cumple una función. Por eso no intenté meter toda mi hoja de vida.",
       bloques: [
-        { titulo: "[PENDIENTE: título del bloque]", viz: "texto",
-          datos: { texto: "[PENDIENTE]" } }
+        { titulo: "Antes y ahora", viz: "tachado",
+          datos: { pares: [
+            { antes: "Un pitch es recitar la hoja de vida rápido.", despues: "Un pitch es una historia corta con una idea que el otro recuerde." }
+          ] } },
+        { titulo: "Cómo está armado mi pitch", viz: "checklist",
+          datos: { items: [
+            "Gancho: un dato sobre cuánto tarda una empresa en detectar que la atacaron.",
+            "Quién soy.",
+            "El problema: las amenazas pasan desapercibidas durante meses.",
+            "Mi propuesta: detección apoyada en inteligencia artificial.",
+            "El beneficio para la empresa.",
+            "Por qué yo: ya construí modelos de detección en un proyecto real.",
+            "Cierre con mis datos de contacto."
+          ] } },
+        { titulo: "Lo que aprendí al grabarlo", viz: "texto",
+          datos: { texto: "Hice tres versiones antes de quedar conforme. Escribir el guion me obligó a escoger una idea y descartar el resto. Al grabarlo noté que hablo rápido, así que ajusté el texto a mi ritmo. Lo voy a seguir mejorando, y ya me sirve como base para responder «háblame de ti» en una entrevista." } },
+        { titulo: "Mi pitch", viz: "enlace",
+          datos: { tipo: "video", etiqueta: "Ver mi pitch en YouTube", texto: "Mi presentación profesional en video.",
+            url: "https://youtu.be/yVKADc-iFLk" } }
       ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
+      leccion: "Si no puedo explicar en un minuto quién soy, el otro tampoco lo va a recordar."
     },
     {
       id: "semana-12", numero: 12,
-      titulo: "[PENDIENTE: título de la semana]",
-      estado: "pendiente",
+      titulo: "Gestión de mis finanzas",
+      estado: "completada",
       fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
+      reflexion: "Tengo una claridad parcial. Como trabajo mientras estudio, manejo mi propio dinero, y la charla me hizo ver que lo hago más por costumbre que con un sistema. La idea que más me quedó es que muchas decisiones de gasto son emocionales: la publicidad está diseñada para despertar emociones, y es fácil terminar comprando cosas que no necesito.\n\nQuiero llegar a la práctica con orden, para que el primer apoyo económico que reciba ya tenga un destino.",
       bloques: [
-        { titulo: "[PENDIENTE: título del bloque]", viz: "texto",
-          datos: { texto: "[PENDIENTE]" } }
+        { titulo: "Antes y ahora", viz: "tachado",
+          datos: { pares: [
+            { antes: "Si me alcanza a fin de mes, voy bien.", despues: "Voy bien si sé a dónde se fue mi dinero y ahorré antes de gastar." }
+          ] } },
+        { titulo: "Qué debo tener en cuenta", viz: "checklist",
+          datos: { items: [
+            "Registrar los gastos del mes para saber a dónde se va el dinero.",
+            "Separar el ahorro apenas recibo un ingreso, no al final con lo que sobre.",
+            "Revisar mis suscripciones. Pago herramientas de inteligencia artificial para estudiar y trabajar, y conviene confirmar cada cierto tiempo que todas se usan.",
+            "Darle prioridad al gasto en formación, como los cursos de ciberseguridad que ya compré, porque aumenta mi valor profesional.",
+            "Esperar un día antes de una compra impulsiva.",
+            "Decidir, antes de empezar la práctica, qué parte del apoyo económico voy a ahorrar."
+          ] } }
       ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
+      leccion: "El dinero que no planeo lo terminan gastando mis emociones."
     },
     {
       id: "semana-13", numero: 13,
-      titulo: "[PENDIENTE: título de la semana]",
-      estado: "pendiente",
+      titulo: "Gestión emocional y el mundo laboral",
+      estado: "completada",
       fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
+      reflexion: "La emoción que más tengo presente es la motivación. Este semestre avancé en varios frentes: optimicé mi perfil de LinkedIn, construí mi hoja de vida, grabé mi pitch y armé esta bitácora. Ver ese avance me da seguridad.\n\nTambién hay presión. Estudio, trabajo y entreno al mismo tiempo, y a veces quiero avanzar más rápido de lo que el tiempo permite. Frente a las entrevistas tengo una inseguridad concreta, porque solo he presentado una.",
       bloques: [
-        { titulo: "[PENDIENTE: título del bloque]", viz: "texto",
-          datos: { texto: "[PENDIENTE]" } }
+        { titulo: "Cómo uso cada emoción", viz: "tarjetas",
+          datos: { tono: "fortaleza", items: [
+            { nombre: "Motivación", texto: "La convierto en un plan con fechas, como las historias STAR y los simulacros, para que mi avance no dependa del ánimo de cada día." },
+            { nombre: "Presión", texto: "Defino pocas prioridades por semana y respeto el descanso y el entrenamiento, que son parte de mis innegociables." },
+            { nombre: "Inseguridad frente a las entrevistas", texto: "La trato como información: me dice qué practicar. Cada simulacro la reduce un poco." }
+          ] } },
+        { titulo: "Observar sin reaccionar", viz: "texto",
+          datos: { texto: "En la materia de Estoicismo, y por interés propio, he practicado observar mis pensamientos y emociones sin identificarme con ellos. En una entrevista eso me permite sentir nervios sin que los nervios decidan lo que respondo." } }
       ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
-    },
-    {
-      id: "semana-14", numero: 14,
-      titulo: "[PENDIENTE: título de la semana]",
-      estado: "pendiente",
-      fecha: "",
-      reflexion: "[PENDIENTE: reflexión de la semana]",
-      bloques: [
-        { titulo: "[PENDIENTE: título del bloque]", viz: "texto",
-          datos: { texto: "[PENDIENTE]" } }
-      ],
-      leccion: "[PENDIENTE: la lección clave de la semana]"
+      leccion: "Mis emociones me informan; las decisiones las tomo yo."
     }
   ]
 };

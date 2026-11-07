@@ -25,4 +25,4 @@ La estrategia detallada de subagentes de cada fase se definirá con Heiner antes
 
 - Cloudflare Pages conectado a `Heiner1905/bitacora-pdp`.
 - Rama de producción: `main`. Build command: ninguno. Build output directory: `site`.
-- Producción: `https://bitacora-pdp.pages.dev`. Cada rama genera su propio link de vista previa.
+- Producción: `https://bitacora-pdp.heinerdanitrincon.workers.dev/`. Cada rama genera su propio link de vista previa.
