@@ -855,6 +855,86 @@
     };
   };
 
+  /* ---------- enlace: tarjeta con un enlace real (LinkedIn o video) ----------
+     datos: { texto, url, etiqueta, tipo: "linkedin" | "video" }
+     - El enlace es un <a> real que abre en pestaña nueva (noopener noreferrer).
+     - tipo "video": fachada liviana (miniatura + botón de reproducir). El iframe
+       de youtube-nocookie se crea solo al hacer clic; antes no se carga nada de YouTube
+       salvo la miniatura (diferida).
+     - Sin logos de marca: la plataforma se nombra en la etiqueta.
+     - En impresión se imprime la URL completa en texto. */
+  function idYouTube(url) {
+    var m = String(url || '').match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+  function urlCorta(url) { return String(url || '').replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''); }
+  var FLECHA = '<svg class="enlace__flecha" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5.5 4H12v6.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg>';
+  T.enlace = function (c, d) {
+    var tipo = d.tipo === 'video' ? 'video' : 'linkedin';
+    var tarjeta = el('div', 'enlace enlace--' + tipo, c);
+    var real = !vacio(d.url) && !vacio(d.etiqueta);
+    if (!real) {
+      tarjeta.classList.add('enlace--vacio');
+      if (d.texto != null) pintar('p', 'enlace__texto', tarjeta, d.texto);
+      pintar('p', 'enlace__accion-vacia', tarjeta, vacio(d.url) ? d.url : d.etiqueta);
+      return { animables: [], preparar: function () {}, entrar: function () {}, final: function () {} };
+    }
+    if (!vacio(d.texto)) el('p', 'enlace__texto', tarjeta, d.texto);
+
+    var vid = tipo === 'video' ? idYouTube(d.url) : null;
+    if (vid) {
+      var marco = el('div', 'enlace__reproductor', tarjeta);
+      var fachada = el('button', 'enlace__fachada', marco);
+      fachada.type = 'button';
+      fachada.setAttribute('aria-label', 'Reproducir el video aquí: ' + (d.texto || d.etiqueta) + ' (se carga desde YouTube)');
+      var img = el('img', 'enlace__miniatura', fachada);
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.src = 'https://i.ytimg.com/vi/' + vid + '/hqdefault.jpg';
+      img.srcset = 'https://i.ytimg.com/vi/' + vid + '/mqdefault.jpg 320w, https://i.ytimg.com/vi/' + vid + '/hqdefault.jpg 480w, https://i.ytimg.com/vi/' + vid + '/maxresdefault.jpg 1280w';
+      img.sizes = '(max-width: 599px) 100vw, 720px';
+      img.addEventListener('error', function () { img.remove(); }, { once: true });
+      var control = el('span', 'enlace__control', fachada);
+      control.setAttribute('aria-hidden', 'true');
+      var play = el('span', 'enlace__play', control);
+      play.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>';
+      el('span', 'enlace__aviso', control, 'Reproducir aquí');
+      fachada.addEventListener('click', function () {
+        var fr = document.createElement('iframe');
+        fr.className = 'enlace__iframe';
+        fr.src = 'https://www.youtube-nocookie.com/embed/' + vid + '?autoplay=1&rel=0';
+        fr.title = (d.texto || d.etiqueta) + ' · video de YouTube';
+        fr.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        fr.setAttribute('allowfullscreen', '');
+        fr.referrerPolicy = 'strict-origin-when-cross-origin';
+        marco.replaceChild(fr, fachada);
+        marco.classList.add('enlace__reproductor--activo');
+        fr.focus();
+      });
+    }
+
+    var pie = el('div', 'enlace__pie', tarjeta);
+    var a = el('a', 'enlace__accion', pie);
+    a.href = d.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    el('span', 'enlace__etiqueta', a, d.etiqueta);
+    el('span', 'sr-only', a, ' (se abre en una pestaña nueva)');
+    a.insertAdjacentHTML('beforeend', FLECHA);
+    var u = el('p', 'enlace__url', pie);
+    el('span', 'enlace__url-corta', u, urlCorta(d.url)).setAttribute('aria-hidden', 'true');
+    el('span', 'enlace__url-completa', u, d.url);
+
+    var tw;
+    return {
+      animables: [tarjeta],
+      preparar: function () { gsap.set(tarjeta, { autoAlpha: 0, y: 28 }); },
+      entrar: function () { tw = gsap.to(tarjeta, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'expo.out' }); },
+      final: function () { if (tw) tw.kill(); }
+    };
+  };
+
   /* ---------- contador: cifras que cuentan hasta su valor ---------- */
   T.contador = function (c, d) {
     var ul = el('ul', 'contador', c);
@@ -990,7 +1070,8 @@
       { letra: 'R', nombre: 'Resultado', texto: 'Texto de muestra del resultado.' }
     ] },
     maquina: { texto: 'Frase de muestra que se escribe sola, letra por letra, para revisar la máquina de escribir.' },
-    contador: { items: [{ valor: 12, etiqueta: 'Cifra de muestra' }, { valor: 1450, etiqueta: 'Otra cifra de muestra' }] }
+    contador: { items: [{ valor: 12, etiqueta: 'Cifra de muestra' }, { valor: 1450, etiqueta: 'Otra cifra de muestra' }] },
+    enlace: { tipo: 'linkedin', etiqueta: 'Enlace de muestra', texto: 'Texto de muestra del enlace.', url: 'https://example.com/' }
   };
 
   var demo = /[?&]demo-viz\b/.test(location.search);
